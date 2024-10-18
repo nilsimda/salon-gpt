@@ -43,13 +43,13 @@ export const STRINGS = {
   logIn: 'Log in',
   signUp: 'Sign up',
   logOut: 'Log out',
-  selectAnOption: 'Select an option',
+  selectAnOption: 'Option auswählen',
   noResultsFound: 'No results found',
   workingOnIt: 'Working on it',
 
   // Assistants
-  createAssistantTitle: 'Create Assistant',
-  createAnAssistantTitle: 'Create an Assistant',
+  createAssistantTitle: 'Assistent erstellen',
+  createAnAssistantTitle: 'Erstelle einen Assistenten',
   createAnAssistantDescription: 'Create a unique assistant and share with your org',
   hideAssistant: 'Hide assistant',
   editAssistant: 'Edit assistant',

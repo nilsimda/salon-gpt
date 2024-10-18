@@ -92,7 +92,7 @@ lint-fix:
 
 .PHONY: first-run
 first-run:
-	make setup
+	make setup-use-community
 	make migrate
 	make dev
 

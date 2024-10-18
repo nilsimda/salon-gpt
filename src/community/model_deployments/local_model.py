@@ -1,7 +1,7 @@
 import asyncio
 from typing import Any, Dict, List
 
-from llama_cpp import Llama
+import ollama
 
 from backend.schemas.cohere_chat import CohereChatRequest
 
@@ -11,10 +11,10 @@ from community.model_deployments import BaseDeployment
 
 
 class LocalModelDeployment(BaseDeployment):
-    def __init__(self, model_path: str, template: str = None):
+    def __init__(self, model: str = "llama3.2", template: str = None, ctx: Context = None):
         self.prompt_template = PromptTemplate()
-        self.model_path = model_path
         self.template = template
+        self.model = model
 
     @property
     def rerank_enabled(self) -> bool:
@@ -22,34 +22,36 @@ class LocalModelDeployment(BaseDeployment):
 
     @classmethod
     def list_models(cls) -> List[str]:
-        return []
+        return ["llama3.2", "mistral-nemo"]
 
     @classmethod
     def is_available(cls) -> bool:
         return True
 
     async def invoke_chat_stream(
-        self, chat_request: CohereChatRequest, **kwargs: Any
+        self, chat_request: CohereChatRequest, ctx: Context, **kwargs: Any
     ) -> Any:
-        model = self._get_model()
+
+        if not chat_request.model:
+            chat_request.model = self.model
 
         if chat_request.max_tokens is None:
             chat_request.max_tokens = 200
 
-        if len(chat_request.documents) == 0:
-            prompt = self.prompt_template.dummy_chat_template(
-                chat_request.message, chat_request.chat_history
-            )
-        else:
-            prompt = self.prompt_template.dummy_rag_template(
-                chat_request.message, chat_request.chat_history, chat_request.documents
-            )
+        #if len(chat_request.documents) == 0:
+        #    prompt = self.prompt_template.dummy_chat_template(
+        #        chat_request.message, chat_request.chat_history
+        #    )
+        #else:
+        #    prompt = self.prompt_template.dummy_rag_template(
+        #        chat_request.message, chat_request.chat_history, chat_request.documents
+        #    )
 
-        stream = model(
-            prompt,
+        stream = ollama.chat(
+            model=chat_request.model,
+            messages=[{'role': 'user', 'content': chat_request.message}],
             stream=True,
-            max_tokens=chat_request.max_tokens,
-            temperature=chat_request.temperature,
+            options={"max_tokens": chat_request.max_tokens, "temperature": chat_request.temperature},
         )
 
         yield {
@@ -60,7 +62,7 @@ class LocalModelDeployment(BaseDeployment):
         for item in stream:
             yield {
                 "event_type": "text-generation",
-                "text": item["choices"][0]["text"],
+                "text": item["message"]["content"],
             }
 
         yield {
@@ -71,27 +73,21 @@ class LocalModelDeployment(BaseDeployment):
     async def invoke_chat(
         self, chat_request: CohereChatRequest, ctx: Context, **kwargs: Any
     ) -> Any:
-        model = self._get_model()
+
+        if not chat_request.model:
+            chat_request.model = self.model
 
         if chat_request.max_tokens is None:
             chat_request.max_tokens = 200
 
-        response = model(
-            chat_request.message,
+        response = ollama.chat(
+            model=chat_request.model,
+            messages=[{'role': 'user', 'content': chat_request.message}],
             stream=False,
-            max_tokens=chat_request.max_tokens,
-            temperature=chat_request.temperature,
+            options={"max_tokens": chat_request.max_tokens, "temperature": chat_request.temperature},
         )
 
-        return {"text": response["choices"][0]["text"]}
-
-    def _get_model(self):
-        model = Llama(
-            model_path=self.model_path,
-            verbose=False,
-        )
-
-        return model
+        return {"text": response['message']['content']}
 
     async def invoke_rerank(
         self, query: str, documents: List[Dict[str, Any]], ctx: Context, **kwargs: Any
@@ -247,15 +243,16 @@ async def main():
     model = LocalModelDeployment(model_path="path/to/model")
 
     print("--- Chat Stream ---")
-    response = await model.invoke_chat_stream(
-        CohereChatRequest(message="hello world", temperature=0.3)
+    response = model.invoke_chat_stream(
+        CohereChatRequest(model="llama3.2", message="hello world", temperature=0.3)
     )
-    for item in response:
+    async for item in response:
         print(item)
 
     print("\n--- Chat ---")
-    response = model.invoke_chat(
-        CohereChatRequest(message="hello world", temperature=0.3)
+    response = await model.invoke_chat(
+        CohereChatRequest(model="llama3.2", message="hello world", temperature=0.3),
+        ctx=None
     )
     print(response)
 
