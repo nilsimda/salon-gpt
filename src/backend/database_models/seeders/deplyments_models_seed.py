@@ -83,7 +83,7 @@ MODELS_NAME_MAPPING = {
         },
         "command-r-plus": {
             "cohere_name": "command-r-plus",
-            "is_default": True,
+            "is_default": False,
         },
         "c4ai-aya-23": {
             "cohere_name": "c4ai-aya-23",

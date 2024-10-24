@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 
-import { CoralLogo, Text, Tooltip } from '@/components/UI';
+import { QuoteLogo, Text, Tooltip } from '@/components/UI';
 import { useBrandedColors, useChatRoutes, useConversationFileActions, useIsDesktop } from '@/hooks';
 import {
   useCitationsStore,
@@ -82,7 +82,7 @@ export const AgentIcon: React.FC<Props> = ({ name, id, isBaseAgent }) => {
           )}
         >
           {isBaseAgent ? (
-            <CoralLogo className={contrastFill} />
+            <QuoteLogo className={contrastFill} />
           ) : (
             <Text className={cn('uppercase', contrastText)} styleAs="p-lg">
               {name[0]}

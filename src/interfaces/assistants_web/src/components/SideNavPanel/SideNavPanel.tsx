@@ -90,7 +90,7 @@ export const SideNavPanel: React.FC<{ className?: string }> = ({ className = '' 
           <AgentsSidePanelButton
             label={
               <div className="group flex w-full items-center justify-between">
-                <Text className="text-coral-500 dark:text-evolved-green-700">New chat</Text>
+                <Text className="text-coral-500 dark:text-evolved-green-700">Neuer Chat</Text>
                 <Shortcut sequence={['⌘', '↑', 'O']} className="hidden group-hover:flex" />
               </div>
             }

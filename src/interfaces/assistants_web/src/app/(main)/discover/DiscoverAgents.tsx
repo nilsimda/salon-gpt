@@ -29,14 +29,14 @@ export const DiscoverAgents = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Text styleAs="h4" className="text-volcanic-400 dark:text-mushroom-950">
-              All Assistants
+              Alle Assistenten
             </Text>
           </div>
           <Button
             kind="secondary"
             theme="default"
             icon="add"
-            label="Create Assistant"
+            label="Assistent erstellen"
             href="/new"
             className="hidden md:block"
           />
@@ -149,19 +149,19 @@ const CompanyAgents: React.FC<{
     <div className="max-w-screen-xl flex-grow overflow-y-auto">
       <div className="space-y-10">
         <Input
-          placeholder="Search Assistants"
+          placeholder="Suche nach Assistenten"
           type="text"
           onChange={handleOnChange}
           value={query}
         />
-        <GroupAgents title="Created by me" agents={createdByMeAgents} />
+        <GroupAgents title="Von mir erstellt" agents={createdByMeAgents} />
         {agents.length >= GROUPED_ASSISTANTS_LIMIT && (
           <>
-            <GroupAgents title="Recently used" agents={recentlyUsedAgents} />
+            <GroupAgents title="Zuletzt verwendet" agents={recentlyUsedAgents} />
             <GroupAgents title="Trending" agents={trendingAgents} />
           </>
         )}
-        <GroupAgents title="All assistants" agents={filteredAgents} />
+        <GroupAgents title="Alle Assistenten" agents={filteredAgents} />
       </div>
     </div>
   );

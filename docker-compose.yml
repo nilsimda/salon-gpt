@@ -50,6 +50,8 @@ services:
       args:
         INSTALL_COMMUNITY_DEPS: false
       dockerfile: ./src/backend/Dockerfile
+    environment:
+      - OLLAMA_HOST=ollama
     develop:
       watch:
         - action: sync
@@ -73,6 +75,7 @@ services:
     depends_on:
       - db
       - redis
+      - ollama
     volumes:
       # Mount alembic folder to sync migrations
       - ./src/backend/alembic:/workspace/src/backend/alembic
@@ -85,10 +88,31 @@ services:
     networks:
       - proxynet
 
+  ollama:
+    image: ollama/ollama:latest
+    restart: always
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:11434/api/version || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "11434:11434"
+    networks:
+      - proxynet    
+
+
   frontend:
     build:
       target: ${BUILD_TARGET:-prod}
-      context: ./src/interfaces/coral_web
+      context: ./src/interfaces/assistants_web
       dockerfile: Dockerfile
     # Set environment variables directly in the docker-compose file
     environment:
@@ -105,19 +129,10 @@ services:
     develop:
       watch:
         - action: sync
-          path: ./src/interfaces/coral_web
+          path: ./src/interfaces/assistants_web
           target: /app
           ignore:
             - node_modules/
-
-  terrarium:
-    image: ghcr.io/cohere-ai/terrarium:latest
-    ports:
-      - "8080:8080"
-    expose:
-      - "8080"
-    networks:
-      - proxynet
 
 volumes:
   db:

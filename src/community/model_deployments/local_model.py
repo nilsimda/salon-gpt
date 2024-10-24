@@ -11,10 +11,10 @@ from community.model_deployments import BaseDeployment
 
 
 class LocalModelDeployment(BaseDeployment):
-    def __init__(self, model: str = "llama3.2", template: str = None, ctx: Context = None):
+    def __init__(self, model_path: str = "llama3", template: str = None, ctx: Context = None):
         self.prompt_template = PromptTemplate()
         self.template = template
-        self.model = model
+        self.model = model_path
 
     @property
     def rerank_enabled(self) -> bool:
@@ -48,7 +48,7 @@ class LocalModelDeployment(BaseDeployment):
         #    )
 
         stream = ollama.chat(
-            model=chat_request.model,
+            model="mistral-nemo",#chat_request.model,
             messages=[{'role': 'user', 'content': chat_request.message}],
             stream=True,
             options={"max_tokens": chat_request.max_tokens, "temperature": chat_request.temperature},
@@ -68,6 +68,7 @@ class LocalModelDeployment(BaseDeployment):
         yield {
             "event_type": "stream-end",
             "finish_reason": "COMPLETE",
+            "response": {}
         }
 
     async def invoke_chat(
@@ -81,7 +82,7 @@ class LocalModelDeployment(BaseDeployment):
             chat_request.max_tokens = 200
 
         response = ollama.chat(
-            model=chat_request.model,
+            model="mistral-nemo",#chat_request.model,
             messages=[{'role': 'user', 'content': chat_request.message}],
             stream=False,
             options={"max_tokens": chat_request.max_tokens, "temperature": chat_request.temperature},
@@ -244,14 +245,15 @@ async def main():
 
     print("--- Chat Stream ---")
     response = model.invoke_chat_stream(
-        CohereChatRequest(model="llama3.2", message="hello world", temperature=0.3)
+        CohereChatRequest(model="llama3", message="hello world", temperature=0.3),
+        ctx=None
     )
     async for item in response:
         print(item)
 
     print("\n--- Chat ---")
     response = await model.invoke_chat(
-        CohereChatRequest(model="llama3.2", message="hello world", temperature=0.3),
+        CohereChatRequest(model="llama3", message="hello world", temperature=0.3),
         ctx=None
     )
     print(response)

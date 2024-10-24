@@ -27,10 +27,10 @@ export const SwitchAssistants: React.FC<Props> = ({ isOpen, close, onBack }) => 
   };
 
   const seeAllAssistantsAction: QuickAction = {
-    name: 'See all assistants',
+    name: 'Alle Assistenten anzeigen',
     label: (
       <span className="flex items-center gap-x-2">
-        See all assistants
+        Alle Assistenten anzeigen
         <Icon name="arrow-right" />
       </span>
     ),

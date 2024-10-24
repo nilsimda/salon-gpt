@@ -1,5 +1,6 @@
 export const DEPLOYMENT_COHERE_PLATFORM = 'Cohere Platform';
 export const DEPLOYMENT_SINGLE_CONTAINER = 'Single Container';
+export const DEPLOYMENT_LOCAL_MODEL = 'Local Model';
 
 export const CHAT_COMPOSER_TEXTAREA_ID = 'composer';
 export const CONFIGURATION_FILE_UPLOAD_ID = 'file-upload';

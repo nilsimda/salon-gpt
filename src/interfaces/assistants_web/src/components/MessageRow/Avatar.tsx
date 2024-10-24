@@ -3,7 +3,7 @@
 import Lottie from 'react-lottie-player';
 
 import logoTyping from '@/assets/lotties/icon-loop-coral-950.json';
-import { CoralLogo, Icon } from '@/components/UI';
+import { QuoteLogo, Icon } from '@/components/UI';
 import { useBrandedColors, useChatRoutes } from '@/hooks';
 import { BotState, ChatMessage, MessageType, isFulfilledMessage } from '@/types/message';
 import { cn } from '@/utils';
@@ -53,7 +53,7 @@ export const BotAvatar: React.FC<{
   if (state === BotState.TYPING || state === BotState.LOADING) {
     return <Lottie animationData={logoTyping} play loop className="size-5 md:size-6" />;
   }
-  return <CoralLogo className={cn('size-4 md:size-[18px]', className)} />;
+  return <QuoteLogo className={cn('size-4 md:size-[18px]', className)} />;
 };
 
 const UserAvatar: React.FC = () => {

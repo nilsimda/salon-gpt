@@ -4,7 +4,7 @@ import { Transition } from '@headlessui/react';
 import React from 'react';
 
 import { AssistantTools } from '@/components/MessagingContainer';
-import { CoralLogo, Icon, Text } from '@/components/UI';
+import { QuoteLogo, Icon, Text } from '@/components/UI';
 import { useAgent, useBrandedColors, useListTools } from '@/hooks';
 import { cn } from '@/utils';
 import { checkIsBaseAgent } from '@/utils';
@@ -45,7 +45,7 @@ export const Welcome: React.FC<Props> = ({ show, agentId }) => {
             )}
           >
             {isBaseAgent ? (
-              <CoralLogo className={contrastFill} />
+              <QuoteLogo className={contrastFill} />
             ) : (
               <Text className={cn('uppercase', contrastText)} styleAs="p-lg">
                 {agent?.name[0]}
@@ -53,11 +53,11 @@ export const Welcome: React.FC<Props> = ({ show, agentId }) => {
             )}
           </div>
           <Text styleAs="h4" className="truncate">
-            {isBaseAgent ? 'Your Public Assistant' : agent?.name}
+            {agent?.name}
           </Text>
           {isBaseAgent && (
             <Text className="ml-auto" styleAs="caption">
-              By Cohere
+              By Rheingold Salon
             </Text>
           )}
         </div>
@@ -65,13 +65,13 @@ export const Welcome: React.FC<Props> = ({ show, agentId }) => {
           {agent?.description || 'Ask questions and get answers based on your files.'}
         </Text>
 
-        {isBaseAgent && (
+        {/*{isBaseAgent && (
           <div className="flex items-center gap-x-1">
             <Icon name="circles-four" kind="outline" />
-            <Text className="font-medium">Toggle Tools On/Off</Text>
+            {<Text className="font-medium">Toggle Tools On/Off</Text>}
           </div>
         )}
-        <AssistantTools agent={agent} tools={tools} />
+        <AssistantTools agent={agent} tools={tools} />*/}
       </div>
     </Transition>
   );

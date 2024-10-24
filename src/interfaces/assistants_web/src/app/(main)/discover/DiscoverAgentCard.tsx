@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { AgentPublic } from '@/cohere-client';
 import { DeleteAgent } from '@/components/Modals/DeleteAgent';
-import { CoralLogo, KebabMenu, Text } from '@/components/UI';
+import { QuoteLogo, KebabMenu, Text } from '@/components/UI';
 import { useContextStore } from '@/context';
 import { useBrandedColors, useSession } from '@/hooks';
 import { checkIsBaseAgent, cn } from '@/utils';
@@ -21,7 +21,7 @@ export const DiscoverAgentCard: React.FC<Props> = ({ agent }) => {
   const { bg, contrastText, contrastFill } = useBrandedColors(agent?.id);
   const session = useSession();
   const isCreator = agent?.user_id === session.userId;
-  const createdBy = isBaseAgent ? 'COHERE' : isCreator ? 'YOU' : 'TEAM';
+  const createdBy = isBaseAgent ? 'RHEINGOLD SALON' : isCreator ? 'YOU' : 'TEAM';
 
   const { open, close } = useContextStore();
 
@@ -47,7 +47,7 @@ export const DiscoverAgentCard: React.FC<Props> = ({ agent }) => {
             )}
           >
             {isBaseAgent ? (
-              <CoralLogo className={contrastFill} />
+              <QuoteLogo className={contrastFill} />
             ) : (
               <Text className={cn('uppercase', contrastText)} styleAs="p-lg">
                 {agent?.name[0]}

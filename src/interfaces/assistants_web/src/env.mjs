@@ -11,13 +11,13 @@ class ServerError extends Error {
 
 const readVariable = (key) => {
   try {
-    if (typeof window === 'undefined'){
+    //if (typeof window === 'undefined'){
       return process.env[key];
-    }
-    return window.__ENV[key];
+    //}
+    //return window.__ENV[key];
   } catch (err) {
     throw new ServerError(
-      `${key} not configured, or the backend server is not running correctly.`
+      `${key} not configured or the backend server is not running correctly.`
     )
   }
 };
@@ -34,7 +34,7 @@ export const env = createEnv({
     NEXT_PUBLIC_HAS_CUSTOM_LOGO: z
       .string()
       .optional()
-      .default('false')
+      .default('true')
       .refine((s) => s === 'true' || s === 'false')
       .transform((s) => s === 'true'),
   },

@@ -1,7 +1,7 @@
 {
-  "name": "Coral",
-  "description": "Cohere presents Coral, a knowledge assistant for enterprises to supercharge the productivity of their most strategic teams.",
-  "short_name": "Coral",
+  "name": "SalonGPT",
+  "description": ".",
+  "short_name": "SalonGPT",
   "start_url": "/",
   "scope": "/",
   "orientation": "portrait",

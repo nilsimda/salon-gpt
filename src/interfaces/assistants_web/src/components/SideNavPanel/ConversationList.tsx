@@ -81,7 +81,7 @@ const Search: React.FC<{
     <section className={cn('flex flex-col gap-4', { 'items-center': !isLeftPanelOpen })}>
       {isLeftPanelOpen ? (
         <InputSearch
-          placeholder="Search chat history"
+          placeholder="Chats durchsuchen"
           value={searchQuery}
           onChange={setSearchQuery}
           maxLength={40}
@@ -164,7 +164,7 @@ const Chats: React.FC<{
       )}
       {recentConversations.length > 0 && (
         <ChatsGroup
-          title="Recent Chats"
+          title="Zuletzt verwendete Chats"
           conversations={recentConversations}
           showWeekHeadings={!searchQuery.length && isLeftPanelOpen}
           checkedConversations={checkedConversations}

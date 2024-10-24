@@ -150,7 +150,6 @@ async def regenerate_chat_stream(
         ping=5,
     )
 
-
 @router.post("/chat", dependencies=[Depends(validate_deployment_header)])
 async def chat(
     session: DBSessionDep,

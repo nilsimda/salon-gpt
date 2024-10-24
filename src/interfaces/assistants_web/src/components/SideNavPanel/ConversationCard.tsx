@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { AgentPublic } from '@/cohere-client';
 import { ShareConversation } from '@/components/Modals/ShareConversation';
-import { CoralLogo, KebabMenu, KebabMenuItem, Text, Tooltip } from '@/components/UI';
+import { QuoteLogo, KebabMenu, KebabMenuItem, Text, Tooltip } from '@/components/UI';
 import { useContextStore } from '@/context';
 import {
   getIsTouchDevice,
@@ -134,11 +134,11 @@ export const ConversationCard: React.FC<Props> = ({ isActive, conversation, flip
               {conversation.agent.name[0]}
             </Text>
           ) : (
-            <CoralLogo className={cn('scale-50', contrastFill)} />
+            <QuoteLogo className={cn('scale-50', contrastFill)} />
           )}
         </div>
         <Text styleAs="p-sm" className="truncate text-volcanic-500 dark:text-mushroom-800">
-          {conversation.agent?.name ?? 'Cohere AI'}
+          {conversation.agent?.name ?? 'Rheingold Salon'}
         </Text>
         <Text styleAs="code-sm" className="ml-auto mt-0.5 uppercase dark:text-mushroom-800">
           {formatDateToShortDate(conversation.updatedAt)}
@@ -183,7 +183,7 @@ export const ConversationCard: React.FC<Props> = ({ isActive, conversation, flip
         {conversation.agent ? (
           <Text>{conversation.agent.name[0]}</Text>
         ) : (
-          <CoralLogo className={contrastFill} />
+          <QuoteLogo className={contrastFill} />
         )}
       </div>
     );

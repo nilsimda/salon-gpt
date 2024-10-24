@@ -20,6 +20,7 @@ export * from './KebabMenu';
 export * from './Logo';
 export * from './LongPressMenu';
 export * from './Modal';
+export * from './QuoteLogo';
 export * from './RadioGroup';
 export * from './Shortcut';
 export * from './Skeleton';
