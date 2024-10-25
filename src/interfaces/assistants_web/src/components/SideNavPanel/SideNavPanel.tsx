@@ -102,8 +102,8 @@ export const SideNavPanel: React.FC<{ className?: string }> = ({ className = '' 
           />
 
           <AgentsSidePanelButton
-            label="See all assistants"
-            tooltip="See all assistants"
+            label="Alle Assistenten anzeigen"
+            tooltip="Alle Assistenten anzeigen"
             theme="mushroom"
             href="/discover"
             iconName="compass"

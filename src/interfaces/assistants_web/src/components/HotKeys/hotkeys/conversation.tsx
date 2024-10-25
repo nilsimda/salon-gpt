@@ -19,7 +19,7 @@ export const useConversationHotKeys = (): HotKeyGroupOption[] => {
   const handleOpenShareModal = () => {
     if (!id) return;
     open({
-      title: 'Share link to conversation',
+      title: 'Link zu dieser Unterhaltung teilen',
       content: <ShareConversation conversationId={id} />,
     });
   };
@@ -29,7 +29,7 @@ export const useConversationHotKeys = (): HotKeyGroupOption[] => {
       group: 'Conversation',
       quickActions: [
         {
-          name: 'New conversation',
+          name: 'Neue Unterhaltung',
           commands: ['ctrl+shift+o', 'meta+shift+o'],
           registerGlobal: true,
           closeDialogOnRun: true,
@@ -39,7 +39,7 @@ export const useConversationHotKeys = (): HotKeyGroupOption[] => {
           },
         },
         {
-          name: 'Share conversation',
+          name: 'Teilen',
           commands: ['ctrl+alt+a', 'meta+alt+a'],
           registerGlobal: true,
           closeDialogOnRun: true,
@@ -49,7 +49,7 @@ export const useConversationHotKeys = (): HotKeyGroupOption[] => {
           },
         },
         {
-          name: 'Delete conversation',
+          name: 'Unterhaltung löschen',
           commands: ['ctrl+shift+backspace', 'meta+shift+backspace'],
           registerGlobal: true,
           closeDialogOnRun: true,

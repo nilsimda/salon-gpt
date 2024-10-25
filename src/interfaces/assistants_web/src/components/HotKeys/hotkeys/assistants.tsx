@@ -30,7 +30,7 @@ export const useAssistantHotKeys = ({
       group: 'Assistants',
       quickActions: [
         {
-          name: 'Switch assistants',
+          name: 'Assistenten wechseln',
           commands: ['ctrl+space+1-5', 'ctrl+space+1-5'],
           displayInDialog: !displayRecentAgentsInDialog,
           customView: ({ isOpen, close, onBack }) => (
@@ -43,7 +43,7 @@ export const useAssistantHotKeys = ({
           },
         },
         {
-          name: 'See all assistants',
+          name: 'Alle Assistenten anzeigen',
           action: navigateToAssistants,
           closeDialogOnRun: true,
           commands: [],
@@ -51,7 +51,7 @@ export const useAssistantHotKeys = ({
           registerGlobal: false,
         },
         {
-          name: 'Create an assistant',
+          name: 'Assistent erstellen',
           action: navigateToNewAssistant,
           closeDialogOnRun: true,
           displayInDialog: !displayRecentAgentsInDialog,

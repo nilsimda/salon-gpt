@@ -54,7 +54,7 @@ const RecentAgents: React.FC = () => {
   return (
     <section className={cn('flex flex-col gap-2', { hidden: !isLeftPanelOpen })}>
       <Text styleAs="label" className="truncate dark:text-mushroom-800">
-        Recent Assistants
+        Zuletzt verwendete Assistenten
       </Text>
       <Flipper flipKey={flipKey} className="flex gap-1 overflow-y-auto">
         {recentAgents.map((agent) => (
