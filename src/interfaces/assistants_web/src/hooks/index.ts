@@ -19,6 +19,7 @@ export * from './use-search';
 export * from './use-session';
 export * from './use-snapshots';
 export * from './use-streamChat';
+export * from './use-studies';
 export * from './use-swipeable';
 export * from './use-toast';
 export * from './use-tools';

@@ -1,18 +1,20 @@
 import { AgentPublic } from '@/cohere-client';
-import { QuoteLogo, Text } from '@/components/UI';
+import { QuoteLogo, AudioLogo, Text } from '@/components/UI';
 import { useBrandedColors } from '@/hooks';
-import { cn } from '@/utils';
+import { checkIsBaseAgent, checkIsSyntheticUserAgent, checkIsTranscriptionAgent, cn } from '@/utils';
 
-export const AgentLogo = ({ agent }: { agent: AgentPublic }) => {
-  const isBaseAgent = !agent.id;
-  const { bg, contrastText, contrastFill } = useBrandedColors(agent.id);
+export const AgentLogo: React.FC<{ agent_id?: string, className?: string}> = ({ agent_id, className }) => {
+  const isBaseAgent = !agent_id;
+  const isTranscriptionAgent = agent_id === 'transcription';
+  const isSyntheticUserAgent = agent_id === 'kerlin';
+  const { bg, contrastText, contrastFill } = useBrandedColors(agent_id);
 
   return (
     <div className={cn('flex size-5 flex-shrink-0 items-center justify-center rounded', bg)}>
-      {isBaseAgent && <QuoteLogo className={cn(contrastFill, 'size-3')} />}
-      {!isBaseAgent && (
-        <Text className={cn('uppercase', contrastText)} styleAs="p-sm">
-          {agent.name[0]}
+      {isBaseAgent ? (<QuoteLogo className={className} />) :
+        isTranscriptionAgent ? (<AudioLogo className={className} />) :(
+        <Text className={className} styleAs="p-sm">
+          {agent_id[0]}
         </Text>
       )}
     </div>

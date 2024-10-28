@@ -63,7 +63,7 @@ export const useAssistantHotKeys = ({
           displayInDialog: displayRecentAgentsInDialog,
           label: (
             <div className="flex gap-x-2">
-              <AgentLogo agent={agent} />
+              <AgentLogo agent_id={agent.id} />
               {agent.name}
               {(agentId === agent.id || (!agent.id && pathname === '/')) && (
                 <span className="ml-2 rounded bg-mushroom-800 px-2 py-1 font-mono text-p-xs uppercase text-volcanic-300 dark:bg-volcanic-400 dark:text-marble-900">

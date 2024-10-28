@@ -27,6 +27,7 @@ class RouterName(StrEnum):
     AGENT = "agent"
     DEFAULT_AGENT = "default_agent"
     SNAPSHOT = "snapshot"
+    STUDY = "study"
     MODEL = "model"
     SCIM = "scim"
 
@@ -136,6 +137,18 @@ ROUTER_DEPENDENCIES = {
         ],
     },
     RouterName.SNAPSHOT: {
+        "default": [
+            Depends(get_session),
+            Depends(validate_user_header),
+            Depends(validate_organization_header),
+        ],
+        "auth": [
+            Depends(get_session),
+            Depends(validate_authorization),
+            Depends(validate_organization_header),
+        ],
+    },
+    RouterName.STUDY: {
         "default": [
             Depends(get_session),
             Depends(validate_user_header),

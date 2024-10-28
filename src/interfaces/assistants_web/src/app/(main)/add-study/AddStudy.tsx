@@ -5,16 +5,15 @@ import { useDeferredValue, useMemo, useState } from 'react';
 import { AgentPublic, ConversationWithoutMessages } from '@/cohere-client';
 import { MobileHeader } from '@/components/Global';
 import { Button, Input, Text } from '@/components/UI';
-import { useConversations, useListAgents, useSession } from '@/hooks';
+import { useListStudies, useSession} from '@/hooks';
 import { cn } from '@/utils';
 
-import { DiscoverAgentCard } from './DiscoverAgentCard';
+import { AddStudyCard } from './AddStudyCard';
 
 const GROUPED_ASSISTANTS_LIMIT = 15;
 
-export const DiscoverAgents = () => {
-  const { data: agents = [] } = useListAgents();
-  const { data: conversations = [] } = useConversations({});
+export const AddStudy = () => {
+  const { data: studies = [] } = useListStudies();
 
   return (
     <div className="flex h-full w-full flex-grow flex-col overflow-y-auto rounded-lg border border-marble-950 bg-marble-980 dark:border-volcanic-100 dark:bg-volcanic-100 md:ml-0">
@@ -29,22 +28,22 @@ export const DiscoverAgents = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Text styleAs="h4" className="text-volcanic-400 dark:text-mushroom-950">
-              Alle Assistenten
+              Alle Studien
             </Text>
           </div>
           <Button
             kind="secondary"
             theme="default"
             icon="add"
-            label="Assistent erstellen"
-            href="/new-agent"
+            label="Studie hinzufügen"
+            href="/new"
             className="hidden md:block"
           />
           <Button kind="secondary" theme="default" icon="add" href="/new" className="md:hidden" />
         </div>
       </header>
       <section className="p-8">
-        <CompanyAgents agents={agents} conversations={conversations} />
+        <CompanyStudies studies={agents} />
       </section>
     </div>
   );
@@ -65,7 +64,7 @@ const GroupAgents: React.FC<{ agents: AgentPublic[]; title: string }> = ({ agent
       </header>
       <div className="grid grid-cols-1 gap-x-4 gap-y-5 md:grid-cols-3 xl:grid-cols-4">
         {visibleAgents.map((agent) => (
-          <DiscoverAgentCard key={agent.id} agent={agent} />
+          <AddStudyCard key={agent.id} agent={agent} />
         ))}
       </div>
       {hasShowMore && (
@@ -87,81 +86,38 @@ const GroupAgents: React.FC<{ agents: AgentPublic[]; title: string }> = ({ agent
   );
 };
 
-const CompanyAgents: React.FC<{
-  agents: AgentPublic[];
-  conversations: ConversationWithoutMessages[];
-}> = ({ agents, conversations }) => {
+const CompanyStudies: React.FC<{
+  studies: StudiesPublic[];
+}> = ({ studies }) => {
   const [query, setQuery] = useState('');
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value);
   const deferredQuery = useDeferredValue(query);
   const session = useSession();
 
-  const filteredAgents = useMemo(
+  const filteredStudies = useMemo(
     () =>
-      agents
-        .filter((agent) => agent.name.toLowerCase().includes(deferredQuery.toLowerCase()))
+      studies
+        .filter((study) => study.name.toLowerCase().includes(deferredQuery.toLowerCase()))
         .sort((a, b) => b.name.toLowerCase().localeCompare(a.name.toLowerCase())),
-    [agents, deferredQuery]
+    [studies, deferredQuery]
   );
 
   const createdByMeAgents = useMemo(
-    () => filteredAgents.filter((agent) => agent.user_id === session.userId),
-    [filteredAgents, session.userId]
-  );
-
-  const recentlyUsedAgents = useMemo(
-    () =>
-      conversations
-        .sort((a, b) => parseInt(b.updated_at) - parseInt(a.updated_at))
-        .map((c) => filteredAgents.find((a) => a.id === c.agent_id))
-        .filter((agent) => !!agent)
-        .filter((agent, index, self) => self.findIndex((a) => a.id === agent.id) === index),
-    [conversations, filteredAgents]
-  );
-
-  const mostUsedAgents = useMemo(
-    () =>
-      conversations.reduce((acc, c) => {
-        if (!c.agent_id) {
-          return acc;
-        }
-        if (!acc[c.agent_id]) {
-          acc[c.agent_id] = 0;
-        } else {
-          acc[c.agent_id]++;
-        }
-        return acc;
-      }, {} as Record<string, number>),
-    [conversations]
-  );
-
-  const trendingAgents: AgentPublic[] = useMemo(
-    () =>
-      Object.keys(mostUsedAgents)
-        .sort((a, b) => mostUsedAgents[b] - mostUsedAgents[a])
-        .map((id) => filteredAgents.find((a) => a.id === id))
-        .filter((agent) => !!agent)
-        .filter((agent) => agent.user_id !== session.userId),
-    [mostUsedAgents, filteredAgents, session.userId]
+    () => filteredStudies.filter((study) => study.user_id === session.userId),
+    [filteredStudies, session.userId]
   );
 
   return (
     <div className="max-w-screen-xl flex-grow overflow-y-auto">
       <div className="space-y-10">
         <Input
-          placeholder="Suche nach Assistenten"
+          placeholder="Suche nach Studien"
           type="text"
           onChange={handleOnChange}
           value={query}
         />
         <GroupAgents title="Von mir erstellt" agents={createdByMeAgents} />
-        {agents.length >= GROUPED_ASSISTANTS_LIMIT && (
-          <>
-            <GroupAgents title="Zuletzt verwendet" agents={recentlyUsedAgents} />
-            <GroupAgents title="Trending" agents={trendingAgents} />
-          </>
-        )}
-        <GroupAgents title="Alle Assistenten" agents={filteredAgents} />
+        <GroupAgents title="Alle Assistenten" agents={filteredStudies} />
       </div>
     </div>
   );

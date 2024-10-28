@@ -9,7 +9,7 @@ import {
   UpdateAgentRequest,
   useCohereClient,
 } from '@/cohere-client';
-import { BASE_AGENT } from '@/constants';
+import { BASE_AGENT, SYNTHETIC_USER_AGENT, TRANSCRIPTION_AGENT } from '@/constants';
 import { useConversations } from '@/hooks';
 
 export const useListAgents = () => {
@@ -18,7 +18,7 @@ export const useListAgents = () => {
     queryKey: ['listAgents'],
     queryFn: async () => {
       const agents = await cohereClient.listAgents({});
-      return agents.concat(BASE_AGENT);
+      return agents.concat(TRANSCRIPTION_AGENT, SYNTHETIC_USER_AGENT, BASE_AGENT);
     },
   });
 };

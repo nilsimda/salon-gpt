@@ -77,9 +77,9 @@ export const Search: React.FC<Props> = ({ isOpen, close, onBack }) => {
               label: (
                 <div className="flex items-center gap-x-2">
                   <AgentLogo
-                    agent={
-                      assistants?.find((assistant) => assistant.id === conversation.agent_id) ??
-                      BASE_AGENT
+                    agent_id={
+                      assistants?.find((assistant) => assistant.id === conversation.agent_id).id ??
+                      BASE_AGENT.id
                     }
                   />
                   <span>{conversation.title}</span>
@@ -107,7 +107,7 @@ export const Search: React.FC<Props> = ({ isOpen, close, onBack }) => {
               name: assistant.name,
               label: (
                 <div className="flex items-center gap-x-2">
-                  <AgentLogo agent={assistant} />
+                  <AgentLogo agent_id={assistant.id} />
                   <span>{assistant.name}</span>
                   {assistant.description && (
                     <span className="ml-2 truncate text-p-sm text-volcanic-600">

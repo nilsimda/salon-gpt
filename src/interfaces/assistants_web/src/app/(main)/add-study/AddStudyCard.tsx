@@ -17,7 +17,7 @@ type Props = {
 /**
  * @description renders a card for an agent with the agent's name, description
  */
-export const DiscoverAgentCard: React.FC<Props> = ({ agent }) => {
+export const AddStudyCard: React.FC<Props> = ({ agent }) => {
   const isBaseAgent = checkIsBaseAgent(agent);
   const { bg, contrastText, contrastFill } = useBrandedColors(agent?.id);
   const session = useSession();

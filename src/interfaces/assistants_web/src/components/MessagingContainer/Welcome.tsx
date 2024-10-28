@@ -4,10 +4,11 @@ import { Transition } from '@headlessui/react';
 import React from 'react';
 
 import { AssistantTools } from '@/components/MessagingContainer';
-import { QuoteLogo, Icon, Text } from '@/components/UI';
+import { Icon, Text } from '@/components/UI';
 import { useAgent, useBrandedColors, useListTools } from '@/hooks';
 import { cn } from '@/utils';
 import { checkIsBaseAgent } from '@/utils';
+import { AgentLogo } from '../Agents/AgentLogo';
 
 type Props = {
   show: boolean;
@@ -44,13 +45,7 @@ export const Welcome: React.FC<Props> = ({ show, agentId }) => {
               bg
             )}
           >
-            {isBaseAgent ? (
-              <QuoteLogo className={contrastFill} />
-            ) : (
-              <Text className={cn('uppercase', contrastText)} styleAs="p-lg">
-                {agent?.name[0]}
-              </Text>
-            )}
+            <AgentLogo agent_id={agentId} />
           </div>
           <Text styleAs="h4" className="truncate">
             {agent?.name}

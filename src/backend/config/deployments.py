@@ -26,6 +26,7 @@ class ModelDeploymentName(StrEnum):
     Azure = "Azure"
     Bedrock = "Bedrock"
     SingleContainer = "Single Container"
+    LocalModel = "Local Model"
 
 
 use_community_features = Settings().feature_flags.use_community_features

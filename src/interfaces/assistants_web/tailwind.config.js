@@ -127,7 +127,7 @@ module.exports = {
         // Evolved Acrylic Blue
         'evolved-blue': {
           //500: '#0039FF',
-          500: '#99af03',
+          500: '#adc604',
         },
         // Safety Green
         success: {

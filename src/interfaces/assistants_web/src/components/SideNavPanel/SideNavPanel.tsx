@@ -94,7 +94,7 @@ export const SideNavPanel: React.FC<{ className?: string }> = ({ className = '' 
                 <Shortcut sequence={['⌘', '↑', 'O']} className="hidden group-hover:flex" />
               </div>
             }
-            tooltip="New chat"
+            tooltip="Neuer Chat"
             iconName="add"
             theme="default"
             onClick={() => navigateToNewChat()}
@@ -107,6 +107,14 @@ export const SideNavPanel: React.FC<{ className?: string }> = ({ className = '' 
             theme="mushroom"
             href="/discover"
             iconName="compass"
+          />
+
+          <AgentsSidePanelButton
+            label="Eine neue Studie hinzufügen"
+            tooltip="Eine neue Studie hinzufügen"
+            theme="mushroom"
+            href="/add-study"
+            iconName="folder"
           />
         </div>
 

@@ -3,10 +3,11 @@
 import Lottie from 'react-lottie-player';
 
 import logoTyping from '@/assets/lotties/icon-loop-coral-950.json';
-import { QuoteLogo, Icon } from '@/components/UI';
+import { Icon } from '@/components/UI';
 import { useBrandedColors, useChatRoutes } from '@/hooks';
 import { BotState, ChatMessage, MessageType, isFulfilledMessage } from '@/types/message';
 import { cn } from '@/utils';
+import { AgentLogo } from '../Agents/AgentLogo';
 
 type Props = {
   message: ChatMessage;
@@ -50,10 +51,11 @@ export const BotAvatar: React.FC<{
   state: BotState;
   className?: string;
 }> = ({ state, className }) => {
+  const { agentId } = useChatRoutes();
   if (state === BotState.TYPING || state === BotState.LOADING) {
     return <Lottie animationData={logoTyping} play loop className="size-5 md:size-6" />;
   }
-  return <QuoteLogo className={cn('size-4 md:size-[18px]', className)} />;
+  return <AgentLogo agent_id={agentId} />;
 };
 
 const UserAvatar: React.FC = () => {

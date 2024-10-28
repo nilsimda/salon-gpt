@@ -16,6 +16,7 @@ import {
 } from '@/hooks';
 import { useConversationStore, useSettingsStore } from '@/stores';
 import { cn, formatDateToShortDate } from '@/utils';
+import { AgentLogo } from '../Agents/AgentLogo';
 
 export type ConversationListItem = {
   conversationId: string;
@@ -134,7 +135,7 @@ export const ConversationCard: React.FC<Props> = ({ isActive, conversation, flip
               {conversation.agent.name[0]}
             </Text>
           ) : (
-            <QuoteLogo className={cn('scale-50', contrastFill)} />
+            <AgentLogo agent_id={conversation.agent?.id} className={cn('scale-50', contrastFill)} />
           )}
         </div>
         <Text styleAs="p-sm" className="truncate text-volcanic-500 dark:text-mushroom-800">
@@ -183,7 +184,7 @@ export const ConversationCard: React.FC<Props> = ({ isActive, conversation, flip
         {conversation.agent ? (
           <Text>{conversation.agent.name[0]}</Text>
         ) : (
-          <QuoteLogo className={contrastFill} />
+          <AgentLogo agent_id={conversation.agent?.id} className={contrastFill} />
         )}
       </div>
     );
