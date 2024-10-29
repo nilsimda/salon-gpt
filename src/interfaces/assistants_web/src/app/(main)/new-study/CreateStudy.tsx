@@ -9,6 +9,7 @@ import { MobileHeader } from '@/components/Global';
 import { Button, Icon, Text } from '@/components/UI';
 import { useContextStore } from '@/context';
 import { useCreateStudy, useNotify } from '@/hooks';
+import { StudySettingsForm } from '@/components/StudySettingsForm';
 
 const DEFAULT_FIELD_VALUES = {
   name: '',

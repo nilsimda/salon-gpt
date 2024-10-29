@@ -18,11 +18,11 @@ export const useAssistantHotKeys = ({
   const { agentId } = useChatRoutes();
 
   const navigateToAssistants = () => {
-    router.push('/discover');
+    router.push('/discover-agent');
   };
 
   const navigateToNewAssistant = () => {
-    router.push('/new');
+    router.push('/new-agent');
   };
 
   return [

@@ -105,7 +105,7 @@ export const SideNavPanel: React.FC<{ className?: string }> = ({ className = '' 
             label="Alle Assistenten anzeigen"
             tooltip="Alle Assistenten anzeigen"
             theme="mushroom"
-            href="/discover"
+            href="/discover-agent"
             iconName="compass"
           />
 
@@ -113,7 +113,7 @@ export const SideNavPanel: React.FC<{ className?: string }> = ({ className = '' 
             label="Eine neue Studie hinzufügen"
             tooltip="Eine neue Studie hinzufügen"
             theme="mushroom"
-            href="/add-study"
+            href="/discover-study"
             iconName="folder"
           />
         </div>

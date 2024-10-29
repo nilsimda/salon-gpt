@@ -25,6 +25,7 @@ from backend.routers.organization import router as organization_router
 from backend.routers.scim import SCIMException, scim_exception_handler
 from backend.routers.scim import router as scim_router
 from backend.routers.snapshot import router as snapshot_router
+from backend.routers.study import router as study_router
 from backend.routers.tool import router as tool_router
 from backend.routers.user import router as user_router
 from backend.services.context import ContextMiddleware, get_context
@@ -50,6 +51,7 @@ def create_app():
         agent_router,
         default_agent_router,
         snapshot_router,
+        study_router,
         organization_router,
         model_router,
         scim_router,
