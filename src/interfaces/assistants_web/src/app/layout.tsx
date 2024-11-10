@@ -9,8 +9,8 @@ import '@/styles/main.css';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Cohere',
-    default: 'Chat | Rheingold Salon',
+    template: '%s | rheingold salon',
+    default: 'Chat | rheingold salon',
   },
 };
 

@@ -1,26 +1,22 @@
 from typing import Optional
 
 from sqlalchemy.orm import Session
-from sqlalchemy.sql.expression import false, true
 
-from backend.database_models import Deployment
 from backend.database_models.study import Study
 from backend.services.transaction import validate_transaction
 
 
 @validate_transaction
-def create_agent(db: Session, study: Study) -> Study:
+def create_study(db: Session, study: Study) -> Study:
     """
-    Create a new agent.
-
-    Agents are configurable entities that can be specified to use specific tools and have specific preambles for better task completion.
+    Create a new study.
 
     Args:
       db (Session): Database session.
-      agent (Agent): Agent to be created.
+      study (Study): Study to be created.
 
     Returns:
-      Agent: Created agent.
+      Study: Created study.
     """
     db.add(study)
     db.commit()
@@ -29,7 +25,7 @@ def create_agent(db: Session, study: Study) -> Study:
 
 
 @validate_transaction
-def get_agent_by_id(
+def get_study_by_id(
     db: Session, study_id: str, user_id: str = "", override_user_id: bool = False
 ) -> Study:
     """
@@ -44,16 +40,7 @@ def get_agent_by_id(
     Returns:
       Study: Study with the given ID.
     """
-    if override_user_id:
-        return db.query(Study).filter(Study.id == study_id).first()
-
-    study = db.query(Study).filter(Study.id == study_id).first()
-
-    # Cannot GET privates Studies not belonging to you
-    if study and study.is_private and study.user_id != user_id:
-        return None
-
-    return study
+    return db.query(Study).filter(Study.id == study_id).first()
 
 
 @validate_transaction
@@ -69,12 +56,7 @@ def get_study_by_name(db: Session, study_name: str, user_id: str) -> Study:
     Returns:
       Study: Study with the given name.
     """
-    study = db.query(Study).filter(Study.name == study_name).first()
-
-    if study and study.is_private and study.user_id != user_id:
-        return None
-
-    return study
+    return db.query(Study).filter(Study.name == study_name).first()
 
 
 @validate_transaction

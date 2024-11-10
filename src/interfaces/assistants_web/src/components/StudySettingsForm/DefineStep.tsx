@@ -1,5 +1,5 @@
 import { StudySettingsFields } from '.';
-import { Input, Textarea } from '@/components/UI';
+import { Input, Text, Textarea, DragDropFileInput } from '@/components/UI';
 
 type Props = {
   fields: StudySettingsFields;
@@ -12,16 +12,23 @@ export const DefineStudyStep: React.FC<Props> = ({ fields, setFields }) => {
     <div className="flex flex-col space-y-4">
       <Input
         label="Name"
-        placeholder="e.g., Customer Feedback Study 2024"
+        placeholder="z.B., Jack Daniels"
         value={fields.name}
         onChange={(e) => setFields({ ...fields, name: e.target.value })}
       />
       <Textarea
-        label="Description"
-        placeholder="e.g., Research study to gather customer feedback on our new product features."
+        label="Beschreibung"
+        placeholder="z.B., eine Studie über die Marktgröße von Whiskey"
         defaultRows={4}
         value={fields.description ?? ''}
         onChange={(e) => setFields({ ...fields, description: e.target.value })}
+      />
+      <Text className="text-sm text-gray-500">
+        Füge eine Infotabelle hinzu.
+      </Text>
+      <DragDropFileInput
+        accept={['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel']}
+        onFilesChange={(files) => setFields({ ...fields, files })}
       />
     </div>
   );

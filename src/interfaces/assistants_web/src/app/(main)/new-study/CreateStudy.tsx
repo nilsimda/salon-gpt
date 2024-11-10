@@ -13,8 +13,7 @@ import { StudySettingsForm } from '@/components/StudySettingsForm';
 
 const DEFAULT_FIELD_VALUES = {
   name: '',
-  description: '',
-  is_private: false,
+  //description: '',
 };
 
 /**
@@ -30,13 +29,9 @@ export const CreateStudy: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleOpenSubmitModal = () => {
-    if (fields.is_private) {
-      handleSubmit();
-      return;
-    }
 
     open({
-      title: `Create ${fields.name}?`,
+      title: `Studie ${fields.name} erstellen?`,
       content: (
         <SubmitModalContent
           studyName={fields.name}
@@ -53,11 +48,11 @@ export const CreateStudy: React.FC = () => {
       setIsSubmitting(true);
       const study = await createStudy(fields);
       close();
-      router.push(`/studies/${study.id}`);
+      //router.push(`/studies/${study.id}`);
     } catch (e) {
       setIsSubmitting(false);
       close();
-      error('Failed to create study');
+      error('Fehler beim Erstellen der Studie');
       console.error(e);
     }
   };
@@ -68,12 +63,12 @@ export const CreateStudy: React.FC = () => {
         <MobileHeader />
         <div className="flex items-center space-x-2">
           <Link href="/studies">
-            <Text className="dark:text-volcanic-600">Explore studies</Text>
+            <Text className="dark:text-volcanic-600">Studien durchsuchen</Text>
           </Link>
           <Icon name="chevron-right" className="dark:text-volcanic-600" />
-          <Text className="dark:text-volcanic-600">Create study</Text>
+          <Text className="dark:text-volcanic-600">Studie hinzufügen</Text>
         </div>
-        <Text styleAs="h4">Create study</Text>
+        <Text styleAs="h4">Studie hinzufügen</Text>
       </header>
       <div className="flex flex-grow flex-col gap-y-8 overflow-y-hidden px-8 pt-8">
         <div className="flex-grow overflow-y-auto">
@@ -97,13 +92,13 @@ const SubmitModalContent: React.FC<{
 }> = ({ studyName, isSubmitting, onSubmit, onClose }) => (
   <div className="flex flex-col gap-y-20">
     <Text>
-      Your study {studyName} is about be visible publicly. Everyone in your organization will be
-      able to see and use it.
+      Die Studie {studyName} wird für alle im Salon sichtbar, d.h. jeder kann sie einsehen und
+      verwenden.
     </Text>
     <div className="flex justify-between">
-      <Button label="Cancel" kind="secondary" onClick={onClose} />
+      <Button label="Abbrechen" kind="secondary" onClick={onClose} />
       <Button
-        label={isSubmitting ? 'Creating study' : 'Yes, make it public'}
+        label={isSubmitting ? 'Erstellen' : 'Ja, öffentlich machen'}
         onClick={onSubmit}
         icon="arrow-right"
         iconPosition="end"

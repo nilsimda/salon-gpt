@@ -140,7 +140,7 @@ export const Composer: React.FC<Props> = ({
           }, 100);
         }}
       >
-        <DragDropFileInput active={isDragDropInputActive} onUploadFile={onUploadFile} />
+        {/* <DragDropFileInput active={isDragDropInputActive} onUploadFile={onUploadFile} /> */}
         <div className="relative flex items-end p-2">
           <textarea
             id={CHAT_COMPOSER_TEXTAREA_ID}

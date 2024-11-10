@@ -23,7 +23,7 @@ export const SwitchAssistants: React.FC<Props> = ({ isOpen, close, onBack }) => 
   const router = useRouter();
 
   const navigateToAssistants = () => {
-    router.push('/discover');
+    router.push('/discover-agent');
   };
 
   const seeAllAssistantsAction: QuickAction = {

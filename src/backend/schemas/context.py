@@ -7,6 +7,7 @@ from backend.crud import user as user_crud
 from backend.database_models.database import DBSessionDep
 from backend.schemas import Organization
 from backend.schemas.agent import Agent, AgentToolMetadata
+from backend.schemas.study import Study
 from backend.schemas.user import User
 from backend.services.logger.utils import LoggerFactory
 from backend.services.utils import get_deployment_config
@@ -31,6 +32,8 @@ class Context(BaseModel):
     organization_id: Optional[str] = None
     organization: Optional[Organization] = None
     use_global_filtering: Optional[bool] = False
+    study: Optional[Study] = None
+    study_id: Optional[str] = None
 
     def __init__(self):
         super().__init__()
@@ -76,6 +79,10 @@ class Context(BaseModel):
         if user:
             self.user = user
 
+        return self
+
+    def with_study(self, study: Study | None) -> "Context":
+        self.study = study
         return self
 
     def with_agent(self, agent: Agent | None) -> "Context":
@@ -163,6 +170,12 @@ class Context(BaseModel):
 
     def get_trace_id(self):
         return self.trace_id
+
+    def get_study(self):
+        return self.study
+
+    def get_study_id(self):
+        return self.study_id
 
     def get_user_id(self):
         return self.user_id

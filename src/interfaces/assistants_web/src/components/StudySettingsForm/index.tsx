@@ -4,8 +4,7 @@ import { useEffect, useState } from 'react';
 import { CreateStudyRequest, UpdateStudyRequest } from '@/cohere-client';
 import { Button, CollapsibleSection } from '@/components/UI';
 import { DefineStudyStep } from './DefineStep';
-import { InterviewsStep } from './InterviewsStep';
-import { VisibilityStep } from './VisibilityStep';
+import { UploadFilesStep } from './UploadFilesStep';
 import { cn } from '@/utils';
 
 type RequiredAndNotNull<T> = {
@@ -63,16 +62,16 @@ export const StudySettingsForm: React.FC<Props> = (props) => {
     }
   }, [defaultState, params, setFields]);
 
-  const [currentStep, setCurrentStep] = useState<'define' | 'interviews' | 'visibility' | undefined>(
+  const [currentStep, setCurrentStep] = useState<'define' | 'tiefeninterviews' | 'groupDiscussions' | 'memos' | undefined>(
     'define'
   );
 
   return (
     <div className="flex flex-col space-y-6">
       <CollapsibleSection
-        title="Define your study"
+        title="Studieninformation"
         number={1}
-        description="What is this study about?"
+        description="Worum geht es in dieser Studie?"
         isExpanded={currentStep === 'define'}
         setIsExpanded={(expanded) => setCurrentStep(expanded ? 'define' : undefined)}
       >
@@ -82,45 +81,58 @@ export const StudySettingsForm: React.FC<Props> = (props) => {
           isNewStudy={source === 'create'}
         />
         <StepButtons
-          handleNext={() => setCurrentStep('interviews')}
+          handleNext={() => setCurrentStep('tiefeninterviews')}
           hide={source !== 'create'}
         />
       </CollapsibleSection>
 
       <CollapsibleSection
-        title="Configure interviews"
+        title="Tiefeninterviews"
         number={2}
-        description="Specify the number of interviews planned."
-        isExpanded={currentStep === 'interviews'}
-        setIsExpanded={(expanded) => setCurrentStep(expanded ? 'interviews' : undefined)}
+        description="Füge Tiefeninterviews hinzu."
+        isExpanded={currentStep === 'tiefeninterviews'}
+        setIsExpanded={(expanded) => setCurrentStep(expanded ? 'tiefeninterviews' : undefined)}
       >
-        <InterviewsStep fields={fields} setFields={setFields} />
+        <UploadFilesStep fields={fields} setFields={setFields} />
         <StepButtons
-          handleNext={() => setCurrentStep('visibility')}
+          handleNext={() => setCurrentStep('groupDiscussions')}
           handleBack={() => setCurrentStep('define')}
           hide={source !== 'create'}
         />
       </CollapsibleSection>
 
       <CollapsibleSection
-        title="Set visibility"
+        title="Gruppendiskussionen"
         number={3}
-        description="Control who can access this study."
-        isExpanded={currentStep === 'visibility'}
-        setIsExpanded={(expanded) => setCurrentStep(expanded ? 'visibility' : undefined)}
+        description="Füge Gruppendiskussionen hinzu."
+        isExpanded={currentStep === 'groupDiscussions'}
+        setIsExpanded={(expanded) => setCurrentStep(expanded ? 'groupDiscussions' : undefined)}
       >
-        <VisibilityStep
-          isPrivate={Boolean(fields.is_private)}
-          setIsPrivate={(isPrivate) => setFields({ ...fields, is_private: isPrivate })}
+        <UploadFilesStep fields={fields} setFields={setFields} />
+        <StepButtons
+          handleNext={() => setCurrentStep('memos')}
+          handleBack={() => setCurrentStep('tiefeninterviews')}
+          hide={source !== 'create'}
         />
+      </CollapsibleSection>
+
+      <CollapsibleSection
+        title="Memos"
+        number={4}
+        description="Füge Memos hinzu."
+        isExpanded={currentStep === 'memos'}
+        setIsExpanded={(expanded) => setCurrentStep(expanded ? 'memos' : undefined)}
+      >
+        <UploadFilesStep fields={fields} setFields={setFields} />
         <StepButtons
           handleNext={onSubmit}
-          handleBack={() => setCurrentStep('interviews')}
-          nextLabel="Create"
+          handleBack={() => setCurrentStep('groupDiscussions')}
+          nextLabel="Erstellen"
           isSubmit
           hide={source !== 'create'}
         />
       </CollapsibleSection>
+
     </div>
   );
 };
@@ -132,7 +144,7 @@ const StepButtons: React.FC<{
   isSubmit?: boolean;
   disabled?: boolean;
   hide?: boolean;
-}> = ({ handleNext, handleBack, nextLabel = 'Next', isSubmit = false, disabled = false, hide = false }) => {
+}> = ({ handleNext, handleBack, nextLabel = 'Weiter', isSubmit = false, disabled = false, hide = false }) => {
   return (
     <div
       className={cn('flex w-full items-center justify-between pt-5', {
@@ -141,7 +153,7 @@ const StepButtons: React.FC<{
       })}
     >
       <Button
-        label="Back"
+        label="Zurück"
         kind="secondary"
         onClick={handleBack}
         className={cn({ hidden: !handleBack })}

@@ -304,6 +304,14 @@ export class CohereClient {
     });
   }
 
+  public createStudy(requestBody: CreateStudyRequest) {
+    return this.cohereService.default.createStudyV1StudiesPost({ requestBody });
+  }
+
+  public listStudies({ offset, limit = 100 }: { offset?: number; limit?: number }) {
+    return this.cohereService.default.listStudiesV1StudiesGet({ offset, limit });
+  }
+
   public listSnapshots() {
     return this.cohereService.default.listSnapshotsV1SnapshotsGet();
   }

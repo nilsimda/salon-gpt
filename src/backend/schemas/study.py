@@ -5,7 +5,6 @@ from pydantic import BaseModel, Field
 
 
 class StudyBase(BaseModel):
-    user_id: str
     organization_id: Optional[str] = None
 
 
@@ -17,6 +16,7 @@ class Study(StudyBase):
     name: str
     individual_interview_count: int = 0
     group_interview_count: int = 0
+    is_being_added: bool = True
 
     class Config:
         from_attributes = True
@@ -31,6 +31,7 @@ class CreateStudyRequest(BaseModel):
     individual_interview_count: Optional[int] = 0
     group_interview_count: Optional[int] = 0
     organization_id: Optional[str] = None
+    is_being_added: Optional[bool] = True
 
     class Config:
         from_attributes = True

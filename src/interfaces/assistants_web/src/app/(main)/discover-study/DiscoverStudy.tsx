@@ -2,7 +2,7 @@
 
 import { useDeferredValue, useMemo, useState } from 'react';
 
-import { AgentPublic, ConversationWithoutMessages } from '@/cohere-client';
+import { StudyPublic } from '@/cohere-client';
 import { MobileHeader } from '@/components/Global';
 import { Button, Input, Text } from '@/components/UI';
 import { useListStudies, useSession} from '@/hooks';
@@ -49,11 +49,11 @@ export const DiscoverStudy = () => {
   );
 };
 
-const GroupAgents: React.FC<{ agents: AgentPublic[]; title: string }> = ({ agents, title }) => {
-  const hasShowMore = agents.length > 3;
+const GroupStudies: React.FC<{ studies: StudyPublic[]; title: string }> = ({ studies, title }) => {
+  const hasShowMore = studies.length > 3;
   const [showMore, setShowMore] = useState(false);
   const handleShowMore = () => setShowMore((prev) => !prev);
-  const visibleAgents = showMore ? agents : agents.slice(0, 3);
+  const visibleStudies = showMore ? studies : studies.slice(0, 3);
 
   return (
     <section className="space-y-6">
@@ -63,8 +63,8 @@ const GroupAgents: React.FC<{ agents: AgentPublic[]; title: string }> = ({ agent
         </Text>
       </header>
       <div className="grid grid-cols-1 gap-x-4 gap-y-5 md:grid-cols-3 xl:grid-cols-4">
-        {visibleAgents.map((agent) => (
-          <DiscoverStudyCard key={agent.id} agent={agent} />
+        {visibleStudies.map((study) => (
+          <DiscoverStudyCard key={study.id} study={study} />
         ))}
       </div>
       {hasShowMore && (
@@ -87,7 +87,7 @@ const GroupAgents: React.FC<{ agents: AgentPublic[]; title: string }> = ({ agent
 };
 
 const CompanyStudies: React.FC<{
-  studies: StudiesPublic[];
+  studies: StudyPublic[];
 }> = ({ studies }) => {
   const [query, setQuery] = useState('');
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value);
@@ -102,9 +102,9 @@ const CompanyStudies: React.FC<{
     [studies, deferredQuery]
   );
 
-  const createdByMeAgents = useMemo(
-    () => filteredStudies.filter((study) => study.user_id === session.userId),
-    [filteredStudies, session.userId]
+  const beingAddedStudies = useMemo(
+    () => filteredStudies.filter((study) => study.is_being_added),
+    [filteredStudies]
   );
 
   return (
@@ -116,8 +116,8 @@ const CompanyStudies: React.FC<{
           onChange={handleOnChange}
           value={query}
         />
-        <GroupAgents title="Werden hinzugefügt..." agents={createdByMeAgents} />
-        <GroupAgents title="Hinzugefügte Studien" agents={filteredStudies} />
+        <GroupStudies title="Werden hinzugefügt..." studies={beingAddedStudies} />
+        <GroupStudies title="Hinzugefügte Studien" studies={studies.filter((s) => !s.is_being_added)} />
       </div>
     </div>
   );

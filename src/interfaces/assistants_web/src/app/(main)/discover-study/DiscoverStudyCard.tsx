@@ -2,74 +2,63 @@
 
 import Link from 'next/link';
 
-import { AgentPublic } from '@/cohere-client';
-import { DeleteAgent } from '@/components/Modals/DeleteAgent';
+import { StudyPublic } from '@/cohere-client';
+//import { DeleteStudy } from '@/components/Modals/DeleteStudy';
 import { KebabMenu, Text } from '@/components/UI';
-import { AgentLogo } from '@/components/Agents/AgentLogo';
 import { useContextStore } from '@/context';
-import { useBrandedColors, useSession } from '@/hooks';
-import { checkIsBaseAgent, cn } from '@/utils';
 
 type Props = {
-  agent?: AgentPublic;
+  study?: StudyPublic;
 };
 
 /**
- * @description renders a card for an agent with the agent's name, description
+ * @description renders a card for a study with the study's name, description
  */
-export const DiscoverStudyCard: React.FC<Props> = ({ agent }) => {
-  const isBaseAgent = checkIsBaseAgent(agent);
-  const { bg, contrastText, contrastFill } = useBrandedColors(agent?.id);
-  const session = useSession();
-  const isCreator = agent?.user_id === session.userId;
-  const createdBy = isCreator ? 'YOU' : 'RHEINGOLD SALON';
+export const DiscoverStudyCard: React.FC<Props> = ({ study }) => {
+  const createdBy = 'RHEINGOLD SALON';
 
   const { open, close } = useContextStore();
-const handleOpenDeleteModal = () => { if (!agent) return; open({ title: `Delete ${agent.name}`,
-      content: <DeleteAgent name={agent.name} agentId={agent.id} onClose={close} />,
-    });
-  };
+  //const handleOpenDeleteModal = () => {
+  //  if (!study) return;
+  //  open({
+  //    title: `Delete ${study.name}`,
+  //    content: <DeleteStudy name={study.name} studyId={study.id} onClose={close} />,
+  //  });
+  //};
 
   return (
     <Link
       className="flex overflow-x-hidden rounded-lg border border-volcanic-800 bg-volcanic-950 p-4 transition-colors duration-300 hover:bg-marble-950 dark:border-volcanic-300 dark:bg-volcanic-150 dark:hover:bg-volcanic-100"
-      href={isBaseAgent ? '/' : `/a/${agent?.id}`}
+      href={`/study/${study?.id}`}
     >
       <div className="flex h-full flex-grow flex-col items-start gap-y-2 overflow-x-hidden">
         <div className="flex w-full items-center gap-x-2">
-          <div
-            className={cn(
-              'relative flex h-8 w-8 flex-shrink-0 items-center justify-center rounded duration-300',
-              bg
-            )}
-          >
-            <AgentLogo agent_id={agent?.id} />
+          <div className="relative flex h-8 w-8 flex-shrink-0 items-center justify-center rounded duration-300 bg-volcanic-800">
+            {/* You might want to add a study icon/logo here */}
           </div>
-          <Text as="h5" className="truncate dark:text-mushroom-950" title={agent?.name}>
-            {agent?.name}
+          <Text as="h5" className="truncate dark:text-mushroom-950" title={study?.name}>
+            {study?.name}
           </Text>
-          {isCreator && (
-            <div className="ml-auto">
-              <KebabMenu
-                anchor="right start"
-                items={[
-                  {
-                    iconName: 'edit',
-                    label: 'Edit assistant',
-                    href: `/edit/${agent?.id}`,
-                  },
-                  {
-                    iconName: 'trash',
-                    label: 'Delete assistant',
-                    iconClassName: 'fill-danger-500 dark:fill-danger-500',
-                    onClick: handleOpenDeleteModal,
-                  },
-                ]}
-              />
-            </div>
-          )}
+          <div className="ml-auto">
+            <KebabMenu
+              anchor="right start"
+              items={[
+                {
+                  iconName: 'edit',
+                  label: 'Edit study',
+                  href: `/study/edit/${study?.id}`,
+                },
+                {
+                  iconName: 'trash',
+                  label: 'Delete study',
+                  iconClassName: 'fill-danger-500 dark:fill-danger-500',
+                  //onClick: handleOpenDeleteModal,
+                },
+              ]}
+            />
+          </div>
         </div>
-        <Text className="line-clamp-2 flex-grow dark:text-mushroom-800">{agent?.description}</Text>
+        <Text className="line-clamp-2 flex-grow dark:text-mushroom-800">{study?.description}</Text>
         <Text className="dark:text-volcanic-500">BY {createdBy}</Text>
       </div>
     </Link>

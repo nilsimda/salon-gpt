@@ -279,7 +279,7 @@ export const AgentSettingsForm: React.FC<Props> = (props) => {
         <StepButtons
           handleNext={onSubmit}
           handleBack={() => setCurrentStep('tools')}
-          nextLabel="Create"
+          nextLabel="Erstellen"
           disabled={!canCreate}
           isSubmit
           hide={source !== 'create'}
@@ -299,7 +299,7 @@ const StepButtons: React.FC<{
 }> = ({
   handleNext,
   handleBack,
-  nextLabel = 'Next',
+  nextLabel = 'Weiter',
   isSubmit = false,
   disabled = false,
   hide = false,
@@ -312,7 +312,7 @@ const StepButtons: React.FC<{
       })}
     >
       <Button
-        label="Back"
+        label="Zurück"
         kind="secondary"
         onClick={handleBack}
         className={cn({ hidden: !handleBack })}

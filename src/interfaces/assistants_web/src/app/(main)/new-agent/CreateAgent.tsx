@@ -77,7 +77,7 @@ export const CreateAgent: React.FC = () => {
       <header className="flex flex-col gap-y-3 border-b px-4 py-6 dark:border-volcanic-150 lg:px-10 lg:py-10">
         <MobileHeader />
         <div className="flex items-center space-x-2">
-          <Link href="/discover">
+          <Link href="/discover-agent">
             <Text className="dark:text-volcanic-600">Explore assistants</Text>
           </Link>
           <Icon name="chevron-right" className="dark:text-volcanic-600" />

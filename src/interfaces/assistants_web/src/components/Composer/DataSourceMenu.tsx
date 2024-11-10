@@ -46,7 +46,7 @@ export const DataSourceMenu: React.FC<Props> = ({ agent, tools }) => {
             as="span"
             className={cn('font-medium', text, { [contrastText]: open })}
           >
-            Tools: {isBaseAgent ? paramsTools?.length ?? 0 : availableTools.length ?? 0}
+            Studie: {isBaseAgent ? paramsTools?.length ?? 0 : availableTools.length ?? 0}
           </Text>
         )}
       </PopoverButton>
@@ -63,11 +63,11 @@ export const DataSourceMenu: React.FC<Props> = ({ agent, tools }) => {
           )}
         >
           <Text styleAs="label" className="mb-2 text-mushroom-300 dark:text-marble-800">
-            Available tools
+            Hinzugefügte Studien
           </Text>
           {availableTools.length === 0 && (
             <Text as="span" styleAs="caption" className="text-mushroom-400 dark:text-volcanic-500">
-              No tools available
+              Keine Studien hinzugefügt
             </Text>
           )}
           {availableTools.map((tool, i) => (

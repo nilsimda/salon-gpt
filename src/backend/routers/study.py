@@ -56,16 +56,15 @@ async def create_study(
         HTTPException: If the study creation fails.
     """
     ctx.with_user(session)
-    user_id = ctx.get_user_id()
     logger = ctx.get_logger()
 
     study_data = StudyModel(
         name=study.name,
         individual_interview_count=study.individual_interview_count,
         group_interview_count=study.group_interview_count,
-        user_id=user_id,
         organization_id=study.organization_id,
     )
+    print(study_data)
 
     try:
         created_study = study_crud.create_study(session, study_data)
@@ -99,7 +98,7 @@ async def list_studies(
     """
     user_id = ctx.get_user_id()
     logger = ctx.get_logger()
-    
+
     if organization_id:
         ctx.without_global_filtering()
 
@@ -118,8 +117,8 @@ async def list_studies(
 
 @router.get("/{study_id}", response_model=StudyPublic)
 async def get_study_by_id(
-    study_id: str, 
-    session: DBSessionDep, 
+    study_id: str,
+    session: DBSessionDep,
     ctx: Context = Depends(get_context)
 ) -> Study:
     """

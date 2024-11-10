@@ -48,4 +48,3 @@ class User(Base):
     )
 
     agents = relationship("Agent", back_populates="user")
-    studies = relationship("Study", back_populates="user")

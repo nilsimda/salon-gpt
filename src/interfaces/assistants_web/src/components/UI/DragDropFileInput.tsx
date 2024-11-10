@@ -23,7 +23,9 @@ export type FileAccept =
   | 'application/ld+json'
   | 'application/pdf'
   | 'application/epub+zip'
-  | 'application/vnd.apache.parquet';
+  | 'application/vnd.apache.parquet'
+  | 'video/*'
+  | 'audio/*';
 
 type Props = {
   active: boolean;
@@ -36,7 +38,7 @@ export const DragDropFileInput: React.FC<Props> = ({
   active,
   label = (
     <>
-      Drag and drop files here or <u>browse files</u>
+      Dateien hierher ziehen oder <u>Dateien durchsuchen</u>
     </>
   ),
   accept = ['application/pdf', 'text/plain'],
@@ -96,24 +98,21 @@ export const DragDropFileInput: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        'relative flex h-28 w-full flex-col items-center justify-center rounded-md border border-mushroom-800 px-3 py-6',
+        'relative flex h-28 w-full flex-col items-center justify-center rounded-md border px-3 py-6',
         'transition duration-200',
-        'border-dashed bg-mushroom-950',
-        'absolute inset-0 z-drag-drop-input-overlay hidden h-full w-full rounded border-none bg-mushroom-800',
+        'border-dashed',
+        'border-mushroom-800 bg-mushroom-950 dark:border-volcanic-400 dark:bg-volcanic-100',
         {
           flex: active,
-          'border-solid bg-mushroom-800': dragActive,
+          'border-solid bg-mushroom-800 dark:bg-volcanic-200': dragActive,
         }
       )}
     >
       {dragActive ? (
-        <Text className="max-w-[170px] text-center text-mushroom-300">Drop files to upload</Text>
+        <Text className="max-w-[170px] text-center text-mushroom-300 dark:text-volcanic-600">Drop files to upload</Text>
       ) : (
         <>
-          <Text className="max-w-[210px] text-center text-mushroom-300">{label}</Text>
-          <Text className="text-center text-mushroom-400" styleAs="caption">
-            .PDF or .TXT, Max 20MB
-          </Text>
+          <Text className="max-w-[210px] text-center text-mushroom-300 dark:text-volcanic-600">{label}</Text>
         </>
       )}
       <input

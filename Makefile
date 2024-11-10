@@ -30,17 +30,17 @@ run-tests: run-unit-tests
 
 .PHONY: attach
 attach: 
-	@docker attach cohere-toolkit-backend-1
+	@docker attach salon-gpt-backend-1
 logs: 
 	@@docker-compose logs --follow --tail 100 $(service)
 
 .PHONY: exec-backend
 exec-backend:
-	docker exec -ti cohere-toolkit-backend-1 bash 
+	docker exec -ti salon-gpt-backend-1 bash 
 
 .PHONY: exec-db
 exec-db:
-	docker exec -ti cohere-toolkit-db-1 bash
+	docker exec -ti salon-gpt-db-1 bash
 
 .PHONY: migration
 migration:
