@@ -10,6 +10,7 @@ class Study(Base):
     __tablename__ = "studies"
 
     name: Mapped[str] = mapped_column(Text, nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=False)
     individual_interview_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     group_interview_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     is_being_added: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)

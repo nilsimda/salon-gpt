@@ -2,7 +2,7 @@
 
 import { useDeferredValue, useMemo, useState } from 'react';
 
-import { StudyPublic } from '@/cohere-client';
+import { Study } from '@/cohere-client';
 import { MobileHeader } from '@/components/Global';
 import { Button, Input, Text } from '@/components/UI';
 import { useListStudies, useSession} from '@/hooks';
@@ -49,7 +49,7 @@ export const DiscoverStudy = () => {
   );
 };
 
-const GroupStudies: React.FC<{ studies: StudyPublic[]; title: string }> = ({ studies, title }) => {
+const GroupStudies: React.FC<{ studies: Study[]; title: string }> = ({ studies, title }) => {
   const hasShowMore = studies.length > 3;
   const [showMore, setShowMore] = useState(false);
   const handleShowMore = () => setShowMore((prev) => !prev);
@@ -87,7 +87,7 @@ const GroupStudies: React.FC<{ studies: StudyPublic[]; title: string }> = ({ stu
 };
 
 const CompanyStudies: React.FC<{
-  studies: StudyPublic[];
+  studies: Study[];
 }> = ({ studies }) => {
   const [query, setQuery] = useState('');
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value);
@@ -103,7 +103,7 @@ const CompanyStudies: React.FC<{
   );
 
   const beingAddedStudies = useMemo(
-    () => filteredStudies.filter((study) => study.is_being_added),
+    () => filteredStudies.filter((study) => study),
     [filteredStudies]
   );
 
@@ -117,7 +117,7 @@ const CompanyStudies: React.FC<{
           value={query}
         />
         <GroupStudies title="Werden hinzugefügt..." studies={beingAddedStudies} />
-        <GroupStudies title="Hinzugefügte Studien" studies={studies.filter((s) => !s.is_being_added)} />
+        <GroupStudies title="Hinzugefügte Studien" studies={studies.filter((s) => !s)} />
       </div>
     </div>
   );

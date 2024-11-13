@@ -64,7 +64,7 @@ export const Header: React.FC<Props> = ({ agent }) => {
               <Logo hasCustomLogo={env.NEXT_PUBLIC_HAS_CUSTOM_LOGO} includeBrandName={false} />
             )}
             <Text className="truncate dark:text-mushroom-950" styleAs="p-lg" as="span">
-              {agent?.name ?? 'Cohere AI'}
+              {agent?.name ?? 'Salon GPT'}
             </Text>
           </button>
           {agent && (

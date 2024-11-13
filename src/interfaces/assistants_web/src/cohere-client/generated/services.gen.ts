@@ -1561,12 +1561,12 @@ export class DefaultService {
      * study (CreateStudyRequest): Study data.
      * ctx (Context): Context object.
      * Returns:
-     * StudyPublic: Created study with no user ID or organization ID.
+     * Study: Created study with no user ID or organization ID.
      * Raises:
      * HTTPException: If the study creation fails.
      * @param data The data for the request.
      * @param data.requestBody
-     * @returns StudyPublic Successful Response
+     * @returns Study Successful Response
      * @throws ApiError
      */
     public createStudyV1StudiesPost(data: CreateStudyV1StudiesPostData): CancelablePromise<CreateStudyV1StudiesPostResponse> {
@@ -1592,12 +1592,12 @@ export class DefaultService {
      * ctx (Context): Context object.
      *
      * Returns:
-     * list[StudyPublic]: List of studies.
+     * list[Study]: List of studies.
      * @param data The data for the request.
      * @param data.offset
      * @param data.limit
      * @param data.organizationId
-     * @returns StudyPublic Successful Response
+     * @returns Study Successful Response
      * @throws ApiError
      */
     public listStudiesV1StudiesGet(data: ListStudiesV1StudiesGetData = {}): CancelablePromise<ListStudiesV1StudiesGetResponse> {
@@ -1631,7 +1631,7 @@ export class DefaultService {
      * HTTPException: If the study is not found.
      * @param data The data for the request.
      * @param data.studyId
-     * @returns StudyPublic Successful Response
+     * @returns Study Successful Response
      * @throws ApiError
      */
     public getStudyByIdV1StudiesStudyIdGet(data: GetStudyByIdV1StudiesStudyIdGetData): CancelablePromise<GetStudyByIdV1StudiesStudyIdGetResponse> {
@@ -1658,14 +1658,14 @@ export class DefaultService {
      * ctx (Context): Context object.
      *
      * Returns:
-     * StudyPublic: Updated study.
+     * Study: Updated study.
      *
      * Raises:
      * HTTPException: If the study is not found.
      * @param data The data for the request.
      * @param data.studyId
      * @param data.requestBody
-     * @returns StudyPublic Successful Response
+     * @returns Study Successful Response
      * @throws ApiError
      */
     public updateStudyV1StudiesStudyIdPut(data: UpdateStudyV1StudiesStudyIdPutData): CancelablePromise<UpdateStudyV1StudiesStudyIdPutResponse> {

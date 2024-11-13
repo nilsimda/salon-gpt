@@ -4,11 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
-class StudyBase(BaseModel):
-    organization_id: Optional[str] = None
-
-
-class Study(StudyBase):
+class Study(BaseModel):
     id: str
     created_at: datetime
     updated_at: datetime
@@ -17,13 +13,11 @@ class Study(StudyBase):
     individual_interview_count: int = 0
     group_interview_count: int = 0
     is_being_added: bool = True
+    organization_id: Optional[str] = None
+    description: Optional[str] = None
 
     class Config:
         from_attributes = True
-
-
-class StudyPublic(Study):
-    organization_id: Optional[str] = Field(exclude=True)
 
 
 class CreateStudyRequest(BaseModel):
@@ -31,6 +25,7 @@ class CreateStudyRequest(BaseModel):
     individual_interview_count: Optional[int] = 0
     group_interview_count: Optional[int] = 0
     organization_id: Optional[str] = None
+    description: Optional[str] = None
     is_being_added: Optional[bool] = True
 
     class Config:
@@ -42,6 +37,8 @@ class UpdateStudyRequest(BaseModel):
     individual_interview_count: Optional[int] = None
     group_interview_count: Optional[int] = None
     organization_id: Optional[str] = None
+    description: Optional[str] = None
+    is_being_added: Optional[bool] = True
 
     class Config:
         from_attributes = True

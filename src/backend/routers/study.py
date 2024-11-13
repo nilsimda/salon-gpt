@@ -11,7 +11,6 @@ from backend.schemas.study import (
     CreateStudyRequest,
     DeleteStudy,
     Study,
-    StudyPublic,
     UpdateStudyRequest,
 )
 from backend.services.context import get_context
@@ -32,7 +31,7 @@ router.name = RouterName.STUDY
 
 @router.post(
     "",
-    response_model=StudyPublic,
+    response_model=Study,
     dependencies=[
         Depends(validate_user_header),
         Depends(validate_create_study_request),
@@ -42,7 +41,7 @@ async def create_study(
     session: DBSessionDep,
     study: CreateStudyRequest,
     ctx: Context = Depends(get_context),
-) -> StudyPublic:
+) -> Study:
     """
     Create a study.
 
@@ -51,7 +50,7 @@ async def create_study(
         study (CreateStudyRequest): Study data.
         ctx (Context): Context object.
     Returns:
-        StudyPublic: Created study with no user ID or organization ID.
+        Study: Created study with no user ID or organization ID.
     Raises:
         HTTPException: If the study creation fails.
     """
@@ -75,7 +74,7 @@ async def create_study(
         logger.exception(event=e)
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("", response_model=list[StudyPublic])
+@router.get("", response_model=list[Study])
 async def list_studies(
     *,
     offset: int = 0,
@@ -83,7 +82,7 @@ async def list_studies(
     session: DBSessionDep,
     organization_id: Optional[str] = None,
     ctx: Context = Depends(get_context),
-) -> list[StudyPublic]:
+) -> list[Study]:
     """
     List all studies.
 
@@ -94,7 +93,7 @@ async def list_studies(
         ctx (Context): Context object.
 
     Returns:
-        list[StudyPublic]: List of studies.
+        list[Study]: List of studies.
     """
     user_id = ctx.get_user_id()
     logger = ctx.get_logger()
@@ -115,7 +114,7 @@ async def list_studies(
         logger.exception(event=e)
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/{study_id}", response_model=StudyPublic)
+@router.get("/{study_id}", response_model=Study)
 async def get_study_by_id(
     study_id: str,
     session: DBSessionDep,
@@ -155,7 +154,7 @@ async def get_study_by_id(
 
 @router.put(
     "/{study_id}",
-    response_model=StudyPublic,
+    response_model=Study,
     dependencies=[
         Depends(validate_user_header),
         Depends(validate_update_study_request),
@@ -166,7 +165,7 @@ async def update_study(
     new_study: UpdateStudyRequest,
     session: DBSessionDep,
     ctx: Context = Depends(get_context),
-) -> StudyPublic:
+) -> Study:
     """
     Update a study by ID.
 
@@ -177,7 +176,7 @@ async def update_study(
         ctx (Context): Context object.
 
     Returns:
-        StudyPublic: Updated study.
+        Study: Updated study.
 
     Raises:
         HTTPException: If the study is not found.

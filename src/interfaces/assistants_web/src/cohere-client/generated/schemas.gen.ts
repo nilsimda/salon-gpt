@@ -3052,7 +3052,7 @@ export const StreamToolResultSchema = {
     title: 'StreamToolResult'
 } as const;
 
-export const StudyPublicSchema = {
+export const StudySchema = {
     properties: {
         user_id: {
             type: 'string',
@@ -3089,7 +3089,7 @@ export const StudyPublicSchema = {
     },
     type: 'object',
     required: ['user_id', 'id', 'created_at', 'updated_at', 'name'],
-    title: 'StudyPublic'
+    title: 'Study'
 } as const;
 
 export const ToggleConversationPinRequestSchema = {

@@ -7,7 +7,7 @@ import Head from 'next/head';
  */
 export const GlobalHead: React.FC = () => {
   const description =
-    'Cohere provides access to advanced Large Language Models and NLP tools through one easy-to-use API. Get started for free.';
+    '';
 
   return (
     <Head>
@@ -22,7 +22,7 @@ export const GlobalHead: React.FC = () => {
       <meta property="og:image" content="/images/share.png" />
       <meta property="og:image:width" content="800" />
       <meta property="og:image:height" content="600" />
-      <meta property="og:site_name" content="Cohere" />
+      <meta property="og:site_name" content="Rheingold Salon" />
     </Head>
   );
 };

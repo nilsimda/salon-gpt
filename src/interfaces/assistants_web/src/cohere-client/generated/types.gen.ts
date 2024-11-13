@@ -688,7 +688,7 @@ export type StreamToolResult = {
     documents?: Array<Document>;
 };
 
-export type StudyPublic = {
+export type Study = {
     user_id: string;
     id: string;
     created_at: string;
@@ -1112,7 +1112,7 @@ export type CreateStudyV1StudiesPostData = {
     requestBody: CreateStudyRequest;
 };
 
-export type CreateStudyV1StudiesPostResponse = (StudyPublic);
+export type CreateStudyV1StudiesPostResponse = (Study);
 
 export type ListStudiesV1StudiesGetData = {
     limit?: number;
@@ -1120,20 +1120,20 @@ export type ListStudiesV1StudiesGetData = {
     organizationId?: (string | null);
 };
 
-export type ListStudiesV1StudiesGetResponse = (Array<StudyPublic>);
+export type ListStudiesV1StudiesGetResponse = (Array<Study>);
 
 export type GetStudyByIdV1StudiesStudyIdGetData = {
     studyId: string;
 };
 
-export type GetStudyByIdV1StudiesStudyIdGetResponse = (StudyPublic);
+export type GetStudyByIdV1StudiesStudyIdGetResponse = (Study);
 
 export type UpdateStudyV1StudiesStudyIdPutData = {
     requestBody: UpdateStudyRequest;
     studyId: string;
 };
 
-export type UpdateStudyV1StudiesStudyIdPutResponse = (StudyPublic);
+export type UpdateStudyV1StudiesStudyIdPutResponse = (Study);
 
 export type DeleteStudyV1StudiesStudyIdDeleteData = {
     studyId: string;

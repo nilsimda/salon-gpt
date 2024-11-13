@@ -3,7 +3,7 @@ import { uniq } from 'lodash';
 import { useCallback, useMemo } from 'react';
 
 import {
-  StudyPublic,
+  Study,
   ApiError,
   CreateStudyRequest,
   UpdateStudyRequest,
@@ -83,7 +83,7 @@ export const useIsStudyNameUnique = () => {
 export const useUpdateStudy = () => {
   const cohereClient = useCohereClient();
   const queryClient = useQueryClient();
-  return useMutation<StudyPublic, ApiError, { request: UpdateStudyRequest; studyId: string }>({
+  return useMutation<Study, ApiError, { request: UpdateStudyRequest; studyId: string }>({
     mutationFn: ({ request, studyId }) => cohereClient.updateStudy(request, studyId),
     onSettled: (study) => {
       queryClient.invalidateQueries({ queryKey: ['study', study?.id] });

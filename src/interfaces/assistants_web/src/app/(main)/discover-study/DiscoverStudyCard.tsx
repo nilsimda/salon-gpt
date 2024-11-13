@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 
-import { StudyPublic } from '@/cohere-client';
+import { Study } from '@/cohere-client';
 //import { DeleteStudy } from '@/components/Modals/DeleteStudy';
 import { KebabMenu, Text } from '@/components/UI';
 import { useContextStore } from '@/context';
 
 type Props = {
-  study?: StudyPublic;
+  study?: Study;
 };
 
 /**
@@ -58,7 +58,7 @@ export const DiscoverStudyCard: React.FC<Props> = ({ study }) => {
             />
           </div>
         </div>
-        <Text className="line-clamp-2 flex-grow dark:text-mushroom-800">{study?.description}</Text>
+        <Text className="line-clamp-2 flex-grow dark:text-mushroom-800">{study?.name}</Text>
         <Text className="dark:text-volcanic-500">BY {createdBy}</Text>
       </div>
     </Link>
