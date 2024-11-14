@@ -126,3 +126,7 @@ dev-sync:
 .PHONY: dev-sync-down
 dev-sync-down:
 	@docker compose down sync_worker sync_publisher flower
+
+.PHONY: pull-model
+pull-model:
+	docker exec -ti salon-gpt-ollama-1 ollama pull "${model}"
