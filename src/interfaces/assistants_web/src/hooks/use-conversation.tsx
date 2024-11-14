@@ -143,12 +143,12 @@ export const useConversationActions = () => {
         onDelete();
       } catch (e) {
         console.error(e);
-        notify.error('Something went wrong. Please try again.');
+        notify.error('Etwas ist schief gelaufen. Bitte versuche es nochmal.');
       }
     };
 
     open({
-      title: `Are you sure you want to delete this conversation?`,
+      title: `Willst du die Konversation wirklich löschen?`,
       content: (
         <DeleteConversations
           conversationIds={[id]}
@@ -166,7 +166,7 @@ export const useConversationActions = () => {
     };
 
     open({
-      title: 'Edit Title',
+      title: 'Titel ändern',
       content: (
         <EditConversationTitle
           conversationId={id}

@@ -60,19 +60,19 @@ const useMenuItems = ({
 
   const menuItems: KebabMenuItem[] = [
     {
-      label: isPinned ? 'Un-pin chat' : 'Pin chat',
+      label: isPinned ? 'Chat Lösen' : 'Chat Anheften',
       iconName: 'pin',
       onClick: async () => {
         await toggleConversationPin({ request: { is_pinned: !isPinned }, conversationId });
       },
     },
     {
-      label: 'Share chat',
+      label: 'Chat Teilen',
       iconName: 'share',
       onClick: handleOpenShareModal,
     },
     {
-      label: 'Delete chat',
+      label: 'Chat Löschen',
       iconName: 'trash',
       iconClassName: 'dark:text-danger-500',
       onClick: () => {

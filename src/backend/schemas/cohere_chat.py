@@ -39,7 +39,7 @@ class CohereChatRequest(BaseChatRequest):
         """,
     )
     model: str | None = Field(
-        default="command-r-plus",
+        default="llama3.2",
         title="The model to use for generating the response.",
     )
     temperature: float | None = Field(

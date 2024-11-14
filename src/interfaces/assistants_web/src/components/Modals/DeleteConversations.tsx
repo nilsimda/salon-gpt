@@ -21,11 +21,10 @@ export const DeleteConversations: React.FC<Props> = ({
   return (
     <section>
       <Text className="mb-5">
-        Once you delete {numConversations === 1 ? 'this chat' : 'these chats'} you will be unable to
-        see or retrieve the messages. You cannot undo this action.
+        Sobald du diese {numConversations === 1 ? 'Konversation' : 'Konversationen'} löschst kannst du die Nachrichten weder sehen noch abrufen. Es kann nicht rückgangig gemacht werden.
       </Text>
       <div className="flex flex-col-reverse items-center justify-between gap-y-4 md:flex-row">
-        <Button kind="secondary" onClick={onClose} label="Cancel" />
+        <Button kind="secondary" onClick={onClose} label="Abbrechen" />
         <Button
           kind="cell"
           onClick={onConfirm}
@@ -33,11 +32,8 @@ export const DeleteConversations: React.FC<Props> = ({
           disabled={isPending}
           label={
             isPending
-              ? 'Deleting...'
-              : `Delete ${numConversations === 1 ? '' : numConversations} ${pluralize(
-                  'conversation',
-                  numConversations
-                )}`
+              ? 'Wird gelöscht...'
+              : 'Konversation löschen'
           }
         />
       </div>

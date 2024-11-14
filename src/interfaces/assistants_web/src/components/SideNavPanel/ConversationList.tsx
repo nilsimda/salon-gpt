@@ -130,7 +130,7 @@ const Chats: React.FC<{
     return (
       <span className="my-auto flex flex-col items-center gap-2 text-center">
         <Icon name="warning" />
-        <Text>Unable to load conversations</Text>
+        <Text>Konversationen konnten nicht geladen werden.</Text>
       </span>
     );
   }
@@ -138,7 +138,7 @@ const Chats: React.FC<{
   if (searchQuery && !searchResults.length && isLeftPanelOpen) {
     return (
       <Text as="span" className="line-clamp-3">
-        No results found for &quot;{searchQuery}&quot;
+        Keine Ergebnisse für &quot;{searchQuery}&quot; gefunden.
       </Text>
     );
   }
@@ -146,7 +146,7 @@ const Chats: React.FC<{
   if (!conversations.length && isLeftPanelOpen) {
     return (
       <span className="flex h-full w-full items-center justify-center text-volcanic-500">
-        <Text>It&apos;s quiet here... for now</Text>
+        <Text>Hier ist es ruhig... fürs Erste.</Text>
       </span>
     );
   }
@@ -155,7 +155,7 @@ const Chats: React.FC<{
     <>
       {pinnedConversations.length > 0 && (
         <ChatsGroup
-          title="Pinned Chats"
+          title="Angeheftete Chats"
           conversations={pinnedConversations}
           showWeekHeadings={false}
           checkedConversations={checkedConversations}

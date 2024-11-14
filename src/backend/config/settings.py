@@ -219,90 +219,10 @@ class GoogleCloudSettings(BaseSettings, BaseModel):
     )
 
 
-class SageMakerSettings(BaseSettings, BaseModel):
-    model_config = SETTINGS_CONFIG
-    endpoint_name: Optional[str] = Field(
-        default=None,
-        validation_alias=AliasChoices("SAGE_MAKER_ENDPOINT_NAME", "endpoint_name"),
-    )
-    region_name: Optional[str] = Field(
-        default=None,
-        validation_alias=AliasChoices("SAGE_MAKER_REGION_NAME", "region_name"),
-    )
-    access_key: Optional[str] = Field(
-        default=None,
-        validation_alias=AliasChoices("SAGE_MAKER_ACCESS_KEY", "access_key"),
-    )
-    secret_key: Optional[str] = Field(
-        default=None,
-        validation_alias=AliasChoices("SAGE_MAKER_SECRET_KEY", "secret_key"),
-    )
-    session_token: Optional[str] = Field(
-        default=None,
-        validation_alias=AliasChoices("SAGE_MAKER_SESSION_TOKEN", "session_token"),
-    )
-
-
-class AzureSettings(BaseSettings, BaseModel):
-    model_config = SETTINGS_CONFIG
-    endpoint_url: Optional[str] = Field(
-        default=None,
-        validation_alias=AliasChoices("AZURE_CHAT_ENDPOINT_URL", "endpoint_url"),
-    )
-    api_key: Optional[str] = Field(
-        default=None, validation_alias=AliasChoices("AZURE_API_KEY", "api_key")
-    )
-
-
-class CoherePlatformSettings(BaseSettings, BaseModel):
-    model_config = SETTINGS_CONFIG
-    api_key: Optional[str] = Field(
-        default=None, validation_alias=AliasChoices("COHERE_API_KEY", "api_key")
-    )
-
-
-class SingleContainerSettings(BaseSettings, BaseModel):
-    model_config = SETTINGS_CONFIG
-    model: Optional[str] = Field(
-        default=None, validation_alias=AliasChoices("SINGLE_CONTAINER_MODEL", "model")
-    )
-    url: Optional[str] = Field(
-        default=None, validation_alias=AliasChoices("SINGLE_CONTAINER_URL", "url")
-    )
-
-
-class BedrockSettings(BaseSettings, BaseModel):
-    model_config = SETTINGS_CONFIG
-    region_name: Optional[str] = Field(
-        default=None,
-        validation_alias=AliasChoices("BEDROCK_REGION_NAME", "region_name"),
-    )
-    access_key: Optional[str] = Field(
-        default=None, validation_alias=AliasChoices("BEDROCK_ACCESS_KEY", "access_key")
-    )
-    secret_key: Optional[str] = Field(
-        default=None, validation_alias=AliasChoices("BEDROCK_SECRET_KEY", "secret_key")
-    )
-    session_token: Optional[str] = Field(
-        default=None,
-        validation_alias=AliasChoices("BEDROCK_SESSION_TOKEN", "session_token"),
-    )
-
-
 class DeploymentSettings(BaseSettings, BaseModel):
     model_config = SETTINGS_CONFIG
     default_deployment: Optional[str] = None
     enabled_deployments: Optional[List[str]] = None
-
-    sagemaker: Optional[SageMakerSettings] = Field(default=SageMakerSettings())
-    azure: Optional[AzureSettings] = Field(default=AzureSettings())
-    cohere_platform: Optional[CoherePlatformSettings] = Field(
-        default=CoherePlatformSettings()
-    )
-    single_container: Optional[SingleContainerSettings] = Field(
-        default=SingleContainerSettings()
-    )
-    bedrock: Optional[BedrockSettings] = Field(default=BedrockSettings())
 
 
 class LoggerSettings(BaseSettings, BaseModel):

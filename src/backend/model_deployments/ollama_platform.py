@@ -47,7 +47,7 @@ class OllamaDeployment(BaseDeployment):
         #    )
 
         stream = ollama.chat(
-            model="mistral-nemo",#chat_request.model,
+            model=chat_request.model,
             messages=[{'role': 'user', 'content': chat_request.message}],
             stream=True,
             options={"max_tokens": chat_request.max_tokens, "temperature": chat_request.temperature},
@@ -81,7 +81,7 @@ class OllamaDeployment(BaseDeployment):
             chat_request.max_tokens = 200
 
         response = ollama.chat(
-            model="mistral-nemo",#chat_request.model,
+            model=chat_request.model,
             messages=[{'role': 'user', 'content': chat_request.message}],
             stream=False,
             options={"max_tokens": chat_request.max_tokens, "temperature": chat_request.temperature},

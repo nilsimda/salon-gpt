@@ -17,11 +17,11 @@ MODELS_NAME_MAPPING = {
     ModelDeploymentName.Ollama: {
         "llama3.2": {
             "cohere_name": "llama3.2",
-            "is_default": False,
+            "is_default": True,
         },
         "mistral-nemo": {
             "cohere_name": "mistral-nemo",
-            "is_default": True,
+            "is_default": False,
         },
     }
 }
