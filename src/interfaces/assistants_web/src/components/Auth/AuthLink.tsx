@@ -44,7 +44,7 @@ export const AuthLink: React.FC<Props> = ({
       break;
     case 'register':
       href = `${authConfig.registerUrl}${searchString}`;
-      label = 'Sign up';
+      label = 'Registrieren';
       break;
     case 'logout':
       href = `${authConfig.logoutUrl}`;
