@@ -11,7 +11,6 @@ def test_create_deployment(session, deployment):
         name="Test Deployment",
         deployment_class_name="CohereDeployment",
         description="Test Description",
-        is_community=False,
         default_deployment_config={},
     )
 
@@ -19,7 +18,6 @@ def test_create_deployment(session, deployment):
     assert deployment.name == deployment_data.name
     assert deployment.deployment_class_name == deployment_data.deployment_class_name
     assert deployment.description == deployment_data.description
-    assert deployment.is_community == deployment_data.is_community
     assert (
         deployment.default_deployment_config
         == deployment_data.default_deployment_config
@@ -35,7 +33,6 @@ def test_create_deployment_invalid_class_name(session):
             name="Test Deployment",
             deployment_class_name="SomeClassName",
             description="Test Description",
-            is_community=False,
             default_deployment_config={},
         )
         deployment_crud.create_deployment(session, deployment_data)

@@ -14,7 +14,6 @@ def test_create_deployment(session_client: TestClient) -> None:
         "default_deployment_config": {"COHERE_API_KEY": "test-api-key"},
         "deployment_class_name": "CohereDeployment",
         "description": "Test deployment",
-        "is_community": False,
     }
     response = session_client.post(
         "/v1/deployments", json=request_json, headers={"User-Id": "1"}
@@ -49,7 +48,6 @@ def test_create_deployment_invalid_deployment_class(session_client: TestClient) 
         "default_deployment_config": {"COHERE_API_KEY": "   "},
         "deployment_class_name": "InvalidDeployment",
         "description": "Test deployment",
-        "is_community": False,
     }
     response = session_client.post(
         "/v1/deployments", json=request_json, headers={"User-Id": "1"}
@@ -106,7 +104,6 @@ def test_update_deployment(session_client: TestClient, session: Session) -> None
         "default_deployment_config": {"COHERE_API_KEY": "test-api-key"},
         "deployment_class_name": "CohereDeployment",
         "description": "Updated deployment",
-        "is_community": False,
     }
     response = session_client.put("/v1/deployments/" + deployment.id, json=request_json)
     assert response.status_code == 200

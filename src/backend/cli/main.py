@@ -3,7 +3,6 @@ import argparse
 from backend.cli.constants import TOOLS
 from backend.cli.prompts import (
     PROMPTS,
-    community_tools_prompt,
     deployment_prompt,
     review_variables_prompt,
     select_deployments_prompt,
@@ -20,10 +19,6 @@ from backend.cli.utils import show_examples, show_welcome_message, wrap_up
 from backend.config.deployments import (
     AVAILABLE_MODEL_DEPLOYMENTS as MANAGED_DEPLOYMENTS_SETUP,
 )
-from community.config.deployments import (
-    AVAILABLE_MODEL_DEPLOYMENTS as COMMUNITY_DEPLOYMENTS_SETUP,
-)
-from community.config.tools import COMMUNITY_TOOLS_SETUP
 
 
 def start():
@@ -40,19 +35,12 @@ def start():
     for _, prompt in PROMPTS.items():
         prompt(secrets)
 
-    # ENABLE COMMUNITY TOOLS
-    use_community_features = args.use_community and community_tools_prompt(secrets)
-    if use_community_features:
-        TOOLS.update(COMMUNITY_TOOLS_SETUP)
-
     # SET UP TOOLS
     for name, configs in TOOLS.items():
         tool_prompt(secrets, name, configs)
 
     # SET UP ENVIRONMENT FOR DEPLOYMENTS
     all_deployments = MANAGED_DEPLOYMENTS_SETUP.copy()
-    if use_community_features:
-        all_deployments.update(COMMUNITY_DEPLOYMENTS_SETUP)
 
     selected_deployments = select_deployments_prompt(all_deployments, secrets)
 

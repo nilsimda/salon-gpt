@@ -12,7 +12,6 @@ class DeploymentSimple(BaseModel):
     deployment_class_name: Optional[str] = Field(exclude=True, default="")
     env_vars: Optional[List[str]]
     is_available: bool
-    is_community: bool
 
     class Config:
         from_attributes = True
@@ -23,7 +22,6 @@ class DeploymentWithModels(BaseModel):
     name: str
     description: Optional[str] = None
     is_available: bool = False
-    is_community: Optional[bool] = False
     env_vars: Optional[List[str]]
     deployment_class_name: Optional[str] = Field(exclude=True, default="")
     models: list[ModelSimple]
@@ -41,7 +39,6 @@ class Deployment(BaseModel):
     env_vars: Optional[List[str]]
     description: Optional[str] = None
     deployment_class_name: Optional[str] = Field(exclude=True, default="")
-    is_community: Optional[bool] = False
     default_deployment_config: Optional[Dict[str, str]] = Field(
         default_factory=dict, exclude=True
     )
@@ -61,7 +58,6 @@ class Deployment(BaseModel):
                 obj.deployment_class_name if obj.deployment_class_name else None
             ),
             "models": [model.name for model in obj.models],
-            "is_community": obj.is_community,
             "is_available": obj.is_available,
             "env_vars": obj.env_vars,
             "default_deployment_config": obj.default_deployment_config,
@@ -74,7 +70,6 @@ class DeploymentCreate(BaseModel):
     name: str
     description: Optional[str] = None
     deployment_class_name: str
-    is_community: bool = False
     default_deployment_config: Dict[str, str]
 
 
@@ -82,7 +77,6 @@ class DeploymentUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     deployment_class_name: Optional[str] = None
-    is_community: Optional[bool] = None
     default_deployment_config: Optional[Dict[str, str]] = None
 
 

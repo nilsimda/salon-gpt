@@ -239,19 +239,7 @@ ALL_TOOLS = {
 
 
 def get_available_tools() -> dict[ToolName, dict]:
-    use_community_tools = Settings().feature_flags.use_community_features
-
     tools = ALL_TOOLS.copy()
-    if use_community_tools:
-        try:
-            from community.config.tools import COMMUNITY_TOOLS
-
-            tools = ALL_TOOLS.copy()
-            tools.update(COMMUNITY_TOOLS)
-        except ImportError:
-            logger.warning(
-                event="[Tools] Error loading tools: Community tools not available."
-            )
 
     for tool in tools.values():
         # Conditionally set error message

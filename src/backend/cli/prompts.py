@@ -50,18 +50,6 @@ def deployment_prompt(secrets, configs):
         )
         secrets[secret] = value
 
-
-def community_tools_prompt(secrets):
-    print_styled(
-        "🏘️ We have some community tools that you can set up. These tools are not required for the Cohere Toolkit to run."
-    )
-    use_community_features = inquirer.confirm(
-        "Do you want to set up community features (tools and model deployments)?"
-    )
-    secrets["USE_COMMUNITY_FEATURES"] = use_community_features
-    return use_community_features
-
-
 def tool_prompt(secrets, name, configs):
     print_styled(
         f"🛠️ If you want to enable {name}, set up the following secrets. Otherwise, press enter."

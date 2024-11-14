@@ -3,15 +3,14 @@ from typing import Any, Dict, List
 
 import ollama
 
+from backend.model_deployments.base import BaseDeployment
 from backend.schemas.cohere_chat import CohereChatRequest
-
-# To use local models install poetry with: poetry install --with setup,community,local-model --verbose
 from backend.schemas.context import Context
-from community.model_deployments import BaseDeployment
 
+OLLAMA_ENV_VARS = []
 
-class LocalModelDeployment(BaseDeployment):
-    def __init__(self, model_path: str = "llama3", template: str = None, ctx: Context = None):
+class OllamaDeployment(BaseDeployment):
+    def __init__(self, model_path: str = "llama3.2", template: str = None, ctx: Context = None):
         self.prompt_template = PromptTemplate()
         self.template = template
         self.model = model_path
@@ -241,7 +240,7 @@ Finally, Write 'Grounded answer:' followed by a response to the user's last inpu
 
 
 async def main():
-    model = LocalModelDeployment(model_path="path/to/model")
+    model = OllamaDeployment(model_path="path/to/model")
 
     print("--- Chat Stream ---")
     response = model.invoke_chat_stream(

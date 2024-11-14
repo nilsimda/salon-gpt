@@ -1,7 +1,6 @@
 from typing import Any
 
 from backend.database_models import (
-    COMMUNITY_MODEL_DEPLOYMENTS_MODULE,
     DEFAULT_MODEL_DEPLOYMENTS_MODULE,
 )
 
@@ -10,8 +9,6 @@ def class_name_validator(v: str):
     from backend.model_deployments.utils import get_module_class
 
     deployment_class = get_module_class(DEFAULT_MODEL_DEPLOYMENTS_MODULE, v)
-    if not deployment_class:
-        deployment_class = get_module_class(COMMUNITY_MODEL_DEPLOYMENTS_MODULE, v)
     if not deployment_class:
         raise ValueError(f"Deployment class not found: {v}")
 

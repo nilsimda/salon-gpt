@@ -100,12 +100,6 @@ class FeatureFlags(BaseSettings, BaseModel):
         default=False,
         validation_alias=AliasChoices("USE_AGENTS_VIEW", "use_agents_view"),
     )
-    use_community_features: Optional[bool] = Field(
-        default=False,
-        validation_alias=AliasChoices(
-            "USE_COMMUNITY_FEATURES", "use_community_features"
-        ),
-    )
 
 class PythonToolSettings(BaseSettings, BaseModel):
     model_config = SETTINGS_CONFIG

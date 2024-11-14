@@ -22,8 +22,6 @@ tools:
 feature_flags:
   # Experimental features
   use_agents_view: false
-  # Community features
-  use_community_features: true
 auth:
   enabled_auth:
   backend_hostname:

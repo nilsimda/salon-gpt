@@ -1,13 +1,7 @@
-from backend.model_deployments.azure import AzureDeployment
-from backend.model_deployments.bedrock import BedrockDeployment
-from backend.model_deployments.cohere_platform import CohereDeployment
-from backend.model_deployments.sagemaker import SageMakerDeployment
-from backend.model_deployments.single_container import SingleContainerDeployment
+from backend.model_deployments.faster_whisper_platform import FasterWhisperDeployment
+from backend.model_deployments.ollama_platform import OllamaDeployment
 
 __all__ = [
-    "AzureDeployment",
-    "CohereDeployment",
-    "SingleContainerDeployment",
-    "SageMakerDeployment",
-    "BedrockDeployment",
+    "OllamaDeployment",
+    "FasterWhisperDeployment",
 ]

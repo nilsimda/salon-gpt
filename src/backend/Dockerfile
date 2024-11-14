@@ -21,8 +21,6 @@ WORKDIR /workspace
 ARG PORT=8000
 ENV PORT=${PORT}
 
-# Build with community packages
-ARG INSTALL_COMMUNITY_DEPS
 
 # Copy dependency files to avoid cache invalidations
 COPY pyproject.toml poetry.lock ./
@@ -30,15 +28,10 @@ COPY pyproject.toml poetry.lock ./
 # Install poetry
 RUN pip install --no-cache-dir poetry==1.6.1
 
-# Conditional installation of dependencies
-RUN if [ "$INSTALL_COMMUNITY_DEPS" = "true" ]; then \
-      poetry install --with dev,community; \
-    else \
-      poetry install --with dev; \
-    fi
+# installation of dependencies
+RUN poetry install --with dev
 
 COPY src/backend/ src/backend/
-COPY src/community src/community/
 
 # Copy environment variables optionally 
 # IMPORTANT: Can't be put in the docker-compose, will break tests

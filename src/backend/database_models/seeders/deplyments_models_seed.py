@@ -8,120 +8,23 @@ from sqlalchemy.orm import Session
 
 from backend.config.deployments import ALL_MODEL_DEPLOYMENTS, ModelDeploymentName
 from backend.database_models import Deployment, Model, Organization
-from community.config.deployments import (
-    AVAILABLE_MODEL_DEPLOYMENTS as COMMUNITY_DEPLOYMENTS_SETUP,
-)
 
 load_dotenv()
 
 model_deployments = ALL_MODEL_DEPLOYMENTS.copy()
-model_deployments.update(COMMUNITY_DEPLOYMENTS_SETUP)
 
 MODELS_NAME_MAPPING = {
-    ModelDeploymentName.CoherePlatform: {
-        "command": {
-            "cohere_name": "command",
+    ModelDeploymentName.Ollama: {
+        "llama3.2": {
+            "cohere_name": "llama3.2",
             "is_default": False,
         },
-        "command-nightly": {
-            "cohere_name": "command-nightly",
-            "is_default": False,
-        },
-        "command-light": {
-            "cohere_name": "command-light",
-            "is_default": False,
-        },
-        "command-light-nightly": {
-            "cohere_name": "command-light-nightly",
-            "is_default": False,
-        },
-        "command-r": {
-            "cohere_name": "command-r",
-            "is_default": False,
-        },
-        "command-r-plus": {
-            "cohere_name": "command-r-plus",
+        "mistral-nemo": {
+            "cohere_name": "mistral-nemo",
             "is_default": True,
         },
-        "c4ai-aya-23": {
-            "cohere_name": "c4ai-aya-23",
-            "is_default": False,
-        },
-        "c4ai-aya-23-35b": {
-            "cohere_name": "c4ai-aya-23-35b",
-            "is_default": False,
-        },
-        "command-r-08-2024": {
-            "cohere_name": "command-r-08-2024",
-            "is_default": False,
-        },
-        "command-r-plus-08-2024": {
-            "cohere_name": "command-r-plus-08-2024",
-            "is_default": False,
-        },
-    },
-    ModelDeploymentName.SingleContainer: {
-        "command": {
-            "cohere_name": "command",
-            "is_default": False,
-        },
-        "command-nightly": {
-            "cohere_name": "command-nightly",
-            "is_default": False,
-        },
-        "command-light": {
-            "cohere_name": "command-light",
-            "is_default": False,
-        },
-        "command-light-nightly": {
-            "cohere_name": "command-light-nightly",
-            "is_default": False,
-        },
-        "command-r": {
-            "cohere_name": "command-r",
-            "is_default": False,
-        },
-        "command-r-plus": {
-            "cohere_name": "command-r-plus",
-            "is_default": False,
-        },
-        "c4ai-aya-23": {
-            "cohere_name": "c4ai-aya-23",
-            "is_default": False,
-        },
-        "c4ai-aya-23-35b": {
-            "cohere_name": "c4ai-aya-23-35b",
-            "is_default": False,
-        },
-        "command-r-08-2024": {
-            "cohere_name": "command-r-08-2024",
-            "is_default": False,
-        },
-        "command-r-plus-08-2024": {
-            "cohere_name": "command-r-plus-08-2024",
-            "is_default": False,
-        },
-    },
-    ModelDeploymentName.SageMaker: {
-        "sagemaker-command": {
-            "cohere_name": "command",
-            "is_default": True,
-        },
-    },
-    ModelDeploymentName.Azure: {
-        "azure-command": {
-            "cohere_name": "command-r",
-            "is_default": True,
-        },
-    },
-    ModelDeploymentName.Bedrock: {
-        "cohere.command-r-plus-v1:0": {
-            "cohere_name": "command-r-plus",
-            "is_default": True,
-        },
-    },
+    }
 }
-
 
 def deployments_models_seed(op):
     """
@@ -152,10 +55,10 @@ def deployments_models_seed(op):
         sql_command = text(
             """
             INSERT INTO deployments (
-                id, name, description, default_deployment_config, deployment_class_name, is_community, created_at, updated_at
+                id, name, description, default_deployment_config, deployment_class_name, created_at, updated_at
             )
             VALUES (
-                :id, :name, :description, :default_deployment_config, :deployment_class_name, :is_community, now(), now()
+                :id, :name, :description, :default_deployment_config, :deployment_class_name, now(), now()
             )
             ON CONFLICT (id) DO NOTHING;
         """
@@ -172,7 +75,6 @@ def deployments_models_seed(op):
             deployment_class_name=model_deployments[
                 deployment
             ].deployment_class.__name__,
-            is_community=deployment in COMMUNITY_DEPLOYMENTS_SETUP,
         )
         op.execute(sql_command)
 

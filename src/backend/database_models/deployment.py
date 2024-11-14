@@ -1,12 +1,11 @@
 from typing import List, Optional
 
-from sqlalchemy import JSON, Boolean, Text, UniqueConstraint
+from sqlalchemy import JSON, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.database_models.base import Base
 
 DEFAULT_MODEL_DEPLOYMENTS_MODULE = "backend.model_deployments"
-COMMUNITY_MODEL_DEPLOYMENTS_MODULE = "community.model_deployments"
 
 
 class Deployment(Base):
@@ -15,7 +14,6 @@ class Deployment(Base):
     name: Mapped[str] = mapped_column(Text, nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text, default="")
     deployment_class_name: Mapped[Optional[str]] = mapped_column(Text)
-    is_community: Mapped[bool] = mapped_column(Boolean, default=False)
     default_deployment_config: Mapped[Optional[dict]] = mapped_column(JSON)
 
     models = relationship("Model", back_populates="deployment")
@@ -65,9 +63,5 @@ class Deployment(Base):
         cls = get_module_class(
             DEFAULT_MODEL_DEPLOYMENTS_MODULE, self.deployment_class_name
         )
-        if not cls:
-            cls = get_module_class(
-                COMMUNITY_MODEL_DEPLOYMENTS_MODULE, self.deployment_class_name
-            )
 
         return cls

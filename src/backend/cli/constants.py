@@ -63,10 +63,6 @@ TOOLS = {
 }
 
 ENV_YAML_CONFIG_MAPPING = {
-    "USE_COMMUNITY_FEATURES": {
-        "type": "config",
-        "path": "feature_flags.use_community_features",
-    },
     "DATABASE_URL": {"type": "config", "path": "database.url"},
     "REDIS_URL": {"type": "config", "path": "redis.url"},
     # "NEXT_PUBLIC_API_HOSTNAME": "" - this does not exist in Settings() yet to be used for Docker setups,
