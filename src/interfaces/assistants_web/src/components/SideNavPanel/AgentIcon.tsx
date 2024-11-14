@@ -11,6 +11,7 @@ import {
   useSettingsStore,
 } from '@/stores';
 import { cn } from '@/utils';
+
 import { AgentLogo } from '../Agents/AgentLogo';
 
 type Props = {
@@ -82,7 +83,7 @@ export const AgentIcon: React.FC<Props> = ({ name, id, isBaseAgent }) => {
             bg
           )}
         >
-          <AgentLogo className={contrastFill} agent_id={id}/>
+          <AgentLogo className={contrastFill} agent_id={id} />
         </div>
       </div>
     </Tooltip>

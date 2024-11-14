@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 import { AgentPublic } from '@/cohere-client';
 import { ShareConversation } from '@/components/Modals/ShareConversation';
-import { QuoteLogo, KebabMenu, KebabMenuItem, Text, Tooltip } from '@/components/UI';
+import { KebabMenu, KebabMenuItem, QuoteLogo, Text, Tooltip } from '@/components/UI';
 import { useContextStore } from '@/context';
 import {
   getIsTouchDevice,
@@ -16,6 +16,7 @@ import {
 } from '@/hooks';
 import { useConversationStore, useSettingsStore } from '@/stores';
 import { cn, formatDateToShortDate } from '@/utils';
+
 import { AgentLogo } from '../Agents/AgentLogo';
 
 export type ConversationListItem = {

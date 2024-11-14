@@ -1,5 +1,6 @@
+import { DragDropFileInput, Input, Text, Textarea } from '@/components/UI';
+
 import { StudySettingsFields } from '.';
-import { Input, Text, Textarea, DragDropFileInput } from '@/components/UI';
 
 type Props = {
   fields: StudySettingsFields;
@@ -23,11 +24,12 @@ export const DefineStudyStep: React.FC<Props> = ({ fields, setFields }) => {
         value={fields.description ?? ''}
         onChange={(e) => setFields({ ...fields, description: e.target.value })}
       />
-      <Text className="text-sm text-gray-500">
-        Füge eine Infotabelle hinzu.
-      </Text>
+      <Text className="text-sm text-gray-500">Füge eine Infotabelle hinzu.</Text>
       <DragDropFileInput
-        accept={['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel']}
+        accept={[
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'application/vnd.ms-excel',
+        ]}
         onFilesChange={(files) => setFields({ ...fields, files })}
       />
     </div>

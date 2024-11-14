@@ -7,6 +7,7 @@ import { Icon } from '@/components/UI';
 import { useBrandedColors, useChatRoutes } from '@/hooks';
 import { BotState, ChatMessage, MessageType, isFulfilledMessage } from '@/types/message';
 import { cn } from '@/utils';
+
 import { AgentLogo } from '../Agents/AgentLogo';
 
 type Props = {

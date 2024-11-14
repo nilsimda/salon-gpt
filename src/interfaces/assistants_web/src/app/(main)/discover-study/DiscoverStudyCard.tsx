@@ -33,7 +33,7 @@ export const DiscoverStudyCard: React.FC<Props> = ({ study }) => {
     >
       <div className="flex h-full flex-grow flex-col items-start gap-y-2 overflow-x-hidden">
         <div className="flex w-full items-center gap-x-2">
-          <div className="relative flex h-8 w-8 flex-shrink-0 items-center justify-center rounded duration-300 bg-volcanic-800">
+          <div className="relative flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-volcanic-800 duration-300">
             {/* You might want to add a study icon/logo here */}
           </div>
           <Text as="h5" className="truncate dark:text-mushroom-950" title={study?.name}>

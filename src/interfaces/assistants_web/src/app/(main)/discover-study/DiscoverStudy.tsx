@@ -5,7 +5,7 @@ import { useDeferredValue, useMemo, useState } from 'react';
 import { Study } from '@/cohere-client';
 import { MobileHeader } from '@/components/Global';
 import { Button, Input, Text } from '@/components/UI';
-import { useListStudies, useSession} from '@/hooks';
+import { useListStudies, useSession } from '@/hooks';
 import { cn } from '@/utils';
 
 import { DiscoverStudyCard } from './DiscoverStudyCard';

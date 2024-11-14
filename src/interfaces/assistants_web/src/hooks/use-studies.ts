@@ -3,9 +3,9 @@ import { uniq } from 'lodash';
 import { useCallback, useMemo } from 'react';
 
 import {
-  Study,
   ApiError,
   CreateStudyRequest,
+  Study,
   UpdateStudyRequest,
   useCohereClient,
 } from '@/cohere-client';
@@ -66,7 +66,6 @@ export const useStudy = ({ studyId }: { studyId?: string }) => {
     },
   });
 };
-
 
 /**
  * @description Returns a function to check if an agent name is unique.

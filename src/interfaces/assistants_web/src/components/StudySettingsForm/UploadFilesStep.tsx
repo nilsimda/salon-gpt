@@ -1,12 +1,12 @@
-import { StudySettingsFields } from '.';
 import { DragDropFileInput, Text } from '@/components/UI';
 import { useConversationFileActions } from '@/hooks/use-files';
+
+import { StudySettingsFields } from '.';
 
 type Props = {
   fields: StudySettingsFields;
   setFields: (fields: StudySettingsFields) => void;
 };
-
 
 export const UploadFilesStep: React.FC<Props> = ({ fields, setFields }) => {
   const { uploadFiles } = useConversationFileActions();

@@ -12,7 +12,7 @@ import {
   DEFAULT_AGENT_MODEL,
   DEFAULT_AGENT_TOOLS,
   DEFAULT_PREAMBLE,
-  DEPLOYMENT_LOCAL_MODEL
+  DEPLOYMENT_LOCAL_MODEL,
 } from '@/constants';
 import { useContextStore } from '@/context';
 import { useCreateAgent, useNotify } from '@/hooks';

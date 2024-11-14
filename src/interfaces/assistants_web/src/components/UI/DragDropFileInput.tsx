@@ -109,10 +109,14 @@ export const DragDropFileInput: React.FC<Props> = ({
       )}
     >
       {dragActive ? (
-        <Text className="max-w-[170px] text-center text-mushroom-300 dark:text-volcanic-600">Drop files to upload</Text>
+        <Text className="max-w-[170px] text-center text-mushroom-300 dark:text-volcanic-600">
+          Drop files to upload
+        </Text>
       ) : (
         <>
-          <Text className="max-w-[210px] text-center text-mushroom-300 dark:text-volcanic-600">{label}</Text>
+          <Text className="max-w-[210px] text-center text-mushroom-300 dark:text-volcanic-600">
+            {label}
+          </Text>
         </>
       )}
       <input

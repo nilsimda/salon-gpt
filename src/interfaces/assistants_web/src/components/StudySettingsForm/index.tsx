@@ -3,9 +3,10 @@ import { useEffect, useState } from 'react';
 
 import { CreateStudyRequest, UpdateStudyRequest } from '@/cohere-client';
 import { Button, CollapsibleSection } from '@/components/UI';
+import { cn } from '@/utils';
+
 import { DefineStudyStep } from './DefineStep';
 import { UploadFilesStep } from './UploadFilesStep';
-import { cn } from '@/utils';
 
 type RequiredAndNotNull<T> = {
   [P in keyof T]-?: Exclude<T[P], null | undefined>;
@@ -13,15 +14,11 @@ type RequiredAndNotNull<T> = {
 
 type RequireAndNotNullSome<T, K extends keyof T> = RequiredAndNotNull<Pick<T, K>> & Omit<T, K>;
 
-type CreateStudySettingsFields = RequireAndNotNullSome<
-  CreateStudyRequest,
-  'name'
->;
+type CreateStudySettingsFields = RequireAndNotNullSome<CreateStudyRequest, 'name'>;
 
-type UpdateStudySettingsFields = RequireAndNotNullSome<
-  UpdateStudyRequest,
-  'name'
-> & { is_private?: boolean };
+type UpdateStudySettingsFields = RequireAndNotNullSome<UpdateStudyRequest, 'name'> & {
+  is_private?: boolean;
+};
 
 export type StudySettingsFields = CreateStudySettingsFields | UpdateStudySettingsFields;
 
@@ -62,9 +59,9 @@ export const StudySettingsForm: React.FC<Props> = (props) => {
     }
   }, [defaultState, params, setFields]);
 
-  const [currentStep, setCurrentStep] = useState<'define' | 'tiefeninterviews' | 'groupDiscussions' | 'memos' | undefined>(
-    'define'
-  );
+  const [currentStep, setCurrentStep] = useState<
+    'define' | 'tiefeninterviews' | 'groupDiscussions' | 'memos' | undefined
+  >('define');
 
   return (
     <div className="flex flex-col space-y-6">
@@ -75,11 +72,7 @@ export const StudySettingsForm: React.FC<Props> = (props) => {
         isExpanded={currentStep === 'define'}
         setIsExpanded={(expanded) => setCurrentStep(expanded ? 'define' : undefined)}
       >
-        <DefineStudyStep
-          fields={fields}
-          setFields={setFields}
-          isNewStudy={source === 'create'}
-        />
+        <DefineStudyStep fields={fields} setFields={setFields} isNewStudy={source === 'create'} />
         <StepButtons
           handleNext={() => setCurrentStep('tiefeninterviews')}
           hide={source !== 'create'}
@@ -132,7 +125,6 @@ export const StudySettingsForm: React.FC<Props> = (props) => {
           hide={source !== 'create'}
         />
       </CollapsibleSection>
-
     </div>
   );
 };
@@ -144,7 +136,14 @@ const StepButtons: React.FC<{
   isSubmit?: boolean;
   disabled?: boolean;
   hide?: boolean;
-}> = ({ handleNext, handleBack, nextLabel = 'Weiter', isSubmit = false, disabled = false, hide = false }) => {
+}> = ({
+  handleNext,
+  handleBack,
+  nextLabel = 'Weiter',
+  isSubmit = false,
+  disabled = false,
+  hide = false,
+}) => {
   return (
     <div
       className={cn('flex w-full items-center justify-between pt-5', {

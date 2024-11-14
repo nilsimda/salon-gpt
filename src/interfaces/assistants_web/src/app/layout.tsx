@@ -23,7 +23,7 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
       <head>
         <PublicEnvScript />
       </head>
-      <body className="text-volcanic-300 selection:bg-coral-900 selection:text-volcanic-300 dark:text-marble-950 dark:selection:bg-green-250 dark:selection:text-marble-950">
+      <body className="dark:selection:bg-green-250 text-volcanic-300 selection:bg-coral-900 selection:text-volcanic-300 dark:text-marble-950 dark:selection:text-marble-950">
         <CookiesProvider>
           <LayoutProviders authToken={authToken}>{children}</LayoutProviders>
         </CookiesProvider>

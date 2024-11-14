@@ -6,10 +6,10 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 import { MobileHeader } from '@/components/Global';
+import { StudySettingsForm } from '@/components/StudySettingsForm';
 import { Button, Icon, Text } from '@/components/UI';
 import { useContextStore } from '@/context';
 import { useCreateStudy, useNotify } from '@/hooks';
-import { StudySettingsForm } from '@/components/StudySettingsForm';
 
 const DEFAULT_FIELD_VALUES = {
   name: '',
@@ -29,7 +29,6 @@ export const CreateStudy: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleOpenSubmitModal = () => {
-
     open({
       title: `Studie ${fields.name} erstellen?`,
       content: (

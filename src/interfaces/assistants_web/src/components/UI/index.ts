@@ -23,7 +23,7 @@ export * from './LongPressMenu';
 export * from './Modal';
 export * from './QuoteLogo';
 export * from './RadioGroup';
-export * from './SearchLogo'
+export * from './SearchLogo';
 export * from './Shortcut';
 export * from './Skeleton';
 export * from './Spinner';

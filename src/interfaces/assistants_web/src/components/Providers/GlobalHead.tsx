@@ -6,8 +6,7 @@ import Head from 'next/head';
  * Some basic meta tag values for the site.
  */
 export const GlobalHead: React.FC = () => {
-  const description =
-    '';
+  const description = '';
 
   return (
     <Head>

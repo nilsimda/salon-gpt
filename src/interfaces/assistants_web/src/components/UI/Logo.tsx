@@ -17,15 +17,11 @@ export const Logo: React.FC<LogoProps> = ({
   style = 'default',
   darkModeEnabled,
 }) => {
-    return (
-      <img 
-        src={includeBrandName ? "/images/logo_with_name.png" : "/images/logo_without_name.png"} 
-        alt={includeBrandName ? "Logo with brand name" : "Logo"} 
-        className={cx(
-          'h-full',
-          { 'w-24': includeBrandName, 'w-4': !includeBrandName },
-          className
-        )} 
-      />
-    );
-  };
+  return (
+    <img
+      src={includeBrandName ? '/images/logo_with_name.png' : '/images/logo_without_name.png'}
+      alt={includeBrandName ? 'Logo with brand name' : 'Logo'}
+      className={cx('h-full', { 'w-24': includeBrandName, 'w-4': !includeBrandName }, className)}
+    />
+  );
+};

@@ -8,6 +8,7 @@ import { Icon, Text } from '@/components/UI';
 import { useAgent, useBrandedColors, useListTools } from '@/hooks';
 import { cn } from '@/utils';
 import { checkIsBaseAgent } from '@/utils';
+
 import { AgentLogo } from '../Agents/AgentLogo';
 
 type Props = {

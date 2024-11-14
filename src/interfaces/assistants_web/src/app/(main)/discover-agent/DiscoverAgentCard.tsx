@@ -3,9 +3,9 @@
 import Link from 'next/link';
 
 import { AgentPublic } from '@/cohere-client';
+import { AgentLogo } from '@/components/Agents/AgentLogo';
 import { DeleteAgent } from '@/components/Modals/DeleteAgent';
 import { KebabMenu, Text } from '@/components/UI';
-import { AgentLogo } from '@/components/Agents/AgentLogo';
 import { useContextStore } from '@/context';
 import { useBrandedColors, useSession } from '@/hooks';
 import { checkIsBaseAgent, cn } from '@/utils';
@@ -25,7 +25,10 @@ export const DiscoverAgentCard: React.FC<Props> = ({ agent }) => {
   const createdBy = isCreator ? 'YOU' : 'RHEINGOLD SALON';
 
   const { open, close } = useContextStore();
-const handleOpenDeleteModal = () => { if (!agent) return; open({ title: `Delete ${agent.name}`,
+  const handleOpenDeleteModal = () => {
+    if (!agent) return;
+    open({
+      title: `Delete ${agent.name}`,
       content: <DeleteAgent name={agent.name} agentId={agent.id} onClose={close} />,
     });
   };
