@@ -26,6 +26,8 @@ MODELS_NAME_MAPPING = {
     }
 }
 
+AGENTS_NAME_MAPPING = {}
+
 def deployments_models_seed(op):
     """
     Seed default deployments, models, organization, user and agent.

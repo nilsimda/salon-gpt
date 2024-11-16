@@ -18,7 +18,7 @@ import {
 import {
   DEFAULT_AGENT_TOOLS,
   DEFAULT_TYPING_VELOCITY,
-  DEPLOYMENT_COHERE_PLATFORM,
+  DEPLOYMENT_OLLAMA,
   TOOL_PYTHON_INTERPRETER_ID,
 } from '@/constants';
 import {
@@ -481,9 +481,6 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
               (e as CohereNetworkError)?.message ||
               'Unable to generate a response since an error was encountered.';
 
-            if (error === 'network error' && deployment === DEPLOYMENT_COHERE_PLATFORM) {
-              error += ' (Ensure a COHERE_API_KEY is configured correctly)';
-            }
             setConversation({
               messages: [
                 ...newMessages,

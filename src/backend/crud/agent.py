@@ -41,7 +41,6 @@ def get_agent_by_id(
       db (Session): Database session.
       agent_id (str): Agent ID.
       override_user_id (bool): Override user ID check. Should only be used for internal operations.
-
     Returns:
       Agent: Agent with the given ID.
     """

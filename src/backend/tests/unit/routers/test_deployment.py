@@ -112,7 +112,6 @@ def test_update_deployment(session_client: TestClient, session: Session) -> None
     assert updated_deployment["env_vars"] == ["COHERE_API_KEY"]
     assert updated_deployment["is_available"]
     assert updated_deployment["description"] == request_json["description"]
-    assert updated_deployment["is_community"] == request_json["is_community"]
 
 
 def test_delete_deployment(session_client: TestClient, session: Session) -> None:

@@ -8,7 +8,7 @@ import { AgentSettingsFields, AgentSettingsForm } from '@/components/AgentSettin
 import { MobileHeader } from '@/components/Global';
 import { DeleteAgent } from '@/components/Modals/DeleteAgent';
 import { Button, Icon, Spinner, Text } from '@/components/UI';
-import { DEFAULT_AGENT_MODEL, DEPLOYMENT_COHERE_PLATFORM } from '@/constants';
+import { DEFAULT_AGENT_MODEL, DEPLOYMENT_OLLAMA } from '@/constants';
 import { useContextStore } from '@/context';
 import { useIsAgentNameUnique, useNotify, useUpdateAgent } from '@/hooks';
 
@@ -26,7 +26,7 @@ export const UpdateAgent: React.FC<Props> = ({ agent }) => {
   const [fields, setFields] = useState<AgentSettingsFields>({
     name: agent.name,
     description: agent.description,
-    deployment: agent.deployment ?? DEPLOYMENT_COHERE_PLATFORM,
+    deployment: agent.deployment ?? DEPLOYMENT_OLLAMA,
     model: agent.model ?? DEFAULT_AGENT_MODEL,
     tools: agent.tools,
     preamble: agent.preamble,

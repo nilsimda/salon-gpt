@@ -59,11 +59,12 @@ async def create_study(
 
     study_data = StudyModel(
         name=study.name,
+        description=study.description,
         individual_interview_count=study.individual_interview_count,
         group_interview_count=study.group_interview_count,
         organization_id=study.organization_id,
+        is_being_added = False
     )
-    print(study_data)
 
     try:
         created_study = study_crud.create_study(session, study_data)

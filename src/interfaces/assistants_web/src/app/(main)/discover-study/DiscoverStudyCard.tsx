@@ -3,7 +3,7 @@
 import Link from 'next/link';
 
 import { Study } from '@/cohere-client';
-//import { DeleteStudy } from '@/components/Modals/DeleteStudy';
+import { DeleteStudy } from '@/components/Modals/DeleteStudy';
 import { KebabMenu, Text } from '@/components/UI';
 import { useContextStore } from '@/context';
 
@@ -18,13 +18,13 @@ export const DiscoverStudyCard: React.FC<Props> = ({ study }) => {
   const createdBy = 'RHEINGOLD SALON';
 
   const { open, close } = useContextStore();
-  //const handleOpenDeleteModal = () => {
-  //  if (!study) return;
-  //  open({
-  //    title: `Delete ${study.name}`,
-  //    content: <DeleteStudy name={study.name} studyId={study.id} onClose={close} />,
-  //  });
-  //};
+  const handleOpenDeleteModal = () => {
+    if (!study) return;
+    open({
+      title: `Delete ${study.name}`,
+      content: <DeleteStudy name={study.name} studyId={study.id} onClose={close} />,
+    });
+  };
 
   return (
     <Link
@@ -52,13 +52,13 @@ export const DiscoverStudyCard: React.FC<Props> = ({ study }) => {
                   iconName: 'trash',
                   label: 'Delete study',
                   iconClassName: 'fill-danger-500 dark:fill-danger-500',
-                  //onClick: handleOpenDeleteModal,
+                  onClick: handleOpenDeleteModal,
                 },
               ]}
             />
           </div>
         </div>
-        <Text className="line-clamp-2 flex-grow dark:text-mushroom-800">{study?.name}</Text>
+        <Text className="line-clamp-2 flex-grow dark:text-mushroom-800">{study?.description}</Text>
         <Text className="dark:text-volcanic-500">BY {createdBy}</Text>
       </div>
     </Link>

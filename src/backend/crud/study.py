@@ -29,7 +29,7 @@ def get_study_by_id(
     db: Session, study_id: str, user_id: str = "", override_user_id: bool = False
 ) -> Study:
     """
-    Get an study by its ID.
+    Get a study by its ID.
     Anyone can get a public study, but only the owner can get a private study.
 
     Args:
@@ -46,8 +46,7 @@ def get_study_by_id(
 @validate_transaction
 def get_study_by_name(db: Session, study_name: str, user_id: str) -> Study:
     """
-    Get an study by its name.
-    Anyone can get a public study, but only the owner can get a private study.
+    Get a study by its name.
 
     Args:
       db (Session): Database session.

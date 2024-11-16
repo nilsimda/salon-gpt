@@ -24,7 +24,7 @@ def upgrade() -> None:
         sa.Column("name", sa.Text(), nullable=False),
         sa.Column("description", sa.Text(), nullable=True),
         sa.Column("deployment_class_name", sa.Text(), nullable=True),
-        sa.Column("is_community", sa.Boolean(), nullable=False),
+        sa.Column("is_community", sa.Boolean(), nullable=True),
         sa.Column("default_deployment_config", sa.JSON(), nullable=True),
         sa.Column("id", sa.String(), nullable=False),
         sa.Column("created_at", sa.DateTime(), nullable=True),

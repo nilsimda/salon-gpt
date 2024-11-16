@@ -1,17 +1,19 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class Study(BaseModel):
     id: str
     created_at: datetime
     updated_at: datetime
-    
+
     name: str
-    individual_interview_count: int = 0
-    group_interview_count: int = 0
+    ti_files: list[str]
+    gd_files: list[str]
+    memo_files: list[str]
+    metadata_file: str
     is_being_added: bool = True
     organization_id: Optional[str] = None
     description: Optional[str] = None
@@ -38,7 +40,7 @@ class UpdateStudyRequest(BaseModel):
     group_interview_count: Optional[int] = None
     organization_id: Optional[str] = None
     description: Optional[str] = None
-    is_being_added: Optional[bool] = True
+    is_being_added: Optional[bool] = False
 
     class Config:
         from_attributes = True

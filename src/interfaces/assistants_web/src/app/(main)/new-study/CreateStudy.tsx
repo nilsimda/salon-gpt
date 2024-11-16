@@ -13,7 +13,7 @@ import { useCreateStudy, useNotify } from '@/hooks';
 
 const DEFAULT_FIELD_VALUES = {
   name: '',
-  //description: '',
+  description: '',
 };
 
 /**

@@ -10,7 +10,7 @@ import {
 } from '@/constants/tools';
 
 export const DEFAULT_CONVERSATION_NAME = 'Neue Konversation';
-export const DEFAULT_AGENT_MODEL = 'mistral-nemo';
+export const DEFAULT_AGENT_MODEL = 'llama3.2';
 export const DEFAULT_TYPING_VELOCITY = 35;
 export const CONVERSATION_HISTORY_OFFSET = 100;
 

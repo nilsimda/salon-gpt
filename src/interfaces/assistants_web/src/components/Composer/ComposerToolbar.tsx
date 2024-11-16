@@ -25,7 +25,7 @@ export const ComposerToolbar: React.FC<Props> = ({ agent, tools, onUploadFile })
       )}
     >
       <FilesMenu onUploadFile={onUploadFile} />
-      <DataSourceMenu agent={agent} tools={tools} />
+      <DataSourceMenu agent={agent} />
     </div>
   );
 };

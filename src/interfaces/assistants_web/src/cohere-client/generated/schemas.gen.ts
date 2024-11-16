@@ -556,7 +556,7 @@ export const $CohereChatRequest = {
         },
       ],
       title: 'The model to use for generating the response.',
-      default: 'command-r-plus',
+      default: 'llama3.2',
     },
     temperature: {
       anyOf: [

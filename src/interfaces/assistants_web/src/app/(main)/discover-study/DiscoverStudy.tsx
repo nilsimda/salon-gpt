@@ -10,8 +10,6 @@ import { cn } from '@/utils';
 
 import { DiscoverStudyCard } from './DiscoverStudyCard';
 
-const GROUPED_ASSISTANTS_LIMIT = 15;
-
 export const DiscoverStudy = () => {
   const { data: studies = [] } = useListStudies();
 
@@ -103,7 +101,7 @@ const CompanyStudies: React.FC<{
   );
 
   const beingAddedStudies = useMemo(
-    () => filteredStudies.filter((study) => study),
+    () => filteredStudies.filter((study) => study.is_being_added),
     [filteredStudies]
   );
 
@@ -117,7 +115,7 @@ const CompanyStudies: React.FC<{
           value={query}
         />
         <GroupStudies title="Werden hinzugefügt..." studies={beingAddedStudies} />
-        <GroupStudies title="Hinzugefügte Studien" studies={studies.filter((s) => !s)} />
+        <GroupStudies title="Hinzugefügte Studien" studies={studies.filter((s) => !s.is_being_added)} />
       </div>
     </div>
   );
