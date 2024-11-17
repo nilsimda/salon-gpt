@@ -2,7 +2,7 @@ import os
 from unittest.mock import MagicMock, patch
 
 import pytest
-from langchain_core.documents.base import Document
+from langchain_core.documents.base import Interview
 
 from backend.services.context import Context
 from backend.tools import LangChainVectorDBRetriever, LangChainWikiRetriever
@@ -19,7 +19,7 @@ async def test_wiki_retriever() -> None:
     retriever = LangChainWikiRetriever()
     query = "Python programming"
     mock_docs = [
-        Document(
+        Interview(
             page_content="example content",
             metadata={
                 "title": "example title",
@@ -27,7 +27,7 @@ async def test_wiki_retriever() -> None:
                 "source": "https://example.com",
             },
         ),
-        Document(
+        Interview(
             page_content="example content 2",
             metadata={
                 "title": "example title 2",
@@ -89,28 +89,28 @@ async def test_vector_db_retriever() -> None:
     retriever = LangChainVectorDBRetriever(file_path)
     query = "What is the mariana trench?"
     mock_docs = [
-        Document(
+        Interview(
             page_content="Location of the Mariana TrenchMariana Trench",
             metadata={
                 "page": 0,
                 "source": "src/backend/tests/unit/test_data/Mariana_Trench.pdf",
             },
         ),
-        Document(
+        Interview(
             page_content="Like other oceanic trenches, the Mariana Trench has been propos ed as a site for nuclear waste",
             metadata={
                 "page": 4,
                 "source": "src/backend/tests/unit/test_data/Mariana_Trench.pdf",
             },
         ),
-        Document(
+        Interview(
             page_content="The Pacific plate is subducted beneath the Mariana Plate",
             metadata={
                 "page": 1,
                 "source": "src/backend/tests/unit/test_data/Mariana_Trench.pdf",
             },
         ),
-        Document(
+        Interview(
             page_content='37. "Vityaz-D explored Mariana Trench according to preinstalled program — developer"',
             metadata={
                 "page": 7,

@@ -10,10 +10,10 @@ class Study(BaseModel):
     updated_at: datetime
 
     name: str
-    ti_files: list[str]
-    gd_files: list[str]
-    memo_files: list[str]
-    metadata_file: str
+    ti_files: Optional[list[str]] = None
+    gd_files: Optional[list[str]] = None
+    memo_files: Optional[list[str]] = None
+    metadata_file: Optional[str] = None
     is_being_added: bool = True
     organization_id: Optional[str] = None
     description: Optional[str] = None

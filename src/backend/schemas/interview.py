@@ -1,20 +1,25 @@
+from enum import StrEnum
 from typing import Union
 
 from pydantic import BaseModel
 
 
-class DocumentBase(BaseModel):
+class InterviewType(StrEnum):
+    GD = "GD"
+    TI = "TI"
+    Memo = "Memo"
+
+class InterviewBase(BaseModel):
     pass
 
 
-class Document(BaseModel):
+class Interview(BaseModel):
     text: str
     document_id: str
 
     title: Union[str, None]
-    url: Union[str, None]
+    type: InterviewType
     fields: Union[dict, None]
-    tool_name: Union[str, None]
 
     class Config:
         from_attributes = True

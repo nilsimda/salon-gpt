@@ -1,10 +1,10 @@
 import pytest
 
 from backend.crud import document as document_crud
-from backend.database_models.document import Document
+from backend.database_models.document import Interview
 from backend.tests.unit.factories import get_factory
 
-# from backend.schemas.document import UpdateDocument
+# from backend.schemas.document import UpdateInterview
 
 
 @pytest.fixture(autouse=True)
@@ -20,7 +20,7 @@ def message(session, conversation, user):
 
 
 def test_create_document(session, user):
-    document_data = Document(
+    document_data = Interview(
         text="Hello, World!",
         user_id=user.id,
         conversation_id="1",
@@ -47,7 +47,7 @@ def test_create_document(session, user):
 
 
 def test_get_document(session, conversation, message, user):
-    _ = get_factory("Document", session).create(
+    _ = get_factory("Interview", session).create(
         id="1",
         text="Hello, World!",
         conversation_id=conversation.id,
@@ -66,7 +66,7 @@ def test_fail_get_nonexistent_document(session):
 
 
 def test_list_documents(session, conversation, message, user):
-    _ = get_factory("Document", session).create(
+    _ = get_factory("Interview", session).create(
         text="Hello, World!",
         conversation_id=conversation.id,
         message_id=message.id,
@@ -85,7 +85,7 @@ def test_list_documents_empty(session):
 
 def test_list_documents_with_pagination(session, conversation, message, user):
     for i in range(10):
-        _ = get_factory("Document", session).create(
+        _ = get_factory("Interview", session).create(
             text=f"Hello, World! {i}",
             conversation_id=conversation.id,
             message_id=message.id,
@@ -99,7 +99,7 @@ def test_list_documents_with_pagination(session, conversation, message, user):
 
 
 def test_delete_document(session, conversation, message, user):
-    document = get_factory("Document", session).create(
+    document = get_factory("Interview", session).create(
         text="Hello, World!",
         conversation_id=conversation.id,
         message_id=message.id,

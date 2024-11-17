@@ -147,7 +147,7 @@ def test_delete_message_cascade(session, conversation, user):
         message_id=message.id, user_id=user.id
     )
     citation_id = citation.id
-    document = get_factory("Document", session).create(
+    document = get_factory("Interview", session).create(
         message_id=message.id, conversation_id=conversation.id, user_id=user.id
     )
     document_id = document.id

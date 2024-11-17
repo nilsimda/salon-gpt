@@ -16,7 +16,7 @@ from backend.crud import tool_call as tool_call_crud
 from backend.database_models.citation import Citation
 from backend.database_models.conversation import Conversation
 from backend.database_models.database import DBSessionDep
-from backend.database_models.document import Document
+from backend.database_models.interview import Interview
 from backend.database_models.message import (
     Message,
     MessageAgent,
@@ -694,6 +694,8 @@ async def generate_chat_stream(
             next_message_position=kwargs.get("next_message_position", 0),
         )
 
+        print(stream_event)
+
         yield json.dumps(
             jsonable_encoder(
                 ChatResponseEvent(
@@ -720,12 +722,12 @@ def handle_stream_event(
     stream_end_data: dict[str, Any],
     response_message: Message,
     ctx: Context,
-    document_ids_to_document: dict[str, Document] = {},
+    document_ids_to_document: dict[str, Interview] = {},
     session: DBSessionDep = None,
     should_store: bool = True,
     user_id: str = "",
     next_message_position: int = 0,
-) -> tuple[StreamEventType, dict[str, Any], Message, dict[str, Document]]:
+) -> tuple[StreamEventType, dict[str, Any], Message, dict[str, Interview]]:
     logger = ctx.get_logger()
 
     handlers = {
@@ -764,9 +766,9 @@ def handle_stream_start(
     conversation_id: str,
     stream_end_data: dict[str, Any],
     response_message: Message,
-    document_ids_to_document: dict[str, Document],
+    document_ids_to_document: dict[str, Interview],
     **kwargs: Any,
-) -> tuple[StreamStart, dict[str, Any], Message, dict[str, Document]]:
+) -> tuple[StreamStart, dict[str, Any], Message, dict[str, Interview]]:
     event["conversation_id"] = conversation_id
     stream_event = StreamStart.model_validate(event)
     if response_message:
@@ -780,9 +782,9 @@ def handle_stream_text_generation(
     _: str,
     stream_end_data: dict[str, Any],
     response_message: Message,
-    document_ids_to_document: dict[str, Document],
+    document_ids_to_document: dict[str, Interview],
     **kwargs: Any,
-) -> tuple[StreamTextGeneration, dict[str, Any], Message, dict[str, Document]]:
+) -> tuple[StreamTextGeneration, dict[str, Any], Message, dict[str, Interview]]:
     stream_end_data["text"] += event["text"]
     stream_event = StreamTextGeneration.model_validate(event)
     return stream_event, stream_end_data, response_message, document_ids_to_document
@@ -793,11 +795,11 @@ def handle_stream_search_results(
     _: str,
     stream_end_data: dict[str, Any],
     response_message: Message,
-    document_ids_to_document: dict[str, Document],
+    document_ids_to_document: dict[str, Interview],
     **kwargs: Any,
-) -> tuple[StreamSearchResults, dict[str, Any], Message, dict[str, Document]]:
+) -> tuple[StreamSearchResults, dict[str, Any], Message, dict[str, Interview]]:
     for document in event["documents"]:
-        storage_document = Document(
+        storage_document = Interview(
             document_id=document.get("id", ""),
             text=document.get("text", ""),
             title=document.get("title", ""),
@@ -838,9 +840,9 @@ def handle_stream_search_queries_generation(
     _: str,
     stream_end_data: dict[str, Any],
     response_message: Message,
-    document_ids_to_document: dict[str, Document],
+    document_ids_to_document: dict[str, Interview],
     **kwargs: Any,
-) -> tuple[StreamSearchQueriesGeneration, dict[str, Any], Message, dict[str, Document]]:
+) -> tuple[StreamSearchQueriesGeneration, dict[str, Any], Message, dict[str, Interview]]:
     search_queries = []
     for search_query in event["search_queries"]:
         search_queries.append(
@@ -861,12 +863,12 @@ def handle_stream_tool_calls_generation(
     conversation_id: str,
     stream_end_data: dict[str, Any],
     response_message: Message,
-    document_ids_to_document: dict[str, Document],
+    document_ids_to_document: dict[str, Interview],
     session: DBSessionDep,
     should_store: bool,
     user_id: str,
     next_message_position: int,
-) -> tuple[StreamToolCallsGeneration, dict[str, Any], Message, dict[str, Document]]:
+) -> tuple[StreamToolCallsGeneration, dict[str, Any], Message, dict[str, Interview]]:
     tool_calls = []
     tool_calls_event = event.get("tool_calls", [])
     for tool_call in tool_calls_event:
@@ -897,9 +899,9 @@ def handle_stream_citation_generation(
     _: str,
     stream_end_data: dict[str, Any],
     response_message: Message,
-    document_ids_to_document: dict[str, Document],
+    document_ids_to_document: dict[str, Interview],
     **kwargs: Any,
-) -> tuple[StreamCitationGeneration, dict[str, Any], Message, dict[str, Document]]:
+) -> tuple[StreamCitationGeneration, dict[str, Any], Message, dict[str, Interview]]:
     citations = []
     for event_citation in event["citations"]:
         citation = Citation(
@@ -915,7 +917,7 @@ def handle_stream_citation_generation(
             if document is not None:
                 citation.documents.append(document)
 
-        # Populates CitationDocuments table
+        # Populates CitationInterviews table
         citations.append(citation)
     stream_event = StreamCitationGeneration(**event | {"citations": citations})
     stream_end_data["citations"].extend(citations)
@@ -927,9 +929,9 @@ def handle_stream_tool_calls_chunk(
     _: str,
     stream_end_data: dict[str, Any],
     response_message: Message,
-    document_ids_to_document: dict[str, Document],
+    document_ids_to_document: dict[str, Interview],
     **kwargs: Any,
-) -> tuple[StreamToolCallsChunk, dict[str, Any], Message, dict[str, Document]]:
+) -> tuple[StreamToolCallsChunk, dict[str, Any], Message, dict[str, Interview]]:
     event["text"] = event.get("text", "")
     tool_call_delta = event.get("tool_call_delta", None)
     if tool_call_delta:
@@ -949,9 +951,9 @@ def handle_stream_end(
     _: str,
     stream_end_data: dict[str, Any],
     response_message: Message,
-    document_ids_to_document: dict[str, Document],
+    document_ids_to_document: dict[str, Interview],
     **kwargs: Any,
-) -> tuple[StreamEnd, dict[str, Any], Message, dict[str, Document]]:
+) -> tuple[StreamEnd, dict[str, Any], Message, dict[str, Interview]]:
     if response_message:
         response_message.citations = stream_end_data["citations"]
         response_message.text = stream_end_data["text"]

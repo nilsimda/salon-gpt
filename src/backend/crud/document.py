@@ -1,20 +1,20 @@
 from sqlalchemy.orm import Session
 
-from backend.database_models.document import Document
+from backend.database_models.document import Interview
 from backend.services.transaction import validate_transaction
 
 
 @validate_transaction
-def create_document(db: Session, document: Document) -> Document:
+def create_document(db: Session, document: Interview) -> Interview:
     """
     Create a new document.
 
     Args:
         db (Session): Database session.
-        document (Document): Document data to be created.
+        document (Interview): Interview data to be created.
 
     Returns:
-        Document: Created document.
+        Interview: Created document.
     """
     db.add(document)
     db.commit()
@@ -23,22 +23,22 @@ def create_document(db: Session, document: Document) -> Document:
 
 
 @validate_transaction
-def get_document(db: Session, document_id: str) -> Document:
+def get_document(db: Session, document_id: str) -> Interview:
     """
     Get a document by ID.
 
     Args:
         db (Session): Database session.
-        document_id (str): Document ID.
+        document_id (str): Interview ID.
 
     Returns:
-        Document: Document with the given ID.
+        Interview: Interview with the given ID.
     """
-    return db.query(Document).filter(Document.id == document_id).first()
+    return db.query(Interview).filter(Interview.id == document_id).first()
 
 
 @validate_transaction
-def get_documents(db: Session, offset: int = 0, limit: int = 100) -> list[Document]:
+def get_documents(db: Session, offset: int = 0, limit: int = 100) -> list[Interview]:
     """
     List all documents.
 
@@ -48,9 +48,9 @@ def get_documents(db: Session, offset: int = 0, limit: int = 100) -> list[Docume
         limit (int): Limit of documents to be listed.
 
     Returns:
-        list[Document]: List of documents.
+        list[Interview]: List of documents.
     """
-    return db.query(Document).offset(offset).limit(limit).all()
+    return db.query(Interview).offset(offset).limit(limit).all()
 
 
 def delete_document(db: Session, document_id: str) -> None:
@@ -59,8 +59,8 @@ def delete_document(db: Session, document_id: str) -> None:
 
     Args:
         db (Session): Database session.
-        document_id (str): Document ID.
+        document_id (str): Interview ID.
     """
-    document = db.query(Document).filter(Document.id == document_id)
+    document = db.query(Interview).filter(Interview.id == document_id)
     document.delete()
     db.commit()

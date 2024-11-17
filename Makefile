@@ -18,10 +18,6 @@ down:
 run-unit-tests:
 	poetry run pytest src/backend/tests/unit --cov=src/backend --cov-report=xml
 
-.PHONY: run-community-tests
-run-community-tests:
-	poetry run pytest src/community/tests --cov=src/community --cov-report=xml
-
 .PHONY: run-integration-tests
 run-integration-tests:
 	docker compose run --build backend poetry run pytest -c src/backend/pytest_integration.ini src/backend/tests/integration/$(file)
@@ -32,7 +28,7 @@ run-tests: run-unit-tests
 attach: 
 	@docker attach salon-gpt-backend-1
 logs: 
-	@@docker-compose logs --follow --tail 100 $(service)
+	@@docker compose logs --follow --tail 100 $(service)
 
 .PHONY: exec-backend
 exec-backend:
@@ -41,6 +37,10 @@ exec-backend:
 .PHONY: exec-db
 exec-db:
 	docker exec -ti salon-gpt-db-1 bash
+
+.PHONY: check-gpus
+check-gpus:
+	docker exec -ti salon-gpt-ollama-1 nvidia-smi 
 
 .PHONY: migration
 migration:
@@ -87,7 +87,7 @@ lint-fix:
 
 .PHONY: first-run
 first-run:
-	make setup-use-community
+	make setup
 	make migrate
 	make dev
 

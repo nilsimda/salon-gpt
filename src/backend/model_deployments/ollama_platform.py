@@ -4,13 +4,14 @@ from typing import Any, Dict, List
 import ollama
 
 from backend.model_deployments.base import BaseDeployment
+from backend.schemas.citation import Citation
 from backend.schemas.cohere_chat import CohereChatRequest
 from backend.schemas.context import Context
 
 OLLAMA_ENV_VARS = []
 
 class OllamaDeployment(BaseDeployment):
-    def __init__(self, model_path: str = "llama3.2", template: str = None, ctx: Context = None):
+    def __init__(self, model_path: str = "mistral-nemo", template: str = None, ctx: Context = None):
         self.prompt_template = PromptTemplate()
         self.template = template
         self.model = model_path
@@ -37,18 +38,15 @@ class OllamaDeployment(BaseDeployment):
         if chat_request.max_tokens is None:
             chat_request.max_tokens = 200
 
-        #if len(chat_request.documents) == 0:
-        #    prompt = self.prompt_template.dummy_chat_template(
-        #        chat_request.message, chat_request.chat_history
-        #    )
-        #else:
-        #    prompt = self.prompt_template.dummy_rag_template(
-        #        chat_request.message, chat_request.chat_history, chat_request.documents
-        #    )
+        messages = []
+        for msg in chat_request.chat_history:
+            messages.append({"role": 'user' if msg.role == 'USER' else 'assistant', "content": msg.message})
+
+        messages.append({"role": "user", "content": chat_request.message})
 
         stream = ollama.chat(
-            model=chat_request.model,
-            messages=[{'role': 'user', 'content': chat_request.message}],
+            model='mistral-nemo', #chat_request.model,
+            messages=messages,
             stream=True,
             options={"max_tokens": chat_request.max_tokens, "temperature": chat_request.temperature},
         )
@@ -56,6 +54,12 @@ class OllamaDeployment(BaseDeployment):
         yield {
             "event_type": "stream-start",
             "generation_id": "",
+        }
+
+        yield {
+            "event_type": "search-results",
+            "search_results": [{"result 1": "this is the first result"}, {"result 2": "this is the second result"}],
+            "documents": []
         }
 
         for item in stream:
@@ -80,9 +84,15 @@ class OllamaDeployment(BaseDeployment):
         if chat_request.max_tokens is None:
             chat_request.max_tokens = 200
 
+        messages = []
+        for msg in chat_request.chat_history:
+            messages.append({"role": 'user' if msg.role == 'USER' else 'assistant', "content": msg.message})
+
+        messages.append({"role": "user", "content": chat_request.message})
+
         response = ollama.chat(
-            model=chat_request.model,
-            messages=[{'role': 'user', 'content': chat_request.message}],
+            model='mistral-nemo',#chat_request.model,
+            messages=messages,
             stream=False,
             options={"max_tokens": chat_request.max_tokens, "temperature": chat_request.temperature},
         )
@@ -137,7 +147,7 @@ class PromptTemplate:
             if len(text.split()) > 200:
                 text = " ".join(text.split()[:200])
 
-            doc_str_list.extend([f"Document: {doc_idx}", doc["title"], text])
+            doc_str_list.extend([f"Interview: {doc_idx}", doc["title"], text])
 
         doc_str = "\n".join(doc_str_list)
 
@@ -180,8 +190,8 @@ class PromptTemplate:
         documents = self._get_cohere_documents_template(documents, max_docs)
         chat_history = self._get_cohere_chat_history_template(chat_history)
         INSTRUCTIONS = """Carefully perform the following instructions, in order, starting each with a new line.
-Firstly, Decide which of the retrieved documents are relevant to the user's last input by writing 'Relevant Documents:' followed by comma-separated list of document numbers. If none are relevant, you should instead write 'None'.
-Secondly, Decide which of the retrieved documents contain facts that should be cited in a good answer to the user's last input by writing 'Cited Documents:' followed a comma-separated list of document numbers. If you dont want to cite any of them, you should instead write 'None'.
+Firstly, Decide which of the retrieved documents are relevant to the user's last input by writing 'Relevant Interviews:' followed by comma-separated list of document numbers. If none are relevant, you should instead write 'None'.
+Secondly, Decide which of the retrieved documents contain facts that should be cited in a good answer to the user's last input by writing 'Cited Interviews:' followed a comma-separated list of document numbers. If you dont want to cite any of them, you should instead write 'None'.
 Thirdly, Write 'Answer:' followed by a response to the user's last input in high quality natural english. Use the retrieved documents to help you. Do not insert any citations or grounding markup.
 Finally, Write 'Grounded answer:' followed by a response to the user's last input in high quality natural english. Use the symbols <co: doc> and </co: doc> to indicate when a fact comes from a document in the search result, e.g <co: 0>my fact</co: 0> for a fact from document 0."""
 
@@ -218,7 +228,7 @@ Finally, Write 'Grounded answer:' followed by a response to the user's last inpu
         for doc_idx, doc in enumerate(documents[:max_docs]):
             if doc_idx > 0:
                 doc_str_list.append("")
-            doc_str_list.extend([f"Document: {doc_idx}", doc["title"], doc["text"]])
+            doc_str_list.extend([f"Interview: {doc_idx}", doc["title"], doc["text"]])
         doc_str_list.append("</results>")
         return "\n".join(doc_str_list)
 

@@ -68,7 +68,7 @@ ALL_TOOLS = {
         description="Performs a search over a list of one or more of the attached files for a textual search query",
     ),
     ToolName.Read_File: ManagedTool(
-        display_name="Read Document",
+        display_name="Read Interview",
         implementation=ReadFileTool,
         parameter_definitions={
             "file": {

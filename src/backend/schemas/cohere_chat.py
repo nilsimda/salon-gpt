@@ -21,7 +21,7 @@ class CohereChatRequest(BaseChatRequest):
 
     documents: List[Dict[str, Any]] = Field(
         default_factory=list,
-        title="""Documents to use to generate grounded response with citations. Example:
+        title="""Interviews to use to generate grounded response with citations. Example:
             documents=[
                 {
                     "id": "national_geographic_everest",

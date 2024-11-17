@@ -196,7 +196,7 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
     >;
   }) => {
     setConversation({ messages: newMessages });
-    const isRAGOn = isGroundingOn(request?.tools || [], request.file_ids || []);
+    const isRAGOn = true //isGroundingOn(request?.tools || [], request.file_ids || []);
     setStreamingMessage(
       createLoadingMessage({
         text: '',
@@ -364,10 +364,15 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
               citations.sort((a, b) => (a.start ?? 0) - (b.start ?? 0));
               saveCitations(generationId, fixedCitations, documentsMap);
 
+              let text = replaceTextWithCitations(botResponse, citations, generationId);
+              console.log(text);
+              botResponse += citations[0].text;
+              console.log(botResponse);
+
               setStreamingMessage({
                 type: MessageType.BOT,
                 state: BotState.TYPING,
-                text: replaceTextWithCitations(botResponse, citations, generationId),
+                text: botResponse,//replaceTextWithCitations(botResponse, citations, generationId),
                 citations,
                 isRAGOn,
                 generationId,

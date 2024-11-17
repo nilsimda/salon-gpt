@@ -1,13 +1,13 @@
 import factory
 
-from backend.database_models import Document
+from backend.database_models import Interview
 
 from .base import BaseFactory
 
 
-class DocumentFactory(BaseFactory):
+class InterviewFactory(BaseFactory):
     class Meta:
-        model = Document
+        model = Interview
 
     user_id = factory.Faker("uuid4")
     title = factory.Faker("sentence")

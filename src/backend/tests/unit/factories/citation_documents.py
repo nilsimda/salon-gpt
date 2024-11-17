@@ -1,13 +1,13 @@
 import factory
 
-from backend.database_models import CitationDocuments
+from backend.database_models import CitationInterviews
 
 from .base import BaseFactory
 
 
-class CitationDocumentsFactory(BaseFactory):
+class CitationInterviewsFactory(BaseFactory):
     class Meta:
-        model = CitationDocuments
+        model = CitationInterviews
 
     left_id = factory.Faker("uuid4")
     right_id = factory.Faker("uuid4")

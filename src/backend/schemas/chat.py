@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 from backend.chat.enums import StreamEvent
 from backend.schemas.citation import Citation
-from backend.schemas.document import Document
+from backend.schemas.interview import Interview
 from backend.schemas.search_query import SearchQuery
 from backend.schemas.tool import Tool, ToolCall, ToolCallDelta
 
@@ -116,8 +116,8 @@ class StreamSearchResults(ChatResponse):
         title="Search results used to generate grounded response with citations.",
         default=[],
     )
-    documents: List[Document] = Field(
-        title="Documents used to generate grounded response with citations.",
+    documents: List[Interview] = Field(
+        title="Interviews used to generate grounded response with citations.",
         default=[],
     )
 
@@ -135,8 +135,8 @@ class StreamToolResult(ChatResponse):
     result: Any
     tool_name: str
 
-    documents: List[Document] = Field(
-        title="Documents used to generate grounded response with citations.",
+    documents: List[Interview] = Field(
+        title="Interviews used to generate grounded response with citations.",
         default=[],
     )
 
@@ -184,8 +184,8 @@ class StreamEnd(ChatResponse):
     citations: List[Citation] = Field(
         title="Citations for the chat message.", default=[]
     )
-    documents: List[Document] = Field(
-        title="Documents used to generate grounded response with citations.",
+    documents: List[Interview] = Field(
+        title="Interviews used to generate grounded response with citations.",
         default=[],
     )
     search_results: List[Dict[str, Any]] = Field(
@@ -231,8 +231,8 @@ class NonStreamedChatResponse(ChatResponse):
         title="Citations for the chat message.",
         default=[],
     )
-    documents: List[Document] | None = Field(
-        title="Documents used to generate grounded response with citations.",
+    documents: List[Interview] | None = Field(
+        title="Interviews used to generate grounded response with citations.",
         default=[],
     )
     search_results: List[Dict[str, Any]] | None = Field(

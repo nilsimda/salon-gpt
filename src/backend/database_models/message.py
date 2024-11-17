@@ -14,7 +14,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.database_models.base import Base
 from backend.database_models.citation import Citation
-from backend.database_models.document import Document
+from backend.database_models.interview import Interview
 from backend.database_models.tool_call import ToolCall
 
 
@@ -56,8 +56,6 @@ class Message(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     generation_id: Mapped[str] = mapped_column(String, nullable=True)
     tool_plan: Mapped[str] = mapped_column(String, nullable=True)
-
-    documents: Mapped[List[Document]] = relationship()
     citations: Mapped[List[Citation]] = relationship()
     message_file_associations: Mapped[List["MessageFileAssociation"]] = relationship(
         "MessageFileAssociation", back_populates="message"

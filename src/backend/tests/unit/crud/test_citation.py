@@ -19,7 +19,7 @@ def message(session, conversation, user):
 
 @pytest.fixture(autouse=True)
 def document(session, conversation, message, user):
-    return get_factory("Document", session).create(
+    return get_factory("Interview", session).create(
         id="1",
         conversation_id=conversation.id,
         message_id=message.id,
@@ -44,7 +44,7 @@ def test_create_citation(session, document, user):
     assert citation.end == citation_data.end
     assert citation.message_id == citation_data.message_id
 
-    get_factory("CitationDocuments", session).create(
+    get_factory("CitationInterviews", session).create(
         left_id=document.id, right_id=citation.id
     )
 

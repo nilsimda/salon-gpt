@@ -7,7 +7,7 @@ from backend.database_models import (
     Citation,
     Conversation,
     ConversationFileAssociation,
-    Document,
+    Interview,
     File,
     Message,
 )
@@ -443,7 +443,7 @@ def test_delete_conversation_with_children_cascades_delete(
     )
     message_id = message.id
     _ = get_factory("Citation", session).create(message_id=message.id, user_id=user.id)
-    _ = get_factory("Document", session).create(
+    _ = get_factory("Interview", session).create(
         conversation_id=conversation.id,
         message_id=message.id,
         user_id=user.id,
@@ -478,7 +478,7 @@ def test_delete_conversation_with_children_cascades_delete(
         .filter(Citation.message_id == message_id, Citation.user_id == user.id)
         .all()
     )
-    documents = session.query(Document).filter(Document.message_id == message_id).all()
+    documents = session.query(Interview).filter(Interview.message_id == message_id).all()
 
     assert not messages
     assert not citations
