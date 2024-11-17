@@ -32,6 +32,8 @@ class OllamaDeployment(BaseDeployment):
         self, chat_request: CohereChatRequest, ctx: Context, **kwargs: Any
     ) -> Any:
 
+        study_id = ctx.study_id if ctx.study_id else "5480f27c-1a80-4e6d-af29-9c7714bfc19e"
+
         if not chat_request.model:
             chat_request.model = self.model
 
@@ -58,7 +60,7 @@ class OllamaDeployment(BaseDeployment):
 
         yield {
             "event_type": "search-results",
-            "search_results": [{"result 1": "this is the first result"}, {"result 2": "this is the second result"}],
+            "search_results": [{"text": "this is the first result"}, {"text": "this is the second result"}],
             "documents": []
         }
 

@@ -3,6 +3,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from backend.database_models.study import Study
+from backend.database_models.interview import Interview
 from backend.services.transaction import validate_transaction
 
 
@@ -26,16 +27,13 @@ def create_study(db: Session, study: Study) -> Study:
 
 @validate_transaction
 def get_study_by_id(
-    db: Session, study_id: str, user_id: str = "", override_user_id: bool = False
-) -> Study:
+    db: Session, study_id: str) -> Study:
     """
     Get a study by its ID.
-    Anyone can get a public study, but only the owner can get a private study.
 
     Args:
       db (Session): Database session.
       study_id (str): Study ID.
-      override_user_id (bool): Override user ID check. Should only be used for internal operations.
 
     Returns:
       Study: Study with the given ID.
@@ -57,6 +55,19 @@ def get_study_by_name(db: Session, study_name: str, user_id: str) -> Study:
     """
     return db.query(Study).filter(Study.name == study_name).first()
 
+@validate_transaction
+def get_interviews_by_study(db: Session, study_id: str) -> list[Interview]:
+    """
+    Get all interviews for a study.
+
+    Args:
+        db (Session): Database session.
+        study_id (str): Study ID.
+
+    Returns:
+      list[Interview]: List of interviews.
+    """
+    return db.query(Interview).filter(Study.study_id == study_id).all()
 
 @validate_transaction
 def get_studies(

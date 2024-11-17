@@ -21,7 +21,8 @@ export const DeleteConversations: React.FC<Props> = ({
   return (
     <section>
       <Text className="mb-5">
-        Sobald du diese {numConversations === 1 ? 'Konversation' : 'Konversationen'} löschst kannst du die Nachrichten weder sehen noch abrufen. Es kann nicht rückgangig gemacht werden.
+        Sobald du diese {numConversations === 1 ? 'Konversation' : 'Konversationen'} löschst kannst
+        du die Nachrichten weder sehen noch abrufen. Es kann nicht rückgangig gemacht werden.
       </Text>
       <div className="flex flex-col-reverse items-center justify-between gap-y-4 md:flex-row">
         <Button kind="secondary" onClick={onClose} label="Abbrechen" />
@@ -30,11 +31,7 @@ export const DeleteConversations: React.FC<Props> = ({
           onClick={onConfirm}
           icon="trash"
           disabled={isPending}
-          label={
-            isPending
-              ? 'Wird gelöscht...'
-              : 'Konversation löschen'
-          }
+          label={isPending ? 'Wird gelöscht...' : 'Konversation löschen'}
         />
       </div>
     </section>

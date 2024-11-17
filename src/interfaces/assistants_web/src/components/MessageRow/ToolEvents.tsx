@@ -76,36 +76,31 @@ const ToolEvent: React.FC<ToolEventProps> = ({ plan, event, stream_search_result
   }
 
   if (stream_search_results) {
-    const artifacts =
-      stream_search_results.documents
-        ?.map((doc) => {
-          return { title: truncateString(doc.title || doc.url || ''), url: getValidURL(doc.url) };
-        })
-        .filter((entry) => !!entry.title)
-        .filter((value, index, self) => index === self.findIndex((t) => t.title === value.title)) ||
-      [];
+    const searchResults = stream_search_results.search_results || [];
+
+    console.log('searchResults', searchResults[0].text);
 
     return (
       <ToolEventWrapper icon="book-open-text">
-        {artifacts.length > 0 ? (
+        {searchResults.length > 0 ? (
           <>
-            Referenced the following resources:
+            Ich habe die folgenden Ausschnitte gefunden:
             <article className="grid grid-cols-2 gap-x-2">
-              {artifacts.map((artifact) => (
-                <b key={artifact.title} className="truncate font-medium">
+              {searchResults.map((artifact, index) => (
+                <b key={index} className="truncate font-medium">
                   {artifact.url ? (
-                    <a href={artifact.url} target="_blank" className="underline">
-                      {artifact.title}
+                    <a href="" target="_blank" className="underline">
+                      {artifact.text}
                     </a>
                   ) : (
-                    <p>{artifact.title}</p>
+                    <p>{artifact.text}</p>
                   )}
                 </b>
               ))}
             </article>
           </>
         ) : (
-          <>No resources found.</>
+          <span>No search results found</span>
         )}
       </ToolEventWrapper>
     );

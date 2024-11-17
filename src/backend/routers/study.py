@@ -7,6 +7,7 @@ from backend.crud import study as study_crud
 from backend.database_models.database import DBSessionDep
 from backend.database_models.study import Study as StudyModel
 from backend.schemas.context import Context
+from backend.schemas.interview import Interview
 from backend.schemas.study import (
     CreateStudyRequest,
     DeleteStudy,
@@ -227,3 +228,26 @@ async def delete_study(
         raise HTTPException(status_code=401, detail="Could not delete Study.")
 
     return DeleteStudy()
+
+@router.get("/{study_id}/interviews", response_model=list[Interview])
+async def list_files(
+    study_id: str, session: DBSessionDep, ctx: Context = Depends(get_context)
+) -> list[Interview]:
+    """
+    List all interviews from a study. Important - no pagination support yet.
+
+    Args:
+        study_id (str): Study ID.
+        session (DBSessionDep): Database session.
+        ctx (Context): Context object.
+
+    Returns:
+        list[Interview]: List of interviews from the study.
+
+    Raises:
+        HTTPException: If the study with the given ID is not found.
+    """
+    user_id = ctx.get_user_id()
+    _ = validate_study_exists(session, study_id, user_id)
+
+    return study_crud.get_interviews_by_study(session, study_id)

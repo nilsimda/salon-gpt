@@ -28,7 +28,7 @@ export const ConversationPanel: React.FC<Props> = () => {
   const { theme } = useBrandedColors(agentId);
 
   const {
-    params: { fileIds },
+    params: { fileIds, selected_study },
     setParams,
   } = useParamsStore();
   const session = useSession();
@@ -213,7 +213,7 @@ export const ConversationPanel: React.FC<Props> = () => {
             </div>
           )}
           <Text styleAs="caption" className="text-mushroom-300 dark:text-marble-800">
-            These files will only be accessible to you and won’t impact others.
+            Keine Studie ausgewählt
           </Text>
         </section>
       </div>

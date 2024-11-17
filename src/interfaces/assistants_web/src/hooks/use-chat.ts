@@ -196,7 +196,7 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
     >;
   }) => {
     setConversation({ messages: newMessages });
-    const isRAGOn = true //isGroundingOn(request?.tools || [], request.file_ids || []);
+    const isRAGOn = true; //isGroundingOn(request?.tools || [], request.file_ids || []);
     setStreamingMessage(
       createLoadingMessage({
         text: '',
@@ -372,7 +372,7 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
               setStreamingMessage({
                 type: MessageType.BOT,
                 state: BotState.TYPING,
-                text: botResponse,//replaceTextWithCitations(botResponse, citations, generationId),
+                text: botResponse, //replaceTextWithCitations(botResponse, citations, generationId),
                 citations,
                 isRAGOn,
                 generationId,

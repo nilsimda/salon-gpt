@@ -3,11 +3,11 @@
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
 import React from 'react';
 
-import { AgentPublic } from '@/cohere-client';
+import { AgentPublic, Study } from '@/cohere-client';
 import { Icon, Switch, Text } from '@/components/UI';
-import { useListStudies, useBrandedColors } from '@/hooks';
+import { useBrandedColors, useListStudies } from '@/hooks';
+import { useParamsStore } from '@/stores';
 import { checkIsBaseAgent, cn, getToolIcon } from '@/utils';
-import { useState } from 'react';
 
 export type Props = {
   agent?: AgentPublic;
@@ -21,7 +21,14 @@ export const DataSourceMenu: React.FC<Props> = ({ agent }) => {
   const { text, contrastText, border, bg } = useBrandedColors(agent?.id);
   const isBaseAgent = checkIsBaseAgent(agent);
 
-  const [selected_study, setStudy] = useState('');
+  const {
+    setParams,
+    params: { selected_study },
+  } = useParamsStore();
+
+  const handleSelectStudy = (study: Study) => {
+    setParams({ selected_study: study });
+  };
 
   return (
     <Popover className="relative">
@@ -41,7 +48,7 @@ export const DataSourceMenu: React.FC<Props> = ({ agent }) => {
             as="span"
             className={cn('font-medium', text, { [contrastText]: open })}
           >
-            Studie: {selected_study}
+            Studie: {selected_study?.name}
           </Text>
         )}
       </PopoverButton>
@@ -67,7 +74,7 @@ export const DataSourceMenu: React.FC<Props> = ({ agent }) => {
           )}
           {studies?.map((study, i) => (
             <div
-              key={study.name}
+              key={study.id}
               className={cn(
                 'flex w-full items-start justify-between gap-x-2 px-1.5 py-3',
                 'focus:outline focus:outline-volcanic-300',
@@ -81,7 +88,7 @@ export const DataSourceMenu: React.FC<Props> = ({ agent }) => {
                 <div className="flex gap-x-2">
                   <div className="relative flex items-center justify-center rounded bg-mushroom-800 p-1 dark:bg-volcanic-200">
                     <Icon
-                      name={getToolIcon(study.name)}
+                      name={getToolIcon(study.id)}
                       kind="outline"
                       size="sm"
                       className="flex items-center fill-mushroom-300 dark:fill-marble-800"
@@ -90,8 +97,8 @@ export const DataSourceMenu: React.FC<Props> = ({ agent }) => {
                       className={cn(
                         'absolute -bottom-0.5 -right-0.5  size-2 rounded-full transition-colors duration-300',
                         {
-                          'bg-success-300': selected_study === study.id,
-                          'bg-mushroom-400 dark:bg-volcanic-600': selected_study !== study.id
+                          'bg-success-300': selected_study?.id === study.id,
+                          'bg-mushroom-400 dark:bg-volcanic-600': selected_study?.id !== study.id,
                         }
                       )}
                     />
@@ -103,8 +110,8 @@ export const DataSourceMenu: React.FC<Props> = ({ agent }) => {
                 {isBaseAgent && (
                   <Switch
                     theme="evolved-blue"
-                    checked={study.id === selected_study} //{!!paramsTools?.find((t) => t.name === study.name)}
-                    onChange={() => setStudy(study.id)}
+                    checked={study.id === selected_study?.id}
+                    onChange={() => handleSelectStudy(study)}
                     showCheckedState
                   />
                 )}

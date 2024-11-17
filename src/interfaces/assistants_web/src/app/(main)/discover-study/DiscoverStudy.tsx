@@ -115,7 +115,10 @@ const CompanyStudies: React.FC<{
           value={query}
         />
         <GroupStudies title="Werden hinzugefügt..." studies={beingAddedStudies} />
-        <GroupStudies title="Hinzugefügte Studien" studies={studies.filter((s) => !s.is_being_added)} />
+        <GroupStudies
+          title="Hinzugefügte Studien"
+          studies={studies.filter((s) => !s.is_being_added)}
+        />
       </div>
     </div>
   );

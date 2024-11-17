@@ -104,6 +104,8 @@ import type {
   ListExperimentalFeaturesV1ExperimentalFeaturesGetResponse,
   ListFilesV1ConversationsConversationIdFilesGetData,
   ListFilesV1ConversationsConversationIdFilesGetResponse,
+  ListFilesV1StudiesStudyIdInterviewsGetData,
+  ListFilesV1StudiesStudyIdInterviewsGetResponse,
   ListModelsV1ModelsGetData,
   ListModelsV1ModelsGetResponse,
   ListOrganizationsV1OrganizationsGetResponse,
@@ -1950,6 +1952,40 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'DELETE',
       url: '/v1/studies/{study_id}',
+      path: {
+        study_id: data.studyId,
+      },
+      errors: {
+        422: 'Validation Error',
+      },
+    });
+  }
+
+  /**
+   * List Files
+   * List all interviews from a study. Important - no pagination support yet.
+   *
+   * Args:
+   * study_id (str): Study ID.
+   * session (DBSessionDep): Database session.
+   * ctx (Context): Context object.
+   *
+   * Returns:
+   * list[Interview]: List of interviews from the study.
+   *
+   * Raises:
+   * HTTPException: If the study with the given ID is not found.
+   * @param data The data for the request.
+   * @param data.studyId
+   * @returns Interview Successful Response
+   * @throws ApiError
+   */
+  public listFilesV1StudiesStudyIdInterviewsGet(
+    data: ListFilesV1StudiesStudyIdInterviewsGetData
+  ): CancelablePromise<ListFilesV1StudiesStudyIdInterviewsGetResponse> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/v1/studies/{study_id}/interviews',
       path: {
         study_id: data.studyId,
       },

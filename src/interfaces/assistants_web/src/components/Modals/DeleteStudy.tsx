@@ -23,7 +23,7 @@ export const DeleteStudy: React.FC<Props> = ({ name, studyId, onClose }) => {
     await deleteStudy({ studyId });
     onClose();
     //if (studyId === currentStudyId) {
-     // router.push('/', undefined);
+    // router.push('/', undefined);
     //}
   };
 

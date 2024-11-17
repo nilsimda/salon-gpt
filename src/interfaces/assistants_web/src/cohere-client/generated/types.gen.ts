@@ -304,17 +304,6 @@ export type DeploymentWithModels = {
   models: Array<ModelSimple>;
 };
 
-export type Document = {
-  text: string;
-  document_id: string;
-  title: string | null;
-  url: string | null;
-  fields: {
-    [key: string]: unknown;
-  } | null;
-  tool_name: string | null;
-};
-
 export type Email = {
   primary: boolean;
   value?: string | null;
@@ -354,6 +343,22 @@ export type GroupOperation = {
 export type HTTPValidationError = {
   detail?: Array<ValidationError>;
 };
+
+export type Interview = {
+  text: string;
+  document_id: string;
+  title: string | null;
+  type: InterviewType;
+  fields: {
+    [key: string]: unknown;
+  } | null;
+};
+
+export enum InterviewType {
+  GD = 'GD',
+  TI = 'TI',
+  MEMO = 'Memo',
+}
 
 export type JWTResponse = {
   token: string;
@@ -425,7 +430,7 @@ export type Message = {
   generation_id: string | null;
   position: number;
   is_active: boolean;
-  documents: Array<Document>;
+  documents: Array<Interview>;
   citations: Array<Citation>;
   files: Array<ConversationFilePublic>;
   tool_calls: Array<ToolCall>;
@@ -485,7 +490,7 @@ export type NonStreamedChatResponse = {
   finish_reason: string;
   text: string;
   citations?: Array<Citation> | null;
-  documents?: Array<Document> | null;
+  documents?: Array<Interview> | null;
   search_results?: Array<{
     [key: string]: unknown;
   }> | null;
@@ -565,7 +570,7 @@ export type StreamEnd = {
   conversation_id?: string | null;
   text: string;
   citations?: Array<Citation>;
-  documents?: Array<Document>;
+  documents?: Array<Interview>;
   search_results?: Array<{
     [key: string]: unknown;
   }>;
@@ -611,7 +616,7 @@ export type StreamSearchResults = {
   search_results?: Array<{
     [key: string]: unknown;
   }>;
-  documents?: Array<Document>;
+  interview?: Interview;
 };
 
 /**
@@ -653,7 +658,7 @@ export type StreamToolInput = {
 export type StreamToolResult = {
   result: unknown;
   tool_name: string;
-  documents?: Array<Document>;
+  documents?: Array<Interview>;
 };
 
 export type Study = {
@@ -661,8 +666,10 @@ export type Study = {
   created_at: string;
   updated_at: string;
   name: string;
-  individual_interview_count?: number;
-  group_interview_count?: number;
+  ti_files?: Array<string> | null;
+  gd_files?: Array<string> | null;
+  memo_files?: Array<string> | null;
+  metadata_file?: string | null;
   is_being_added?: boolean;
   organization_id?: string | null;
   description?: string | null;
@@ -1173,6 +1180,12 @@ export type DeleteStudyV1StudiesStudyIdDeleteData = {
 };
 
 export type DeleteStudyV1StudiesStudyIdDeleteResponse = DeleteStudy;
+
+export type ListFilesV1StudiesStudyIdInterviewsGetData = {
+  studyId: string;
+};
+
+export type ListFilesV1StudiesStudyIdInterviewsGetResponse = Array<Interview>;
 
 export type ListOrganizationsV1OrganizationsGetResponse = Array<Organization>;
 
@@ -2071,6 +2084,21 @@ export type $OpenApiTs = {
          * Successful Response
          */
         200: DeleteStudy;
+        /**
+         * Validation Error
+         */
+        422: HTTPValidationError;
+      };
+    };
+  };
+  '/v1/studies/{study_id}/interviews': {
+    get: {
+      req: ListFilesV1StudiesStudyIdInterviewsGetData;
+      res: {
+        /**
+         * Successful Response
+         */
+        200: Array<Interview>;
         /**
          * Validation Error
          */

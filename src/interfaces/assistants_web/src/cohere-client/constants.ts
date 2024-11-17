@@ -6,8 +6,8 @@ export enum FinishReason {
 }
 
 // Chat
-export const OLLAMA_DEPLOYMENT = "Ollama";
-export const OLLAMA_DEPLOYMENT_DEFAULT_CHAT_MODEL = "llama3.2"
+export const OLLAMA_DEPLOYMENT = 'Ollama';
+export const OLLAMA_DEPLOYMENT_DEFAULT_CHAT_MODEL = 'llama3.2';
 
 export const DEFAULT_CHAT_TEMPERATURE = 0.3;
 export const DEFAULT_CHAT_TOOL = 'Wikipedia';

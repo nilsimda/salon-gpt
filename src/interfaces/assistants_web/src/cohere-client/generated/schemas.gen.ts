@@ -529,7 +529,7 @@ export const $CohereChatRequest = {
         type: 'object',
       },
       type: 'array',
-      title: `Documents to use to generate grounded response with citations. Example:
+      title: `Interviews to use to generate grounded response with citations. Example:
             documents=[
                 {
                     "id": "national_geographic_everest",
@@ -1559,66 +1559,6 @@ export const $DeploymentWithModels = {
   title: 'DeploymentWithModels',
 } as const;
 
-export const $Document = {
-  properties: {
-    text: {
-      type: 'string',
-      title: 'Text',
-    },
-    document_id: {
-      type: 'string',
-      title: 'Document Id',
-    },
-    title: {
-      anyOf: [
-        {
-          type: 'string',
-        },
-        {
-          type: 'null',
-        },
-      ],
-      title: 'Title',
-    },
-    url: {
-      anyOf: [
-        {
-          type: 'string',
-        },
-        {
-          type: 'null',
-        },
-      ],
-      title: 'Url',
-    },
-    fields: {
-      anyOf: [
-        {
-          type: 'object',
-        },
-        {
-          type: 'null',
-        },
-      ],
-      title: 'Fields',
-    },
-    tool_name: {
-      anyOf: [
-        {
-          type: 'string',
-        },
-        {
-          type: 'null',
-        },
-      ],
-      title: 'Tool Name',
-    },
-  },
-  type: 'object',
-  required: ['text', 'document_id', 'title', 'url', 'fields', 'tool_name'],
-  title: 'Document',
-} as const;
-
 export const $Email = {
   properties: {
     primary: {
@@ -1773,6 +1713,53 @@ export const $HTTPValidationError = {
   },
   type: 'object',
   title: 'HTTPValidationError',
+} as const;
+
+export const $Interview = {
+  properties: {
+    text: {
+      type: 'string',
+      title: 'Text',
+    },
+    document_id: {
+      type: 'string',
+      title: 'Document Id',
+    },
+    title: {
+      anyOf: [
+        {
+          type: 'string',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Title',
+    },
+    type: {
+      $ref: '#/components/schemas/InterviewType',
+    },
+    fields: {
+      anyOf: [
+        {
+          type: 'object',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Fields',
+    },
+  },
+  type: 'object',
+  required: ['text', 'document_id', 'title', 'type', 'fields'],
+  title: 'Interview',
+} as const;
+
+export const $InterviewType = {
+  type: 'string',
+  enum: ['GD', 'TI', 'Memo'],
+  title: 'InterviewType',
 } as const;
 
 export const $JWTResponse = {
@@ -2096,7 +2083,7 @@ export const $Message = {
     },
     documents: {
       items: {
-        $ref: '#/components/schemas/Document',
+        $ref: '#/components/schemas/Interview',
       },
       type: 'array',
       title: 'Documents',
@@ -2433,7 +2420,7 @@ export const $NonStreamedChatResponse = {
       anyOf: [
         {
           items: {
-            $ref: '#/components/schemas/Document',
+            $ref: '#/components/schemas/Interview',
           },
           type: 'array',
         },
@@ -2441,7 +2428,7 @@ export const $NonStreamedChatResponse = {
           type: 'null',
         },
       ],
-      title: 'Documents used to generate grounded response with citations.',
+      title: 'Interviews used to generate grounded response with citations.',
       default: [],
     },
     search_results: {
@@ -2827,10 +2814,10 @@ export const $StreamEnd = {
     },
     documents: {
       items: {
-        $ref: '#/components/schemas/Document',
+        $ref: '#/components/schemas/Interview',
       },
       type: 'array',
-      title: 'Documents used to generate grounded response with citations.',
+      title: 'Interviews used to generate grounded response with citations.',
       default: [],
     },
     search_results: {
@@ -2958,13 +2945,9 @@ export const $StreamSearchResults = {
       title: 'Search results used to generate grounded response with citations.',
       default: [],
     },
-    documents: {
-      items: {
-        $ref: '#/components/schemas/Document',
-      },
-      type: 'array',
-      title: 'Documents used to generate grounded response with citations.',
-      default: [],
+    interview: {
+      $ref: '#/components/schemas/Interview',
+      title: 'The interview in which was searched',
     },
   },
   type: 'object',
@@ -3126,10 +3109,10 @@ export const $StreamToolResult = {
     },
     documents: {
       items: {
-        $ref: '#/components/schemas/Document',
+        $ref: '#/components/schemas/Interview',
       },
       type: 'array',
-      title: 'Documents used to generate grounded response with citations.',
+      title: 'Interviews used to generate grounded response with citations.',
       default: [],
     },
   },
@@ -3158,15 +3141,58 @@ export const $Study = {
       type: 'string',
       title: 'Name',
     },
-    individual_interview_count: {
-      type: 'integer',
-      title: 'Individual Interview Count',
-      default: 0,
+    ti_files: {
+      anyOf: [
+        {
+          items: {
+            type: 'string',
+          },
+          type: 'array',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Ti Files',
     },
-    group_interview_count: {
-      type: 'integer',
-      title: 'Group Interview Count',
-      default: 0,
+    gd_files: {
+      anyOf: [
+        {
+          items: {
+            type: 'string',
+          },
+          type: 'array',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Gd Files',
+    },
+    memo_files: {
+      anyOf: [
+        {
+          items: {
+            type: 'string',
+          },
+          type: 'array',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Memo Files',
+    },
+    metadata_file: {
+      anyOf: [
+        {
+          type: 'string',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Metadata File',
     },
     is_being_added: {
       type: 'boolean',
@@ -3671,7 +3697,7 @@ export const $UpdateStudyRequest = {
         },
       ],
       title: 'Is Being Added',
-      default: true,
+      default: false,
     },
   },
   type: 'object',

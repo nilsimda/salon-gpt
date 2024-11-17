@@ -12,6 +12,25 @@ import { useConversationStore, useFilesStore, useParamsStore } from '@/stores';
 import { UploadingFile } from '@/stores/slices/filesSlice';
 import { fileSizeToBytes, formatFileSize, getFileExtension, mapExtensionToMimeType } from '@/utils';
 
+/*export const useListStudyFiles = (study_id?: string){
+  const cohereClient = useCohereClient();
+  return useQuery<ListStudyFile[], ApiError>({
+    queryKey: ['listFiles', study_id],
+    queryFn: async () => {
+      if (!study_id) throw new Error('Study ID not found');
+      try {
+        return await cohereClient.listFiles({ study_id });
+      } catch (e) {
+        console.error(e);
+        throw e;
+      }
+    },
+    enabled: !!study_id,
+    refetchOnWindowFocus: false,
+  });
+}
+}*/
+
 export const useListConversationFiles = (
   conversationId?: string,
   options?: { enabled?: boolean }

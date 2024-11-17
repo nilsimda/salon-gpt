@@ -116,9 +116,9 @@ class StreamSearchResults(ChatResponse):
         title="Search results used to generate grounded response with citations.",
         default=[],
     )
-    documents: List[Interview] = Field(
-        title="Interviews used to generate grounded response with citations.",
-        default=[],
+    interview: Interview = Field(
+        title="The interview in which was searched",
+        default=None,
     )
 
 
