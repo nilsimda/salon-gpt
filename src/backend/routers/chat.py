@@ -46,9 +46,13 @@ async def chat_stream(
     Returns:
         EventSourceResponse: Server-sent event response with chatbot responses.
     """
+    chat_request.tools = []
+
     ctx.with_model(chat_request.model)
     agent_id = chat_request.agent_id
     ctx.with_agent_id(agent_id)
+
+
 
     (
         session,

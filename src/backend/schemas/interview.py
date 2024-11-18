@@ -15,7 +15,7 @@ class InterviewBase(BaseModel):
 
 class Interview(BaseModel):
     text: str
-    document_id: str
+    id: str
 
     title: Union[str, None]
     type: InterviewType

@@ -1,37 +1,30 @@
 import { AgentPublic } from '@/cohere-client';
 import { FileAccept } from '@/components/UI';
-import { DEPLOYMENT_LOCAL_MODEL } from '@/constants/setup';
-import {
-  AGENT_SETTINGS_TOOLS,
-  FILE_UPLOAD_TOOLS,
-  TOOL_READ_DOCUMENT_ID,
-  TOOL_SEARCH_FILE_ID,
-  TOOL_WEB_SCRAPE_ID,
-} from '@/constants/tools';
+import { DEPLOYMENT_OLLAMA } from '@/constants/setup';
+import { TOOL_SEARCH_INTERVIEW_ID } from '@/constants/tools';
 
 export const DEFAULT_CONVERSATION_NAME = 'Neue Konversation';
-export const DEFAULT_AGENT_MODEL = 'llama3.2';
+export const DEFAULT_AGENT_MODEL = 'mistral-nemo';
 export const DEFAULT_TYPING_VELOCITY = 35;
-export const CONVERSATION_HISTORY_OFFSET = 100;
+
+export const DEFAULT_AGENT_TOOLS = [TOOL_SEARCH_INTERVIEW_ID];
 
 export const DEFAULT_PREAMBLE =
   '## Du hilfst bei der Beantwortung von Fragen aus allen Themengebieten, insbesondere bist du Experte in tiefenpsychologischer Marktforschung.';
 
-export const DEFAULT_AGENT_TOOLS = [TOOL_SEARCH_FILE_ID, TOOL_READ_DOCUMENT_ID, TOOL_WEB_SCRAPE_ID];
-
 export const BASE_AGENT: AgentPublic = {
   id: '',
   deployments: [],
-  name: 'ZitatKIn',
+  name: 'ZitatKI',
   description: 'Finde Zitate aus Studien.',
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
   preamble: DEFAULT_PREAMBLE,
   version: 1,
   temperature: 0.1,
-  tools: [],
+  tools: [TOOL_SEARCH_INTERVIEW_ID],
   model: DEFAULT_AGENT_MODEL,
-  deployment: DEPLOYMENT_LOCAL_MODEL,
+  deployment: DEPLOYMENT_OLLAMA,
   user_id: '',
   is_private: false,
 };
@@ -48,7 +41,7 @@ export const TRANSCRIPTION_AGENT: AgentPublic = {
   temperature: 0.0,
   tools: [],
   model: 'whisper-large-v3',
-  deployment: DEPLOYMENT_LOCAL_MODEL,
+  deployment: DEPLOYMENT_OLLAMA,
   user_id: '',
   is_private: false,
 };
@@ -66,7 +59,7 @@ export const SYNTHETIC_USER_AGENT: AgentPublic = {
   temperature: 0.2,
   tools: [],
   model: DEFAULT_AGENT_MODEL,
-  deployment: DEPLOYMENT_LOCAL_MODEL,
+  deployment: DEPLOYMENT_OLLAMA,
   user_id: '',
   is_private: false,
 };

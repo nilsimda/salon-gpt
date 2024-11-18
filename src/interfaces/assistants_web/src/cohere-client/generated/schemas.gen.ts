@@ -556,7 +556,7 @@ export const $CohereChatRequest = {
         },
       ],
       title: 'The model to use for generating the response.',
-      default: 'llama3.2',
+      default: 'mistral-nemo',
     },
     temperature: {
       anyOf: [
@@ -747,6 +747,20 @@ export const $CohereChatRequest = {
         },
       ],
       title: 'The agent ID to use for the chat.',
+    },
+    interviews: {
+      anyOf: [
+        {
+          items: {
+            $ref: '#/components/schemas/Interview',
+          },
+          type: 'array',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'List of interviews used to generate grounded response with citations.',
     },
   },
   type: 'object',
@@ -1721,9 +1735,9 @@ export const $Interview = {
       type: 'string',
       title: 'Text',
     },
-    document_id: {
+    id: {
       type: 'string',
-      title: 'Document Id',
+      title: 'Id',
     },
     title: {
       anyOf: [
@@ -1752,7 +1766,7 @@ export const $Interview = {
     },
   },
   type: 'object',
-  required: ['text', 'document_id', 'title', 'type', 'fields'],
+  required: ['text', 'id', 'title', 'type', 'fields'],
   title: 'Interview',
 } as const;
 

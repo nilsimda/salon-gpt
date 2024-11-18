@@ -26,7 +26,7 @@ class AgentFactory(BaseFactory):
                 "random_element",
                 elements=[
                     ToolName.Wiki_Retriever_LangChain,
-                    ToolName.Search_File,
+                    ToolName.Search_Interview,
                     ToolName.Read_File,
                     ToolName.Python_Interpreter,
                     ToolName.Calculator,

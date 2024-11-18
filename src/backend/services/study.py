@@ -6,7 +6,7 @@ from backend.database_models.study import Study
 
 
 def validate_study_exists(session: DBSessionDep, study_id: str, user_id: str) -> Study:
-    study = study_crud.get_study_by_id(session, study_id, user_id)
+    study = study_crud.get_study_by_id(session, study_id)
 
     if not study:
         raise HTTPException(

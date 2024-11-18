@@ -1,39 +1,49 @@
 'use client';
 
 import { Transition } from '@headlessui/react';
+import { group } from 'console';
 import { uniqBy } from 'lodash';
 import { useMemo, useState } from 'react';
 
+import { Interview, InterviewType } from '@/cohere-client';
 import { Banner, Button, Icon, IconButton, Text, Tooltip } from '@/components/UI';
-import { TOOL_GOOGLE_DRIVE_ID, TOOL_READ_DOCUMENT_ID, TOOL_SEARCH_FILE_ID } from '@/constants';
+import { TOOL_GOOGLE_DRIVE_ID, TOOL_READ_DOCUMENT_ID, TOOL_SEARCH_INTERVIEW_ID } from '@/constants';
 import {
   useAgent,
   useBrandedColors,
   useChatRoutes,
-  useConversationFileActions,
-  useListConversationFiles,
   useSession,
+  useListStudyFiles
 } from '@/hooks';
 import { useParamsStore, useSettingsStore } from '@/stores';
 import { DataSourceArtifact } from '@/types/tools';
 import { pluralize } from '@/utils';
+import { useEffect } from 'react';
 
 type Props = {};
 
 export const ConversationPanel: React.FC<Props> = () => {
-  const [isDeletingFile, setIsDeletingFile] = useState(false);
   const { disabledAssistantKnowledge, setRightPanelOpen } = useSettingsStore();
   const { agentId, conversationId } = useChatRoutes();
   const { data: agent } = useAgent({ agentId });
   const { theme } = useBrandedColors(agentId);
 
   const {
-    params: { fileIds, selected_study },
+    params: { interviews: interviews, selected_study: selected_study },
     setParams,
   } = useParamsStore();
+
   const session = useSession();
-  const { data: files } = useListConversationFiles(conversationId);
-  const { deleteFile } = useConversationFileActions();
+
+    // Add loading state check
+  const { data: currentInterviews, isLoading: isLoadingInterviews } = useListStudyFiles(selected_study?.id);
+
+  // Use an effect to ensure interviews are always in sync
+  useEffect(() => {
+    if (currentInterviews && !isLoadingInterviews) {
+      setParams(prev => ({ ...prev, interviews: currentInterviews }));
+    }
+  }, [currentInterviews, isLoadingInterviews, setParams]);
 
   const agentToolMetadataArtifacts = useMemo(() => {
     if (!agent) {
@@ -46,7 +56,7 @@ export const ConversationPanel: React.FC<Props> = () => {
     const fileArtifacts = uniqBy(
       (
         agent.tools_metadata?.filter((tool_metadata) =>
-          [TOOL_GOOGLE_DRIVE_ID, TOOL_READ_DOCUMENT_ID, TOOL_SEARCH_FILE_ID].includes(
+          [TOOL_GOOGLE_DRIVE_ID, TOOL_READ_DOCUMENT_ID, TOOL_SEARCH_INTERVIEW_ID].includes(
             tool_metadata.tool_name
           )
         ) ?? []
@@ -69,20 +79,27 @@ export const ConversationPanel: React.FC<Props> = () => {
     ...agentToolMetadataArtifacts.folders,
   ];
 
-  const handleDeleteFile = async (fileId: string) => {
-    if (isDeletingFile || !conversationId) return;
-
-    setIsDeletingFile(true);
-    try {
-      await deleteFile({ conversationId, fileId });
-      setParams({ fileIds: (fileIds ?? []).filter((id) => id !== fileId) });
-    } finally {
-      setIsDeletingFile(false);
+  const groupedInterviews = interviews?.reduce((groups, interview) => {
+    const type = interview.type;
+    if (!groups[type]) {
+      groups[type] = [];
     }
+    groups[type].push(interview);
+    return groups;
+  }, {} as Record<InterviewType, Interview[]>);
+
+  const [collapsedTables, setCollapsedTables] = useState({
+    "TI": false,
+    "GD": false,
+    "Memo": false,
+  });
+
+  const toggleTable = (type: InterviewType) => {
+    setCollapsedTables((prev) => ({ ...prev, [type]: !prev[type] }));
   };
 
   return (
-    <aside className="space-y-5 py-4">
+    <aside className="flex flex-col space-y-5 overflow-y-auto py-4">
       <header className="flex items-center gap-2">
         <IconButton
           onClick={() => setRightPanelOpen(false)}
@@ -90,7 +107,7 @@ export const ConversationPanel: React.FC<Props> = () => {
           className="flex h-auto flex-shrink-0 self-center lg:hidden"
         />
         <Text styleAs="p-sm" className="font-medium uppercase">
-          Knowledge
+          Interviews
         </Text>
       </header>
       <div className="flex flex-col gap-y-10">
@@ -99,7 +116,7 @@ export const ConversationPanel: React.FC<Props> = () => {
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-x-2">
                 <Text styleAs="label" className="font-medium">
-                  Assistant Knowledge
+                  Interviews
                 </Text>
                 <Tooltip
                   hover
@@ -176,7 +193,7 @@ export const ConversationPanel: React.FC<Props> = () => {
         <section className="relative flex flex-col gap-y-6">
           <div className="flex gap-x-2">
             <Text styleAs="label" className="font-medium">
-              My files
+              {selected_study?.name ?? 'Studie'}
             </Text>
             <Tooltip
               hover
@@ -185,36 +202,50 @@ export const ConversationPanel: React.FC<Props> = () => {
               label="To use uploaded files, at least 1 File Upload tool must be enabled"
             />
           </div>
-          {files && files.length > 0 && (
+          {groupedInterviews && interviews && interviews.length > 0 && (
             <div className="flex flex-col gap-y-4">
-              {files.map(({ file_name: name, id }) => (
+              {[InterviewType.TI, InterviewType.GD, InterviewType.MEMO].map((type) => (
                 <div
-                  key={id}
+                  key={type}
                   className="group flex w-full flex-col gap-y-2 rounded-lg p-2 dark:hover:bg-volcanic-200"
                 >
-                  <div className="group flex w-full items-center justify-between gap-x-4">
-                    <div className="flex items-center gap-x-2 overflow-hidden">
-                      <Icon
-                        name="file"
-                        kind="outline"
-                        className="fill-mushroom-300 dark:fill-marble-950"
-                      />
-                      <Text className="truncate">{name}</Text>
-                    </div>
-                    <IconButton
-                      onClick={() => handleDeleteFile(id)}
-                      disabled={isDeletingFile}
-                      iconName="close"
-                      className="invisible group-hover:visible"
+                  <h2
+                    className="flex cursor-pointer items-center"
+                    onClick={() => toggleTable(type)}
+                  >
+                    {type}s
+                    <Icon
+                      name={collapsedTables[type] ? 'chevron-down' : 'chevron-up'}
+                      className="ml-2"
                     />
-                  </div>
+                  </h2>
+                  {!collapsedTables[type] && groupedInterviews[type]?.length > 0 && (
+                    <table>
+                      <thead>
+                        <tr>
+                          {Object.keys(groupedInterviews[type][0]?.fields || {}).map((fieldKey) => (
+                            <th key={fieldKey}>{fieldKey}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {groupedInterviews[type]?.map((interview: Interview, index) => (
+                          <tr key={interview.id}>
+                            <td>{index}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
               ))}
             </div>
           )}
-          <Text styleAs="caption" className="text-mushroom-300 dark:text-marble-800">
-            Keine Studie ausgewählt
-          </Text>
+          {!selected_study && (
+            <Text styleAs="caption" className="text-mushroom-300 dark:text-marble-800">
+              Keine Studie ausgewählt
+            </Text>
+          )}
         </section>
       </div>
     </aside>

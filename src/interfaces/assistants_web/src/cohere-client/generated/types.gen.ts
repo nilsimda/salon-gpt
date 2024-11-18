@@ -150,6 +150,7 @@ export type CohereChatRequest = {
   }> | null;
   force_single_step?: boolean | null;
   agent_id?: string | null;
+  interviews?: Array<Interview> | null;
 };
 
 export type ConversationFilePublic = {
@@ -346,7 +347,7 @@ export type HTTPValidationError = {
 
 export type Interview = {
   text: string;
-  document_id: string;
+  id: string;
   title: string | null;
   type: InterviewType;
   fields: {

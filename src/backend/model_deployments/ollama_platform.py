@@ -1,12 +1,14 @@
 import asyncio
 from typing import Any, Dict, List
+import json
 
 import ollama
 
 from backend.model_deployments.base import BaseDeployment
-from backend.schemas.citation import Citation
 from backend.schemas.cohere_chat import CohereChatRequest
 from backend.schemas.context import Context
+import backend.crud.study as study_crud
+import backend.crud.interview as interview_crud
 
 OLLAMA_ENV_VARS = []
 
@@ -32,42 +34,44 @@ class OllamaDeployment(BaseDeployment):
         self, chat_request: CohereChatRequest, ctx: Context, **kwargs: Any
     ) -> Any:
 
-        study_id = ctx.study_id if ctx.study_id else "5480f27c-1a80-4e6d-af29-9c7714bfc19e"
+        with open("src/backend/data/transcripts/JackDaniels/1_270824_1600Uhr_MD_Elwira_32_Honey.txt", "r") as file:
+            interview_text = file.read()
 
         if not chat_request.model:
             chat_request.model = self.model
 
         if chat_request.max_tokens is None:
-            chat_request.max_tokens = 200
+            chat_request.max_tokens = 128_000
 
-        messages = []
-        for msg in chat_request.chat_history:
-            messages.append({"role": 'user' if msg.role == 'USER' else 'assistant', "content": msg.message})
+        interviews = chat_request.interviews
+        if interviews:
+            print(interviews[0].title)
 
-        messages.append({"role": "user", "content": chat_request.message})
+        #messages = []
+        #for msg in chat_request.chat_history:
+        #    messages.append({"role": 'user' if msg.role == 'USER' else 'assistant', "content": msg.message})
 
-        stream = ollama.chat(
-            model='mistral-nemo', #chat_request.model,
-            messages=messages,
-            stream=True,
-            options={"max_tokens": chat_request.max_tokens, "temperature": chat_request.temperature},
-        )
-
+        #messages.append({"role": "user", "content": chat_request.message})
         yield {
             "event_type": "stream-start",
             "generation_id": "",
         }
 
-        yield {
-            "event_type": "search-results",
-            "search_results": [{"text": "this is the first result"}, {"text": "this is the second result"}],
-            "documents": []
-        }
+        for interview in [interview_text]:
+            res = ollama.chat(
+                model="mistral-nemo", #chat_request.model,
+                messages=[{"role": "user", "content": self.prompt_template.json_search_template(chat_request.message, interview)}],
+                stream = False,
+                format="json",
+                options={"max_tokens": 128_000, "temperature": 0.1},
+            )
 
-        for item in stream:
+            json_res = json.loads(res["message"]["content"])
+
             yield {
-                "event_type": "text-generation",
-                "text": item["message"]["content"],
+                "event_type": "search-results",
+                "search_results": json_res["quotes"],
+                "documents": [],
             }
 
         yield {
@@ -111,6 +115,36 @@ class PromptTemplate:
     """
     Template for generating prompts for different types of requests.
     """
+
+    def json_search_template(self, query: str, interview_text:str) -> str:
+        prompt = \
+f"""Im folgenden erhaeltst du ein Einzelinterview Transcript (INTERVIEW_TRANSKRIPT) einer tiefenpsychologischen Markforschungsstudie. 
+Anschliessend folgt eine Frage oder Aufgabe (FRAGE) zu dem Interview.
+
+INTERVIEW_TRANSKRIPT:
+{interview_text}
+
+FRAGE: {query}
+
+Beantworte die FRAGE in dem du passende Zitate aus dem INTERVIEW_TRANSKRIPT verwendest. Dabei soll deine Antwort folgendes
+JSON Format haben:
+{{ "quotes": [
+    {{
+        "text": <1. Zitat aus dem Interview>,
+        "confidence_score": <Wie sicher bist du dir mit deiner Antwort auf einer Skala von 0.0-1.0>
+    }},
+    {{
+        "text": <2. Zitat aus dem Interview>,
+        "confidence_score": <Wie sicher bist du dir mit deiner Antwort auf einer Skala von 0.0-1.0>
+    }},
+    ...
+    ]
+"Du kannst bis zu 10 Zitate zurueck geben"
+}}
+
+"""
+        return prompt
+
 
     def dummy_chat_template(
         self, message: str, chat_history: List[Dict[str, str]]

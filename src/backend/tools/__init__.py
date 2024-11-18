@@ -1,6 +1,6 @@
 from backend.tools.brave_search import BraveWebSearch
 from backend.tools.calculator import Calculator
-from backend.tools.files import ReadFileTool, SearchFileTool
+from backend.tools.files import ReadFileTool, SearchInterviewTool
 from backend.tools.google_drive import GoogleDrive, GoogleDriveAuth
 from backend.tools.google_search import GoogleWebSearch
 from backend.tools.hybrid_search import HybridWebSearch
@@ -15,7 +15,7 @@ __all__ = [
     "LangChainVectorDBRetriever",
     "LangChainWikiRetriever",
     "ReadFileTool",
-    "SearchFileTool",
+    "SearchInterviewTool",
     "GoogleDrive",
     "GoogleDriveAuth",
     "WebScrapeTool",

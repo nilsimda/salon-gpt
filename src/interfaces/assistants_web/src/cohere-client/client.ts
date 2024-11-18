@@ -80,6 +80,9 @@ export class CohereClient {
       conversationId,
     });
   }
+  public listStudyFiles({ studyId }: { studyId: string }) {
+    return this.cohereService.default.listFilesV1StudiesStudyIdInterviewsGet({ studyId });
+  }
 
   public async chat({
     request,

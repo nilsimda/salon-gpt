@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   ApiError,
   DeleteAgentFileResponse,
+  Interview,
   ListConversationFile,
   useCohereClient,
 } from '@/cohere-client';
@@ -12,24 +13,23 @@ import { useConversationStore, useFilesStore, useParamsStore } from '@/stores';
 import { UploadingFile } from '@/stores/slices/filesSlice';
 import { fileSizeToBytes, formatFileSize, getFileExtension, mapExtensionToMimeType } from '@/utils';
 
-/*export const useListStudyFiles = (study_id?: string){
+export const useListStudyFiles = (studyId?: string) => {
   const cohereClient = useCohereClient();
-  return useQuery<ListStudyFile[], ApiError>({
-    queryKey: ['listFiles', study_id],
+  return useQuery<Array<Interview>, ApiError>({
+    queryKey: ['listStudyFiles', studyId],
     queryFn: async () => {
-      if (!study_id) throw new Error('Study ID not found');
+      if (!studyId) throw new Error('Study ID not found');
       try {
-        return await cohereClient.listFiles({ study_id });
+        return await cohereClient.listStudyFiles({ studyId });
       } catch (e) {
         console.error(e);
         throw e;
       }
     },
-    enabled: !!study_id,
+    enabled: !!studyId,
     refetchOnWindowFocus: false,
   });
-}
-}*/
+};
 
 export const useListConversationFiles = (
   conversationId?: string,

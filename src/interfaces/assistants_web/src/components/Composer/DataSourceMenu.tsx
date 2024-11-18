@@ -5,9 +5,10 @@ import React from 'react';
 
 import { AgentPublic, Study } from '@/cohere-client';
 import { Icon, Switch, Text } from '@/components/UI';
-import { useBrandedColors, useListStudies } from '@/hooks';
+import { useBrandedColors, useListStudies, useListStudyFiles } from '@/hooks';
 import { useParamsStore } from '@/stores';
 import { checkIsBaseAgent, cn, getToolIcon } from '@/utils';
+import { useEffect } from 'react';
 
 export type Props = {
   agent?: AgentPublic;
@@ -23,12 +24,21 @@ export const DataSourceMenu: React.FC<Props> = ({ agent }) => {
 
   const {
     setParams,
-    params: { selected_study },
+    params: { selected_study},
   } = useParamsStore();
 
+  const { data: interviews, isLoading: isLoadingInterviews} = useListStudyFiles(selected_study?.id);
+
   const handleSelectStudy = (study: Study) => {
-    setParams({ selected_study: study });
+    setParams({ selected_study: study});
   };
+
+  // Use an effect to update interviews when they're loaded
+  useEffect(() => {
+    if (interviews && !isLoadingInterviews) {
+      setParams(prev => ({ ...prev, interviews }));
+    }
+  }, [interviews, isLoadingInterviews, setParams]);
 
   return (
     <Popover className="relative">

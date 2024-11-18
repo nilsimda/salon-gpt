@@ -9,14 +9,14 @@ const INITIAL_STATE: ConfigurableParams = {
   temperature: DEFAULT_CHAT_TEMPERATURE,
   preamble: '',
   tools: [],
-  fileIds: [],
+  interviews: [],
   deployment: undefined,
   deploymentConfig: undefined,
 };
 
 export type ConfigurableParams = Pick<CohereChatRequest, 'temperature' | 'tools'> & {
   preamble: string;
-  fileIds: CohereChatRequest['file_ids'];
+  interviews: CohereChatRequest['interviews'];
   selected_study?: Study;
   model?: string;
   deployment?: string;
@@ -36,7 +36,7 @@ export type ParamStore = {
 export const createParamsSlice: StateCreator<StoreState, [], [], ParamStore> = (set) => ({
   setParams(params?) {
     let tools = params?.tools;
-    let fileIds = params?.fileIds;
+    let interviews = params?.interviews;
 
     set((state) => {
       return {
@@ -44,7 +44,7 @@ export const createParamsSlice: StateCreator<StoreState, [], [], ParamStore> = (
           ...state.params,
           ...params,
           ...(tools ? { tools } : []),
-          ...(fileIds ? { fileIds } : {}),
+          ...(interviews ? { interviews } : {}),
         },
       };
     });

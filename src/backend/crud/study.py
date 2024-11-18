@@ -67,7 +67,7 @@ def get_interviews_by_study(db: Session, study_id: str) -> list[Interview]:
     Returns:
       list[Interview]: List of interviews.
     """
-    return db.query(Interview).filter(Study.study_id == study_id).all()
+    return db.query(Interview).filter(Interview.study_id == study_id).all()
 
 @validate_transaction
 def get_studies(

@@ -13,7 +13,7 @@ from backend.tools import (
     LangChainWikiRetriever,
     PythonInterpreter,
     ReadFileTool,
-    SearchFileTool,
+    SearchInterviewTool,
     TavilyWebSearch,
     WebScrapeTool,
 )
@@ -33,7 +33,7 @@ Don't forget to add the implementation to this AVAILABLE_TOOLS dictionary!
 
 class ToolName(StrEnum):
     Wiki_Retriever_LangChain = LangChainWikiRetriever.NAME
-    Search_File = SearchFileTool.NAME
+    Search_Interviews = SearchInterviewTool.NAME
     Read_File = ReadFileTool.NAME
     Python_Interpreter = PythonInterpreter.NAME
     Calculator = Calculator.NAME
@@ -46,9 +46,9 @@ class ToolName(StrEnum):
 
 
 ALL_TOOLS = {
-    ToolName.Search_File: ManagedTool(
-        display_name="Search File",
-        implementation=SearchFileTool,
+    ToolName.Search_Interviews: ManagedTool(
+        display_name="Search Interviews",
+        implementation=SearchInterviewTool,
         parameter_definitions={
             "search_query": {
                 "description": "Textual search query to search over the file's content for",
@@ -62,8 +62,8 @@ ALL_TOOLS = {
             },
         },
         is_visible=True,
-        is_available=SearchFileTool.is_available(),
-        error_message="SearchFileTool not available.",
+        is_available=SearchInterviewTool.is_available(),
+        error_message="SearchInterviewTool not available.",
         category=Category.FileLoader,
         description="Performs a search over a list of one or more of the attached files for a textual search query",
     ),

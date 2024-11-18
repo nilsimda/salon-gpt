@@ -7,7 +7,6 @@ import {
   Citation,
   CohereChatRequest,
   CohereNetworkError,
-  Document,
   FinishReason,
   StreamEnd,
   StreamEvent,
@@ -58,7 +57,7 @@ type IdToDocument = { [documentId: string]: Document };
 
 type ChatRequestOverrides = Pick<
   CohereChatRequest,
-  'temperature' | 'model' | 'preamble' | 'tools' | 'file_ids'
+  'temperature' | 'model' | 'preamble' | 'tools' | 'interviews'
 >;
 
 export type HandleSendChat = (
@@ -77,7 +76,7 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
   const { mutateAsync: streamChat } = chatMutation;
 
   const {
-    params: { temperature, preamble, tools, model, deployment, deploymentConfig, fileIds },
+    params: { temperature, preamble, tools, model, deployment, deploymentConfig, interviews },
   } = useParamsStore();
   const {
     conversation: { id, messages },

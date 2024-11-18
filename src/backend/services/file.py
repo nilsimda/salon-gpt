@@ -145,7 +145,7 @@ class FileService:
                     tool_metadata.artifacts
                     for tool_metadata in agent_tool_metadata
                     if tool_metadata.tool_name == ToolName.Read_File
-                    or tool_metadata.tool_name == ToolName.Search_File
+                    or tool_metadata.tool_name == ToolName.Search_Interview
                 ),
                 [],  # Default value if the generator is empty
             )

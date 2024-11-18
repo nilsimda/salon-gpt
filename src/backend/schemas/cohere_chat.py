@@ -4,6 +4,7 @@ from typing import Any, Dict, List
 from pydantic import Field
 
 from backend.schemas.chat import BaseChatRequest
+from backend.schemas.interview import Interview
 
 
 class CohereChatPromptTruncation(StrEnum):
@@ -39,7 +40,7 @@ class CohereChatRequest(BaseChatRequest):
         """,
     )
     model: str | None = Field(
-        default="llama3.2",
+        default="mistral-nemo",
         title="The model to use for generating the response.",
     )
     temperature: float | None = Field(
@@ -112,4 +113,8 @@ class CohereChatRequest(BaseChatRequest):
     agent_id: str | None = Field(
         default=None,
         title="The agent ID to use for the chat.",
+    )
+    interviews: List[Interview] | None = Field(
+        default=None,
+        title="List of interviews used to generate grounded response with citations.",
     )

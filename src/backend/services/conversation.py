@@ -128,7 +128,7 @@ def get_messages_with_files(
                 position=message.position,
                 is_active=message.is_active,
                 files=files_with_conversation_id,
-                documents=message.documents,
+                documents=[],
                 citations=message.citations,
                 tool_calls=message.tool_calls,
                 tool_plan=message.tool_plan,

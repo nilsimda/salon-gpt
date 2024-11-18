@@ -2,6 +2,7 @@ from enum import StrEnum
 from typing import Any, Dict, List
 
 import backend.crud.file as file_crud
+import backend.crud.interview as interview_crud
 from backend.tools.base import BaseTool
 
 
@@ -45,12 +46,12 @@ class ReadFileTool(BaseTool):
             }
         ]
 
-class SearchFileTool(BaseTool):
+class SearchInterviewTool(BaseTool):
     """
-    Tool to query a list of files.
+    Tool to query a list of interviews.
     """
 
-    NAME = "search_file"
+    NAME = "search_interview"
     MAX_NUM_CHUNKS = 10
     SEARCH_LIMIT = 5
 
@@ -64,17 +65,12 @@ class SearchFileTool(BaseTool):
     async def call(
         self, parameters: dict, ctx: Any, **kwargs: Any
     ) -> List[Dict[str, Any]]:
-        query = parameters.get("search_query")
         files = parameters.get("files")
 
         session = kwargs.get("session")
-        user_id = kwargs.get("user_id")
-
-        if not query or not files:
-            return []
 
         file_ids = [file_id for _, file_id in files]
-        retrieved_files = file_crud.get_files_by_ids(session, file_ids, user_id)
+        retrieved_files = interview_crud.get_files_by_ids(session, file_ids)
         if not retrieved_files:
             return []
 
@@ -84,7 +80,7 @@ class SearchFileTool(BaseTool):
                 {
                     "text": file.file_content,
                     "title": file.file_name,
-                    "url": file.file_name,
+                    "": file.id,
                 }
             )
         return results
