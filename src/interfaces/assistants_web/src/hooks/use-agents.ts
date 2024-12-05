@@ -61,6 +61,18 @@ export const useAgent = ({ agentId }: { agentId?: string }) => {
         if (!agentId) {
           return BASE_AGENT;
         }
+        if (agentId === "transkription") {
+          return TRANSCRIPTION_AGENT;
+
+        }
+        if (agentId === "kerlin") {
+          return SYNTHETIC_USER_AGENT;
+
+        }
+        if (agentId === "zitatki") {
+          return BASE_AGENT;
+
+        }
         return await cohereClient.getAgent(agentId);
       } catch (e) {
         console.error(e);

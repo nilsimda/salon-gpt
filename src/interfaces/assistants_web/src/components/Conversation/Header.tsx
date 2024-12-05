@@ -10,23 +10,21 @@ import { useConversationStore, useSettingsStore } from '@/stores';
 import { cn } from '@/utils';
 
 type Props = {
-  agent?: AgentPublic;
+  agentName: string;
 };
 
-export const Header: React.FC<Props> = ({ agent }) => {
+export const Header: React.FC<Props> = ({ agentName }) => {
   const {
     conversation: { id },
   } = useConversationStore();
   const { setLeftPanelOpen, setRightPanelOpen } = useSettingsStore();
   const { open } = useContextStore();
-  const { text, bg, contrastText, lightText, fill, lightFill, dark, light } = useBrandedColors(
-    agent?.id
-  );
+  const { text, bg, contrastText, lightText, fill, lightFill, dark, light } = useBrandedColors("");
 
   const handleOpenShareModal = () => {
     if (!id) return;
     open({
-      title: 'Share link to conversation',
+      title: 'Link zu dieser Konversation teilen',
       content: <ShareConversation conversationId={id} />,
     });
   };
@@ -49,36 +47,11 @@ export const Header: React.FC<Props> = ({ agent }) => {
             onClick={handleOpenLeftSidePanel}
             className="flex h-full items-center gap-4 lg:hidden"
           >
-            {agent ? (
-              <Text
-                className={cn(
-                  'size-5 rounded text-center align-middle uppercase',
-                  bg,
-                  contrastText
-                )}
-                styleAs="p"
-              >
-                {agent?.name[0]}
-              </Text>
-            ) : (
-              <Logo hasCustomLogo={env.NEXT_PUBLIC_HAS_CUSTOM_LOGO} includeBrandName={false} />
-            )}
+            <Logo hasCustomLogo={env.NEXT_PUBLIC_HAS_CUSTOM_LOGO} includeBrandName={false} />
             <Text className="truncate dark:text-mushroom-950" styleAs="p-lg" as="span">
-              {agent?.name ?? 'Salon GPT'}
+              {agentName}
             </Text>
           </button>
-          {agent && (
-            <Text
-              styleAs="label-sm"
-              className={cn(
-                'rounded bg-mushroom-950 px-2  py-1 font-bold uppercase dark:bg-volcanic-200',
-                text,
-                dark(lightText)
-              )}
-            >
-              {agent.is_private ? 'Private' : 'Public'}
-            </Text>
-          )}
         </div>
         <section className="flex items-center gap-4">
           {id && (
@@ -86,7 +59,7 @@ export const Header: React.FC<Props> = ({ agent }) => {
               kind="secondary"
               className="[&>div]:gap-x-0 lg:[&>div]:gap-x-3"
               label={
-                <Text className={cn(dark(lightText), light(text), 'hidden lg:flex')}>Share</Text>
+                <Text className={cn(dark(lightText), light(text), 'hidden lg:flex')}>Teilen</Text>
               }
               iconOptions={{
                 customIcon: (

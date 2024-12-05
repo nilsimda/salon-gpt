@@ -90,31 +90,47 @@ export const SideNavPanel: React.FC<{ className?: string }> = ({ className = '' 
           <AgentsSidePanelButton
             label={
               <div className="group flex w-full items-center justify-between">
-                <Text className="text-coral-500 dark:text-evolved-green-700">Neuer Chat</Text>
+                <Text className="text-coral-500 dark:text-evolved-green-700">Neue Studie</Text>
                 <Shortcut sequence={['⌘', '↑', 'O']} className="hidden group-hover:flex" />
               </div>
             }
-            tooltip="Neuer Chat"
+            tooltip="Neue Studie"
             iconName="add"
             theme="default"
-            onClick={() => navigateToNewChat()}
-            stretch
+            href="new-study"
           />
 
-          <AgentsSidePanelButton
-            label="Alle Assistenten anzeigen"
-            tooltip="Alle Assistenten anzeigen"
-            theme="mushroom"
-            href="/discover-agent"
-            iconName="compass"
-          />
 
           <AgentsSidePanelButton
-            label="Studien anzeigen oder hinzufügen"
+            label="Alle Studien anzeigen"
             tooltip="Studien anzeigen oder hinzufügen"
             theme="mushroom"
             href="/discover-study"
             iconName="folder"
+          />
+
+          <AgentsSidePanelButton
+            label="KerlIn"
+            tooltip="Befrage einen syntethischen Nutzer"
+            theme="mushroom"
+            href="/a/kerlin"
+            iconName="compass"
+          />
+
+          <AgentsSidePanelButton
+            label="TransKriptIon"
+            tooltip="Transkribiere Audio/Video Dateien"
+            theme="mushroom"
+            href="/a/transcription"
+            iconName="compass"
+          />
+
+          <AgentsSidePanelButton
+            label="ZitatKI"
+            tooltip="Finde Zitate aus Studien"
+            theme="mushroom"
+            href="/a/zitatki"
+            iconName="compass"
           />
         </div>
 

@@ -1,13 +1,10 @@
 'use client';
 
 import { Transition } from '@headlessui/react';
-import { group } from 'console';
-import { uniqBy } from 'lodash';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { Interview, InterviewType } from '@/cohere-client';
-import { Banner, Button, Icon, IconButton, Text, Tooltip } from '@/components/UI';
-import { TOOL_GOOGLE_DRIVE_ID, TOOL_READ_DOCUMENT_ID, TOOL_SEARCH_INTERVIEW_ID } from '@/constants';
+import { Icon, IconButton, Text, Tooltip } from '@/components/UI';
 import {
   useAgent,
   useBrandedColors,
@@ -16,9 +13,6 @@ import {
   useListStudyFiles
 } from '@/hooks';
 import { useParamsStore, useSettingsStore } from '@/stores';
-import { DataSourceArtifact } from '@/types/tools';
-import { pluralize } from '@/utils';
-import { useEffect } from 'react';
 
 type Props = {};
 
@@ -35,49 +29,7 @@ export const ConversationPanel: React.FC<Props> = () => {
 
   const session = useSession();
 
-    // Add loading state check
-  const { data: currentInterviews, isLoading: isLoadingInterviews } = useListStudyFiles(selected_study?.id);
-
-  // Use an effect to ensure interviews are always in sync
-  useEffect(() => {
-    if (currentInterviews && !isLoadingInterviews) {
-      setParams(prev => ({ ...prev, interviews: currentInterviews }));
-    }
-  }, [currentInterviews, isLoadingInterviews, setParams]);
-
-  const agentToolMetadataArtifacts = useMemo(() => {
-    if (!agent) {
-      return {
-        files: [],
-        folders: [],
-      };
-    }
-
-    const fileArtifacts = uniqBy(
-      (
-        agent.tools_metadata?.filter((tool_metadata) =>
-          [TOOL_GOOGLE_DRIVE_ID, TOOL_READ_DOCUMENT_ID, TOOL_SEARCH_INTERVIEW_ID].includes(
-            tool_metadata.tool_name
-          )
-        ) ?? []
-      )
-        .map((tool_metadata) => tool_metadata.artifacts as DataSourceArtifact[])
-        .flat(),
-      'id'
-    );
-
-    const files = fileArtifacts.filter((artifact) => artifact.type !== 'folder'); // can be file, document, pdf, etc.
-    const folders = fileArtifacts.filter((artifact) => artifact.type === 'folder');
-    return {
-      files,
-      folders,
-    };
-  }, [agent]);
-
-  const agentKnowledgeFiles = [
-    ...agentToolMetadataArtifacts.files,
-    ...agentToolMetadataArtifacts.folders,
-  ];
+  const { data: currentInterviews } = useListStudyFiles(selected_study?.id);
 
   const groupedInterviews = interviews?.reduce((groups, interview) => {
     const type = interview.type;
@@ -126,12 +78,6 @@ export const ConversationPanel: React.FC<Props> = () => {
                   label="Enables assistant knowledge to provide more accurate responses."
                 />
               </span>
-              {/* @DEV_NOTE: This is disabled while we add the ability in BE to enable/disable assistant knowledge */}
-              {/* <Switch
-                theme={theme}
-                checked={!disabledAssistantKnowledge.includes(agentId)}
-                onChange={(checked) => setUseAssistantKnowledge(checked, agentId)}
-              /> */}
             </div>
             <Transition
               show={!disabledAssistantKnowledge.includes(agentId) ?? false}
@@ -143,50 +89,6 @@ export const ConversationPanel: React.FC<Props> = () => {
               leaveTo="opacity-0 scale-90"
               as="div"
             >
-              {agentKnowledgeFiles.length === 0 && session.userId === agent?.user_id ? (
-                <Banner className="flex flex-col">
-                  Add a data source to expand the assistant’s knowledge.
-                  <Button
-                    theme={theme}
-                    className="mt-4 w-full"
-                    label="Add Data Source"
-                    stretch
-                    icon="add"
-                    href={`/edit/${agentId}?datasources=1`}
-                  />
-                </Banner>
-              ) : (
-                <div className="flex flex-col gap-y-3">
-                  <Text as="div" className="flex items-center gap-x-3">
-                    <Icon name="folder" kind="outline" className="flex-shrink-0" />
-                    {/*  This renders the number of folders and files in the agent's Google Drive.
-                    For example, if the agent has 2 folders and 3 files, it will render:
-                    - "2 folders and 3 files" */}
-                    {agentToolMetadataArtifacts.folders.length > 0 &&
-                      `${agentToolMetadataArtifacts.folders.length} ${pluralize(
-                        'folder',
-                        agentToolMetadataArtifacts.folders.length
-                      )} ${agentToolMetadataArtifacts.files.length > 0 ? 'and ' : ''}`}
-                    {agentToolMetadataArtifacts.files.length > 0 &&
-                      `${agentToolMetadataArtifacts.files.length} ${pluralize(
-                        'file',
-                        agentToolMetadataArtifacts.files.length
-                      )}`}
-                  </Text>
-                  <ol className="space-y-2">
-                    {agentKnowledgeFiles.map((file) => (
-                      <li key={file.id} className="ml-6 flex items-center gap-x-3">
-                        <Icon
-                          name={file.type === 'folder' ? 'folder' : 'file'}
-                          kind="outline"
-                          className="flex-shrink-0"
-                        />
-                        <Text>{file.name}</Text>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              )}
             </Transition>
           </div>
         )}

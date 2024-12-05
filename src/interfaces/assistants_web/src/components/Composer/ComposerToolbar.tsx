@@ -2,20 +2,20 @@
 
 import React from 'react';
 
-import { AgentPublic, ManagedTool } from '@/cohere-client';
+import { AgentPublic, Study } from '@/cohere-client';
 import { DataSourceMenu, FilesMenu } from '@/components/Composer';
 import { cn } from '@/utils';
 
 type Props = {
   agent?: AgentPublic;
-  tools?: ManagedTool[];
+  study?: Study;
   onUploadFile: (files: File[]) => void;
 };
 
 /**
  * @description Renders the bottom toolbar of the composer that shows available and selected data sources.
  */
-export const ComposerToolbar: React.FC<Props> = ({ agent, tools, onUploadFile }) => {
+export const ComposerToolbar: React.FC<Props> = ({ agent, study, onUploadFile }) => {
   return (
     <div
       className={cn(
