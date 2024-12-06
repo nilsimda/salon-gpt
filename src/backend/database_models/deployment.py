@@ -16,8 +16,6 @@ class Deployment(Base):
     deployment_class_name: Mapped[Optional[str]] = mapped_column(Text)
     default_deployment_config: Mapped[Optional[dict]] = mapped_column(JSON)
 
-    models = relationship("Model", back_populates="deployment")
-
     agents = relationship(
         "Agent",
         secondary="agent_deployment_model",

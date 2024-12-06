@@ -8,8 +8,11 @@ from backend.config.routers import RouterName
 from backend.crud import agent_tool_metadata as agent_tool_metadata_crud
 from backend.database_models.database import DBSessionDep
 from backend.schemas.agent import Agent, AgentToolMetadata
-from backend.schemas.chat import ChatResponseEvent, NonStreamedChatResponse
-from backend.schemas.cohere_chat import CohereChatRequest
+from backend.schemas.chat import (
+    BaseChatRequest,
+    ChatResponseEvent,
+    NonStreamedChatResponse,
+)
 from backend.schemas.context import Context
 from backend.services.agent import validate_agent_exists
 from backend.services.chat import (
@@ -30,7 +33,7 @@ router.name = RouterName.CHAT
 @router.post("/chat-stream", dependencies=[Depends(validate_deployment_header)])
 async def chat_stream(
     session: DBSessionDep,
-    chat_request: CohereChatRequest,
+    chat_request: BaseChatRequest,
     request: Request,
     ctx: Context = Depends(get_context),
 ) -> Generator[ChatResponseEvent, Any, None]:
@@ -46,20 +49,16 @@ async def chat_stream(
     Returns:
         EventSourceResponse: Server-sent event response with chatbot responses.
     """
-    chat_request.tools = []
 
     ctx.with_model(chat_request.model)
     agent_id = chat_request.agent_id
     ctx.with_agent_id(agent_id)
-
-
 
     (
         session,
         chat_request,
         response_message,
         should_store,
-        managed_tools,
         next_message_position,
         ctx,
     ) = process_chat(session, chat_request, request, ctx)
@@ -70,7 +69,6 @@ async def chat_stream(
             CustomChat().chat(
                 chat_request,
                 stream=True,
-                managed_tools=managed_tools,
                 session=session,
                 ctx=ctx,
             ),
@@ -89,7 +87,7 @@ async def chat_stream(
 @router.post("/chat-stream/regenerate", dependencies=[Depends(validate_deployment_header)])
 async def regenerate_chat_stream(
     session: DBSessionDep,
-    chat_request: CohereChatRequest,
+    chat_request: BaseChatRequest,
     request: Request,
     ctx: Context = Depends(get_context),
 ) -> EventSourceResponse:
@@ -157,7 +155,7 @@ async def regenerate_chat_stream(
 @router.post("/chat", dependencies=[Depends(validate_deployment_header)])
 async def chat(
     session: DBSessionDep,
-    chat_request: CohereChatRequest,
+    chat_request: BaseChatRequest,
     request: Request,
     ctx: Context = Depends(get_context),
 ) -> NonStreamedChatResponse:

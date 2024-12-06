@@ -10,13 +10,6 @@ class Snapshot(Base):
     __tablename__ = "snapshots"
 
     user_id: Mapped[str] = mapped_column(String, nullable=True)
-    organization_id: Mapped[Optional[str]] = mapped_column(
-        ForeignKey(
-            "organizations.id",
-            name="conversations_organization_id_fkey",
-            ondelete="CASCADE",
-        )
-    )
     conversation_id: Mapped[str] = mapped_column(String)
 
     last_message_id: Mapped[str] = mapped_column(

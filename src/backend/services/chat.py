@@ -8,12 +8,8 @@ from fastapi.encoders import jsonable_encoder
 
 from backend.chat.collate import to_dict
 from backend.chat.enums import StreamEvent
-from backend.config.tools import AVAILABLE_TOOLS
-from backend.crud import agent_tool_metadata as agent_tool_metadata_crud
 from backend.crud import conversation as conversation_crud
 from backend.crud import message as message_crud
-from backend.crud import tool_call as tool_call_crud
-from backend.database_models.citation import Citation
 from backend.database_models.conversation import Conversation
 from backend.database_models.database import DBSessionDep
 from backend.database_models.interview import Interview
@@ -22,29 +18,21 @@ from backend.database_models.message import (
     MessageAgent,
     MessageFileAssociation,
 )
-from backend.database_models.tool_call import ToolCall as ToolCallModel
 from backend.schemas import CohereChatRequest
-from backend.schemas.agent import Agent, AgentToolMetadata
+from backend.schemas.agent import Agent
 from backend.schemas.chat import (
     BaseChatRequest,
     ChatMessage,
     ChatResponseEvent,
     ChatRole,
     NonStreamedChatResponse,
-    StreamCitationGeneration,
     StreamEnd,
     StreamEventType,
-    StreamSearchQueriesGeneration,
-    StreamSearchResults,
     StreamStart,
     StreamTextGeneration,
-    StreamToolCallsChunk,
-    StreamToolCallsGeneration,
 )
 from backend.schemas.context import Context
 from backend.schemas.conversation import UpdateConversationRequest
-from backend.schemas.search_query import SearchQuery
-from backend.schemas.tool import Tool, ToolCall, ToolCallDelta
 from backend.services.agent import validate_agent_exists
 
 
@@ -82,25 +70,11 @@ def process_chat(
                 status_code=404, detail=f"Agent with ID {agent_id} not found."
             )
 
-        agent_tool_metadata = (
-            agent_tool_metadata_crud.get_all_agent_tool_metadata_by_agent_id(
-                session, agent_id
-            )
-        )
-        agent_tool_metadata_schema = [
-            AgentToolMetadata.model_validate(x) for x in agent_tool_metadata
-        ]
-        ctx.with_agent_tool_metadata(agent_tool_metadata_schema)
-
-        # if tools are not provided in the chat request, use the agent's tools
-        if not chat_request.tools:
-            chat_request.tools = [Tool(name=tool) for tool in agent.tools]
-
         # Set the agent settings in the chat request
         chat_request.model = agent.model
         chat_request.preamble = agent.preamble
 
-    should_store = chat_request.chat_history is None and not is_custom_tool_call(
+    should_store = chat_request.chat_history is None(
         chat_request
     )
     conversation = get_or_create_conversation(
@@ -150,17 +124,12 @@ def process_chat(
     chat_request.chat_history = chat_history
     chat_request.conversation_id = ""
 
-    tools = chat_request.tools
-    managed_tools = (
-        len([tool.name for tool in tools if tool.name in AVAILABLE_TOOLS]) > 0
-    )
 
     return (
         session,
         chat_request,
         chatbot_message,
         should_store,
-        managed_tools,
         next_message_position,
         ctx,
     )
@@ -192,10 +161,6 @@ def process_message_regeneration(
     if agent_id:
         agent = validate_agent_exists(session, agent_id, user_id)
         ctx.with_agent(Agent.model_validate(agent))
-
-        # if tools are not provided in the chat request, use the agent's tools
-        if not chat_request.tools:
-            chat_request.tools = [Tool(name=tool) for tool in agent.tools]
 
         # Set the agent settings in the chat request
         chat_request.preamble = agent.preamble
@@ -248,16 +213,11 @@ def process_message_regeneration(
         conversation, last_user_message.position, chat_request
     )
 
-    managed_tools = (
-        len([tool.name for tool in chat_request.tools if tool.name in AVAILABLE_TOOLS]) > 0
-    )
-
     return (
         session,
         chat_request,
         new_chatbot_message,
         previous_chatbot_message_ids,
-        managed_tools,
         ctx
     )
 
@@ -292,27 +252,6 @@ def get_last_message(
         )
 
     return agent_messages[-1]
-
-
-def is_custom_tool_call(chat_response: BaseChatRequest) -> bool:
-    """
-    Check if the chat request is called with custom tools
-
-    Args:
-        chat_response (BaseChatRequest): Chat request data.
-
-    Returns:
-        bool: Whether the chat request is called with custom tools.
-    """
-    if chat_response.tools is None or len(chat_response.tools) == 0:
-        return False
-
-    # check if any of the tools is not in the available tools
-    for tool in chat_response.tools:
-        if tool.name not in AVAILABLE_TOOLS:
-            return True
-
-    return False
 
 
 def get_or_create_conversation(
@@ -531,46 +470,6 @@ def update_conversation_after_turn(
     conversation_crud.update_conversation(session, conversation, new_conversation)
 
 
-def save_tool_calls_message(
-    session: DBSessionDep,
-    tool_calls: List[ToolCall],
-    text: str,
-    user_id: str,
-    position: int,
-    conversation_id: str,
-) -> None:
-    """
-    Save tool calls to the database.
-
-    Args:
-        session (DBSessionDep): Database session.
-        tool_calls (List[ToolCall]): List of ToolCall objects.
-        message (str): Message text.
-        position (int): Message position.
-    """
-    # Save message to the database
-    message = create_message(
-        session,
-        chat_request=None,
-        conversation_id=conversation_id,
-        user_id=user_id,
-        user_message_position=position,
-        text=text,
-        tool_plan=text,
-        agent=MessageAgent.CHATBOT,
-        should_store=True,
-    )
-
-    # Save tool calls to the database
-    for tool_call in tool_calls:
-        tool_call = ToolCallModel(
-            name=tool_call.name,
-            parameters=to_dict(tool_call.parameters),
-            message_id=message.id,
-        )
-        tool_call_crud.create_tool_call(session, tool_call)
-
-
 async def generate_chat_response(
     session: DBSessionDep,
     model_deployment_stream: Generator[StreamedChatResponse, None, None],
@@ -618,13 +517,9 @@ async def generate_chat_response(
                 generation_id=generation_id,
                 chat_history=data.get("chat_history", []),
                 finish_reason=data.get("finish_reason", ""),
-                citations=data.get("citations", []),
-                search_queries=data.get("search_queries", []),
-                documents=data.get("documents", []),
                 search_results=data.get("search_results", []),
                 event_type=StreamEvent.NON_STREAMED_CHAT_RESPONSE,
                 conversation_id=ctx.get_conversation_id(),
-                tool_calls=data.get("tool_calls", []),
                 error=data.get("error", None),
             )
 
@@ -663,16 +558,8 @@ async def generate_chat_stream(
         "conversation_id": conversation_id,
         "response_id": ctx.get_trace_id(),
         "text": "",
-        "citations": [],
-        "documents": [],
         "search_results": [],
-        "search_queries": [],
-        "tool_calls": [],
-        "tool_results": [],
     }
-
-    # Map the user facing document_ids field returned from model to storage ID for document model
-    document_ids_to_document = {}
 
     stream_event = None
     async for event in model_deployment_stream:
@@ -680,14 +567,12 @@ async def generate_chat_stream(
             stream_event,
             stream_end_data,
             response_message,
-            document_ids_to_document,
         ) = handle_stream_event(
             event,
             conversation_id,
             stream_end_data,
             response_message,
             ctx,
-            document_ids_to_document,
             session=session,
             should_store=should_store,
             user_id=user_id,
@@ -733,11 +618,6 @@ def handle_stream_event(
     handlers = {
         StreamEvent.STREAM_START: handle_stream_start,
         StreamEvent.TEXT_GENERATION: handle_stream_text_generation,
-        StreamEvent.SEARCH_RESULTS: handle_stream_search_results,
-        StreamEvent.SEARCH_QUERIES_GENERATION: handle_stream_search_queries_generation,
-        StreamEvent.TOOL_CALLS_GENERATION: handle_stream_tool_calls_generation,
-        StreamEvent.CITATION_GENERATION: handle_stream_citation_generation,
-        StreamEvent.TOOL_CALLS_CHUNK: handle_stream_tool_calls_chunk,
         StreamEvent.STREAM_END: handle_stream_end,
     }
     event_type = event["event_type"]
@@ -776,7 +656,6 @@ def handle_stream_start(
     stream_end_data["generation_id"] = event["generation_id"]
     return stream_event, stream_end_data, response_message, document_ids_to_document
 
-
 def handle_stream_text_generation(
     event: dict[str, Any],
     _: str,
@@ -788,163 +667,6 @@ def handle_stream_text_generation(
     stream_end_data["text"] += event["text"]
     stream_event = StreamTextGeneration.model_validate(event)
     return stream_event, stream_end_data, response_message, document_ids_to_document
-
-
-def handle_stream_search_results(
-    event: dict[str, Any],
-    _: str,
-    stream_end_data: dict[str, Any],
-    response_message: Message,
-    document_ids_to_document: dict[str, Interview],
-    **kwargs: Any,
-) -> tuple[StreamSearchResults, dict[str, Any], Message, dict[str, Interview]]:
-    for document in event["documents"]:
-        storage_document = Interview(
-            document_id=document.get("id", ""),
-            text=document.get("text", ""),
-            title=document.get("title", ""),
-            url=document.get("url", ""),
-            tool_name=document.get("tool_name", ""),
-            # all document fields except for id, tool_name and text
-            fields={
-                k: v
-                for k, v in document.items()
-                if k not in ["id", "tool_name", "text"]
-            },
-            user_id=response_message.user_id,
-            conversation_id=response_message.conversation_id,
-            message_id=response_message.id,
-        )
-        document_ids_to_document[document["id"]] = storage_document
-
-    documents = list(document_ids_to_document.values())
-    response_message.documents = documents
-
-    stream_end_data["documents"].extend(documents)
-    if "search_results" not in event or event["search_results"] is None:
-        event["search_results"] = []
-
-    stream_event = StreamSearchResults(
-        **event
-        | {
-            "documents": documents,
-            "search_results": event["search_results"],
-        },
-    )
-    stream_end_data["search_results"].extend(event["search_results"])
-    return stream_event, stream_end_data, response_message, document_ids_to_document
-
-
-def handle_stream_search_queries_generation(
-    event: dict[str, Any],
-    _: str,
-    stream_end_data: dict[str, Any],
-    response_message: Message,
-    document_ids_to_document: dict[str, Interview],
-    **kwargs: Any,
-) -> tuple[StreamSearchQueriesGeneration, dict[str, Any], Message, dict[str, Interview]]:
-    search_queries = []
-    for search_query in event["search_queries"]:
-        search_queries.append(
-            SearchQuery(
-                text=search_query.get("text", ""),
-                generation_id=search_query.get("generation_id", ""),
-            )
-        )
-    stream_event = StreamSearchQueriesGeneration(
-        **event | {"search_queries": search_queries}
-    )
-    stream_end_data["search_queries"] = search_queries
-    return stream_event, stream_end_data, response_message, document_ids_to_document
-
-
-def handle_stream_tool_calls_generation(
-    event: dict[str, Any],
-    conversation_id: str,
-    stream_end_data: dict[str, Any],
-    response_message: Message,
-    document_ids_to_document: dict[str, Interview],
-    session: DBSessionDep,
-    should_store: bool,
-    user_id: str,
-    next_message_position: int,
-) -> tuple[StreamToolCallsGeneration, dict[str, Any], Message, dict[str, Interview]]:
-    tool_calls = []
-    tool_calls_event = event.get("tool_calls", [])
-    for tool_call in tool_calls_event:
-        tool_calls.append(
-            ToolCall(
-                name=tool_call.get("name"),
-                parameters=tool_call.get("parameters"),
-            )
-        )
-    stream_event = StreamToolCallsGeneration(**event | {"tool_calls": tool_calls})
-    stream_end_data["tool_calls"].extend(tool_calls)
-
-    if should_store:
-        save_tool_calls_message(
-            session,
-            tool_calls,
-            event.get("text", ""),
-            user_id,
-            next_message_position,
-            conversation_id,
-        )
-
-    return stream_event, stream_end_data, response_message, document_ids_to_document
-
-
-def handle_stream_citation_generation(
-    event: dict[str, Any],
-    _: str,
-    stream_end_data: dict[str, Any],
-    response_message: Message,
-    document_ids_to_document: dict[str, Interview],
-    **kwargs: Any,
-) -> tuple[StreamCitationGeneration, dict[str, Any], Message, dict[str, Interview]]:
-    citations = []
-    for event_citation in event["citations"]:
-        citation = Citation(
-            text=event_citation.get("text"),
-            user_id=response_message.user_id,
-            start=event_citation.get("start"),
-            end=event_citation.get("end"),
-        )
-
-        document_ids = event_citation.get("document_ids")
-        for document_id in document_ids:
-            document = document_ids_to_document.get(document_id, None)
-            if document is not None:
-                citation.documents.append(document)
-
-        # Populates CitationInterviews table
-        citations.append(citation)
-    stream_event = StreamCitationGeneration(**event | {"citations": citations})
-    stream_end_data["citations"].extend(citations)
-    return stream_event, stream_end_data, response_message, document_ids_to_document
-
-
-def handle_stream_tool_calls_chunk(
-    event: dict[str, Any],
-    _: str,
-    stream_end_data: dict[str, Any],
-    response_message: Message,
-    document_ids_to_document: dict[str, Interview],
-    **kwargs: Any,
-) -> tuple[StreamToolCallsChunk, dict[str, Any], Message, dict[str, Interview]]:
-    event["text"] = event.get("text", "")
-    tool_call_delta = event.get("tool_call_delta", None)
-    if tool_call_delta:
-        tool_call = ToolCallDelta(
-            name=tool_call_delta.get("name"),
-            index=tool_call_delta.get("index"),
-            parameters=tool_call_delta.get("parameters"),
-        )
-        event["tool_call_delta"] = tool_call
-
-    stream_event = StreamToolCallsChunk.model_validate(event)
-    return stream_event, stream_end_data, response_message, document_ids_to_document
-
 
 def handle_stream_end(
     event: dict[str, Any],

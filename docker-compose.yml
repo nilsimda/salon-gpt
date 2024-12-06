@@ -75,7 +75,6 @@ services:
     depends_on:
       - db
       - redis
-      - ollama
     volumes:
       # Mount alembic folder to sync migrations
       - ./src/backend/alembic:/workspace/src/backend/alembic
@@ -84,34 +83,10 @@ services:
       # Mount configurations
       - ./src/backend/config/secrets.yaml:/workspace/src/backend/config/secrets.yaml
       - ./src/backend/config/configuration.yaml:/workspace/src/backend/config/configuration.yaml
+      - hf_models:/root/.cache/huggingface/hub
     # network_mode: host
     networks:
       - proxynet
-
-  ollama:
-    image: ollama/ollama:latest
-    restart: always
-    #deploy:
-      #resources:
-        #reservations:
-          #devices:
-            #- driver: nvidia
-            #  count: all
-            #  capabilities: [gpu]
-    #environment:
-      #- NVIDIA_VISIBLE_DEVICES=all
-    healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:11434/api/version || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_models:/root/.ollama
-    networks:
-      - proxynet    
-
 
   frontend:
     build:
@@ -142,9 +117,10 @@ volumes:
   db:
     name: cohere_toolkit_db
     driver: local
-  ollama_models:
+  hf_models:
     name: ollama_models
     driver: local
+
 
 networks:
   proxynet:

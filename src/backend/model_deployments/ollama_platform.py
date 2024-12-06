@@ -1,72 +1,48 @@
 import asyncio
-from typing import Any, Dict, List
 import json
-
-import ollama
+from typing import Any, AsyncGenerator, Dict, List
+from transformers import pipeline
 
 from backend.model_deployments.base import BaseDeployment
-from backend.schemas.cohere_chat import CohereChatRequest
+from backend.schemas.chat import BaseChatRequest
 from backend.schemas.context import Context
-import backend.crud.study as study_crud
-import backend.crud.interview as interview_crud
 
 OLLAMA_ENV_VARS = []
 
-class OllamaDeployment(BaseDeployment):
-    def __init__(self, model_path: str = "mistral-nemo", template: str = None, ctx: Context = None):
+class HuggingFaceDeployment(BaseDeployment):
+    def __init__(self, model: str = "mistralai/Mistral-Nemo-Instruct-2407"):
         self.prompt_template = PromptTemplate()
-        self.template = template
-        self.model = model_path
-
-    @property
-    def rerank_enabled(self) -> bool:
-        return False
+        self.model = model
 
     @classmethod
     def list_models(cls) -> List[str]:
-        return ["llama3.2", "mistral-nemo"]
+        return ["mistral-nemo"]
 
     @classmethod
     def is_available(cls) -> bool:
         return True
 
     async def invoke_chat_stream(
-        self, chat_request: CohereChatRequest, ctx: Context, **kwargs: Any
-    ) -> Any:
+        self, chat_request: BaseChatRequest, ctx: Context, **kwargs: Any
+    ) -> AsyncGenerator[Any, Any]:
 
-        with open("src/backend/data/transcripts/JackDaniels/1_270824_1600Uhr_MD_Elwira_32_Honey.txt", "r") as file:
-            interview_text = file.read()
+        chatbot = pipeline("text-generation", model=self.model, max_new_tokens=128, device_map="auto")
 
-        if not chat_request.model:
-            chat_request.model = self.model
-
-        if chat_request.max_tokens is None:
-            chat_request.max_tokens = 128_000
-
-        interviews = chat_request.interviews
-        if interviews:
-            print(interviews[0].title)
-
-        #messages = []
-        #for msg in chat_request.chat_history:
-        #    messages.append({"role": 'user' if msg.role == 'USER' else 'assistant', "content": msg.message})
-
-        #messages.append({"role": "user", "content": chat_request.message})
         yield {
             "event_type": "stream-start",
             "generation_id": "",
         }
 
-        for interview in [interview_text]:
-            res = ollama.chat(
-                model="mistral-nemo", #chat_request.model,
-                messages=[{"role": "user", "content": self.prompt_template.json_search_template(chat_request.message, interview)}],
-                stream = False,
-                format="json",
-                options={"max_tokens": 128_000, "temperature": 0.1},
-            )
+        messages = [
+            {"role": "system", "content": "You are a pirate chatbot who always responds in pirate speak!"},
+            {"role": "user", "content": chat_request.message},
+        ]
 
-            json_res = json.loads(res["message"]["content"])
+        chatbot(messages)
+
+
+
+
 
             yield {
                 "event_type": "search-results",

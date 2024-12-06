@@ -14,7 +14,6 @@ from backend.schemas.cohere_chat import CohereChatRequest
 from backend.schemas.context import Context
 from backend.schemas.tool import Category, Tool
 from backend.services.file import get_file_service
-from backend.tools.utils.tools_checkers import tool_has_category
 
 MAX_STEPS = 15
 
@@ -140,16 +139,11 @@ class CustomChat(BaseChat):
         **kwargs: Any,
     ):
         logger = ctx.get_logger()
-        managed_tools = self.get_managed_tools(chat_request)
-        managed_tools_full_schema = self.get_managed_tools(chat_request, full_schema=True)
         session = kwargs.get("session")
         user_id = ctx.get_user_id()
         agent_id = ctx.get_agent_id()
 
         file_reader_tools_names = []
-        if managed_tools:
-            chat_request.tools = managed_tools
-            file_reader_tools_names = [tool.name for tool in managed_tools_full_schema if tool_has_category(tool, Category.FileLoader)]
 
         # Get files if available
         all_files = []
