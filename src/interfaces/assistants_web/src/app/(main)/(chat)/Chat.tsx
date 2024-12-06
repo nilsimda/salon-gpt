@@ -64,7 +64,7 @@ const Chat: React.FC<{ agentName: string; conversationId?: string }> = ({
     <ConversationError error={error} />
   ) : (
     <Conversation agentName={agentName} startOptionsEnabled />
-  );
+  )
 };
 
 export default Chat;

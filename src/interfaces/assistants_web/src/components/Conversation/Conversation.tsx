@@ -74,6 +74,7 @@ export const Conversation: React.FC<Props> = ({ agentName, startOptionsEnabled =
             onRegenerate={handleRegenerate}
             messages={messages}
             streamingMessage={streamingMessage}
+            agentId={agentName}
             composer={
               <>
                 <WelcomeGuideTooltip step={3} className="absolute bottom-full mb-4" />

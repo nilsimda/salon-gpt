@@ -3,11 +3,9 @@
 import { Transition } from '@headlessui/react';
 import React from 'react';
 
-import { AssistantTools } from '@/components/MessagingContainer';
 import { Icon, Text } from '@/components/UI';
-import { useAgent, useBrandedColors, useListTools } from '@/hooks';
+import { useBrandedColors } from '@/hooks';
 import { cn } from '@/utils';
-import { checkIsBaseAgent } from '@/utils';
 
 import { AgentLogo } from '../Agents/AgentLogo';
 
@@ -20,15 +18,11 @@ type Props = {
  * @description Welcome message shown to the user when they first open the chat.
  */
 export const Welcome: React.FC<Props> = ({ show, agentId }) => {
-  const { data: agent, isLoading: isAgentsLoading } = useAgent({ agentId });
-  const { data: tools = [], isLoading: isToolsLoading } = useListTools();
-  const { contrastText, bg, contrastFill } = useBrandedColors(agentId);
-
-  const isBaseAgent = checkIsBaseAgent(agent);
+  const { contrastText, bg, contrastFill } = useBrandedColors("");
 
   return (
     <Transition
-      show={show && !isToolsLoading && !isAgentsLoading}
+      show={show}
       enter="transition-all duration-300 ease-out delay-300"
       enterFrom="opacity-0"
       enterTo="opacity-100"
@@ -49,25 +43,15 @@ export const Welcome: React.FC<Props> = ({ show, agentId }) => {
             <AgentLogo agent_id={agentId} />
           </div>
           <Text styleAs="h4" className="truncate">
-            {agent?.name}
+            {agentId}
           </Text>
-          {isBaseAgent && (
-            <Text className="ml-auto" styleAs="caption">
-              By Rheingold Salon
-            </Text>
-          )}
+          <Text className="ml-auto" styleAs="caption">
+            By Rheingold Salon
+          </Text>
         </div>
         <Text className="text-mushroom-300 dark:text-marble-800">
-          {agent?.description || 'Ask questions and get answers based on your files.'}
+          Ask questions and get answers based on your files.
         </Text>
-
-        {/*{isBaseAgent && (
-          <div className="flex items-center gap-x-1">
-            <Icon name="circles-four" kind="outline" />
-            {<Text className="font-medium">Toggle Tools On/Off</Text>}
-          </div>
-        )}
-        <AssistantTools agent={agent} tools={tools} />*/}
       </div>
     </Transition>
   );

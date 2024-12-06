@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { Interview, InterviewType } from '@/cohere-client';
 import { Icon, IconButton, Text, Tooltip } from '@/components/UI';
 import {
-  useAgent,
   useBrandedColors,
   useChatRoutes,
   useSession,
@@ -19,8 +18,6 @@ type Props = {};
 export const ConversationPanel: React.FC<Props> = () => {
   const { disabledAssistantKnowledge, setRightPanelOpen } = useSettingsStore();
   const { agentId, conversationId } = useChatRoutes();
-  const { data: agent } = useAgent({ agentId });
-  const { theme } = useBrandedColors(agentId);
 
   const {
     params: { interviews: interviews, selected_study: selected_study },

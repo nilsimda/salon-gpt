@@ -1,9 +1,8 @@
 from typing import Optional
 
-from sqlalchemy import JSON, Boolean, Float, ForeignKey, Integer, Text, UniqueConstraint
+from sqlalchemy import JSON, Boolean, ForeignKey, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from backend.database_models.agent_tool_metadata import AgentToolMetadata
 from backend.database_models.base import Base
 
 
@@ -35,43 +34,9 @@ class AgentDeploymentModel(Base):
 class Agent(Base):
     __tablename__ = "agents"
 
-    version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     name: Mapped[str] = mapped_column(Text, nullable=False)
     description: Mapped[str] = mapped_column(Text, default="", nullable=False)
-    preamble: Mapped[str] = mapped_column(Text, default="", nullable=False)
-    temperature: Mapped[float] = mapped_column(Float, default=0.3, nullable=False)
 
-    tools: Mapped[list[str]] = mapped_column(JSON, default=[], nullable=False)
-    tools_metadata: Mapped[list[AgentToolMetadata]] = relationship("AgentToolMetadata")
-
-    user_id: Mapped[Optional[str]] = mapped_column(
-        ForeignKey("users.id", name="agents_user_id_fkey", ondelete="CASCADE")
-    )
-    organization_id: Mapped[Optional[str]] = mapped_column(
-        ForeignKey(
-            "organizations.id", name="agents_organization_id_fkey", ondelete="CASCADE"
-        )
-    )
-    is_private: Mapped[bool] = mapped_column(Boolean, default=False)
-
-    deployments = relationship(
-        "Deployment",
-        secondary="agent_deployment_model",
-        back_populates="agents",
-        overlaps="deployments,models,agents,agent,agent_deployment_associations,deployment,model",
-    )
-    models = relationship(
-        "Model",
-        secondary="agent_deployment_model",
-        back_populates="agents",
-        overlaps="deployments,models,agents,agent,agent_deployment_associations,model",
-    )
-    agent_deployment_associations = relationship(
-        "AgentDeploymentModel", back_populates="agent"
-    )
-
-    user = relationship("User", back_populates="agents")
-    # TODO Eugene  - add the composite index here if needed
     __table_args__ = (
         UniqueConstraint("name", "version", "user_id", name="_name_version_user_uc"),
     )

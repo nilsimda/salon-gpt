@@ -20,7 +20,7 @@ export const ConversationError: React.FC<Props> = ({ error }) => {
 
   return (
     <>
-      <Header />
+      <Header agentName='' />
       <section className={cn('grid h-full w-full place-content-center gap-2 px-8 md:px-0')}>
         <Icon name="warning" size="lg" className="mx-auto" />
 

@@ -1,6 +1,5 @@
 'use client';
 
-import { AgentPublic } from '@/cohere-client';
 import { ShareConversation } from '@/components/Modals/ShareConversation';
 import { Button, Icon, IconButton, Logo, Text } from '@/components/UI';
 import { useContextStore } from '@/context';
@@ -14,6 +13,7 @@ type Props = {
 };
 
 export const Header: React.FC<Props> = ({ agentName }) => {
+  console.log('Header re-rendered with agentName:', agentName);
   const {
     conversation: { id },
   } = useConversationStore();

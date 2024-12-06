@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation';
 import { Swipeable } from '@/components/Global';
 import { HotKeys } from '@/components/HotKeys';
 import { SideNavPanel } from '@/components/SideNavPanel';
-import { COOKIE_KEYS, DEFAULT_AGENT_TOOLS } from '@/constants';
+import { COOKIE_KEYS } from '@/constants';
 import { getCohereServerClient } from '@/server/cohereServerClient';
 
 const MainLayout: NextPage<React.PropsWithChildren> = async ({ children }) => {
@@ -29,13 +29,6 @@ const MainLayout: NextPage<React.PropsWithChildren> = async ({ children }) => {
       queryFn: async () => {
         const agents = await cohereServerClient.listAgents({});
         return agents;
-      },
-    }),
-    queryClient.prefetchQuery({
-      queryKey: ['tools'],
-      queryFn: async () => {
-        const tools = await cohereServerClient.listTools({});
-        return tools.filter((tool) => !DEFAULT_AGENT_TOOLS.includes(tool.name ?? ''));
       },
     }),
     queryClient.prefetchQuery({
