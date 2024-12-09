@@ -19,16 +19,14 @@ from backend.services.request_validators import (
 class RouterName(StrEnum):
     AUTH = "auth"
     CHAT = "chat"
+    SEARCH = "search"
+    TRANSCRIBE = "transcribe"
     CONVERSATION = "conversation"
-    DEPLOYMENT = "deployment"
-    EXPERIMENTAL_FEATURES = "experimental_features"
-    TOOL = "tool"
     USER = "user"
     AGENT = "agent"
     DEFAULT_AGENT = "default_agent"
     SNAPSHOT = "snapshot"
     STUDY = "study"
-    MODEL = "model"
     SCIM = "scim"
 
 
@@ -58,43 +56,38 @@ ROUTER_DEPENDENCIES = {
             Depends(validate_organization_header),
         ],
     },
+    RouterName.SEARCH: {
+        "default": [
+            Depends(get_session),
+            Depends(validate_user_header),
+            Depends(validate_chat_request),
+            Depends(validate_organization_header),
+        ],
+        "auth": [
+            Depends(get_session),
+            Depends(validate_chat_request),
+            Depends(validate_authorization),
+            Depends(validate_organization_header),
+        ],
+    },
+    RouterName.TRANSCRIBE: {
+        "default": [
+            Depends(get_session),
+            Depends(validate_user_header),
+            Depends(validate_chat_request),
+            Depends(validate_organization_header),
+        ],
+        "auth": [
+            Depends(get_session),
+            Depends(validate_chat_request),
+            Depends(validate_authorization),
+            Depends(validate_organization_header),
+        ],
+    },
     RouterName.CONVERSATION: {
         "default": [
             Depends(get_session),
             Depends(validate_user_header),
-            Depends(validate_organization_header),
-        ],
-        "auth": [
-            Depends(get_session),
-            Depends(validate_authorization),
-            Depends(validate_organization_header),
-        ],
-    },
-    RouterName.DEPLOYMENT: {
-        "default": [
-            Depends(get_session),
-            Depends(validate_organization_header),
-        ],
-        "auth": [
-            Depends(get_session),
-            Depends(validate_authorization),
-            Depends(validate_organization_header),
-        ],
-    },
-    RouterName.EXPERIMENTAL_FEATURES: {
-        "default": [
-            Depends(get_session),
-            Depends(validate_organization_header),
-        ],
-        "auth": [
-            Depends(get_session),
-            Depends(validate_authorization),
-            Depends(validate_organization_header),
-        ],
-    },
-    RouterName.TOOL: {
-        "default": [
-            Depends(get_session),
             Depends(validate_organization_header),
         ],
         "auth": [
@@ -152,17 +145,6 @@ ROUTER_DEPENDENCIES = {
         "default": [
             Depends(get_session),
             Depends(validate_user_header),
-            Depends(validate_organization_header),
-        ],
-        "auth": [
-            Depends(get_session),
-            Depends(validate_authorization),
-            Depends(validate_organization_header),
-        ],
-    },
-    RouterName.MODEL: {
-        "default": [
-            Depends(get_session),
             Depends(validate_organization_header),
         ],
         "auth": [

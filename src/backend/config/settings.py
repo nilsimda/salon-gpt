@@ -101,26 +101,6 @@ class FeatureFlags(BaseSettings, BaseModel):
         validation_alias=AliasChoices("USE_AGENTS_VIEW", "use_agents_view"),
     )
 
-class PythonToolSettings(BaseSettings, BaseModel):
-    model_config = SETTINGS_CONFIG
-    url: Optional[str] = Field(
-        default=None, validation_alias=AliasChoices("PYTHON_INTERPRETER_URL", "url")
-    )
-
-
-class TavilySearchSettings(BaseSettings, BaseModel):
-    model_config = SETTINGS_CONFIG
-    api_key: Optional[str] = Field(
-        default=None, validation_alias=AliasChoices("TAVILY_API_KEY", "api_key")
-    )
-
-
-class WolframAlphaSettings(BaseSettings, BaseModel):
-    model_config = SETTINGS_CONFIG
-    app_id: Optional[str] = Field(
-        default=None, validation_alias=AliasChoices("WOLFRAM_APP_ID", "app_id")
-    )
-
 
 class GDriveSettings(BaseSettings, BaseModel):
     model_config = SETTINGS_CONFIG
@@ -140,65 +120,11 @@ class GDriveSettings(BaseSettings, BaseModel):
     )
 
 
-class TavilyWebSearchSettings(BaseSettings, BaseModel):
-    model_config = SETTINGS_CONFIG
-    api_key: Optional[str] = Field(
-        default=None, validation_alias=AliasChoices("TAVILY_API_KEY", "api_key")
-    )
-
-
-class GoogleWebSearchSettings(BaseSettings, BaseModel):
-    model_config = SETTINGS_CONFIG
-    api_key: Optional[str] = Field(
-        default=None, validation_alias=AliasChoices("GOOGLE_SEARCH_API_KEY", "api_key")
-    )
-    cse_id: Optional[str] = Field(
-        default=None, validation_alias=AliasChoices("GOOGLE_SEARCH_CSE_ID", "cse_id")
-    )
-
-
-class BraveWebSearchSettings(BaseSettings, BaseModel):
-    model_config = SETTINGS_CONFIG
-    api_key: Optional[str] = Field(
-        default=None, validation_alias=AliasChoices("BRAVE_API_KEY", "api_key")
-    )
-
-
-class HybridWebSearchSettings(BaseSettings, BaseModel):
-    model_config = SETTINGS_CONFIG
-    enabled_web_searches: Optional[List[str]] = []
-
-
-class ToolSettings(BaseSettings, BaseModel):
-    model_config = SETTINGS_CONFIG
-    enabled_tools: Optional[List[str]] = None
-
-    python_interpreter: Optional[PythonToolSettings] = Field(
-        default=PythonToolSettings()
-    )
-    wolfram_alpha: Optional[WolframAlphaSettings] = Field(
-        default=WolframAlphaSettings()
-    )
-    google_drive: Optional[GDriveSettings] = Field(default=GDriveSettings())
-    tavily_web_search: Optional[TavilyWebSearchSettings] = Field(
-        default=TavilyWebSearchSettings()
-    )
-    google_web_search: Optional[GoogleWebSearchSettings] = Field(
-        default=GoogleWebSearchSettings()
-    )
-    brave_web_search: Optional[BraveWebSearchSettings] = Field(
-        default=BraveWebSearchSettings()
-    )
-
-    hybrid_web_search: Optional[HybridWebSearchSettings] = Field(
-        default=HybridWebSearchSettings()
-    )
-
-
 class DatabaseSettings(BaseSettings, BaseModel):
     model_config = SETTINGS_CONFIG
     url: Optional[str] = Field(
-        default="postgresql+psycopg2://postgres:postgres@db:5432", validation_alias=AliasChoices("DATABASE_URL", "url")
+        default="postgresql://postgres:postgres@db:5432",
+        validation_alias=AliasChoices("DATABASE_URL", "url"),
     )
     migrate_token: Optional[str] = Field(
         default=None, validation_alias=AliasChoices("MIGRATE_TOKEN", "migrate_token")
@@ -249,7 +175,6 @@ class Settings(BaseSettings):
     model_config = SETTINGS_CONFIG
     auth: Optional[AuthSettings] = Field(default=AuthSettings())
     feature_flags: Optional[FeatureFlags] = Field(default=FeatureFlags())
-    tools: Optional[ToolSettings] = Field(default=ToolSettings())
     database: Optional[DatabaseSettings] = Field(default=DatabaseSettings())
     redis: Optional[RedisSettings] = Field(default=RedisSettings())
     google_cloud: Optional[GoogleCloudSettings] = Field(default=GoogleCloudSettings())
