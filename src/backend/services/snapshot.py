@@ -1,9 +1,8 @@
+import json
 from typing import Any
 
 from fastapi import HTTPException
 
-from backend.chat.collate import to_dict
-from backend.crud import agent as agent_crud
 from backend.crud import snapshot as snapshot_crud
 from backend.database_models import Snapshot as SnapshotModel
 from backend.database_models import SnapshotAccess as SnapshotAccessModel
@@ -11,7 +10,7 @@ from backend.database_models import SnapshotLink as SnapshotLinkModel
 from backend.database_models.database import DBSessionDep
 from backend.schemas.context import Context
 from backend.schemas.conversation import Conversation
-from backend.schemas.snapshot import SnapshotAgent, SnapshotData
+from backend.schemas.snapshot import SnapshotData
 from backend.services.conversation import get_messages_with_files
 
 SNAPSHOT_VERSION = 1
@@ -29,6 +28,14 @@ def validate_snapshot_exists(
     if not snapshot and raise_exception:
         raise HTTPException(status_code=404, detail="Snapshot not found")
     return snapshot
+
+
+def to_dict(obj):
+    return json.loads(
+        json.dumps(
+            obj, default=lambda o: o.__dict__ if hasattr(o, "__dict__") else str(o)
+        )
+    )
 
 
 def validate_snapshot_link(session: DBSessionDep, link_id: str) -> SnapshotLinkModel:
@@ -58,17 +65,6 @@ def wrap_create_snapshot(
     ctx: Context,
 ) -> SnapshotModel:
     snapshot_agent = None
-    if conversation.agent_id:
-        agent = agent_crud.get_agent_by_id(session, conversation.agent_id, user_id)
-        tools_metadata = [to_dict(metadata) for metadata in agent.tools_metadata]
-
-        snapshot_agent = SnapshotAgent(
-            id=agent.id,
-            name=agent.name,
-            description=agent.description,
-            preamble=agent.preamble,
-            tools_metadata=tools_metadata,
-        )
 
     messages = get_messages_with_files(session, user_id, conversation.messages, ctx)
     snapshot_data = SnapshotData(

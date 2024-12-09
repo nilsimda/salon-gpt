@@ -1,12 +1,7 @@
-from enum import StrEnum
 from uuid import uuid4
 
 from sqlalchemy import DateTime, String, func
 from sqlalchemy.orm import DeclarativeBase, Query, mapped_column
-
-
-class FilterFields(StrEnum):
-    ORGANIZATION_ID = "organization_id"
 
 
 class CustomFilterQuery(Query):
@@ -14,8 +9,6 @@ class CustomFilterQuery(Query):
     Custom query class that filters by field if the entity has field
     and the filter value is set.
     """
-
-    ALLOWED_FILTER_FIELDS = [FilterFields.ORGANIZATION_ID]
 
     def __new__(cls, *args, **kwargs):
         from backend.services.context import GLOBAL_REQUEST_CONTEXT

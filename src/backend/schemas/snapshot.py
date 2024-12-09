@@ -3,7 +3,6 @@ from typing import Optional, Union
 
 from pydantic import BaseModel, Field
 
-from backend.schemas.agent import AgentToolMetadata
 from backend.schemas.message import Message
 
 
@@ -12,7 +11,6 @@ class SnapshotAgent(BaseModel):
     name: str
     description: Optional[str]
     preamble: Optional[str]
-    tools_metadata: Optional[list[AgentToolMetadata]]
 
     class Config:
         from_attributes = True

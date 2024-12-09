@@ -21,18 +21,18 @@ class StreamEvent(str, Enum):
 
 
 class ChatRole(StrEnum):
-    """One of CHATBOT|USER|SYSTEM to identify who the message is coming from."""
+    """One of model|user|system to identify who the message is coming from."""
 
-    CHATBOT = "CHATBOT"
-    USER = "USER"
-    SYSTEM = "SYSTEM"
+    MODEL = "model"
+    USER = "user"
+    SYSTEM = "system"
 
 
 class ChatMessage(BaseModel):
     """A list of previous messages between the user and the model, meant to give the model conversational context for responding to the user's message."""
 
     role: ChatRole = Field(
-        title="One of CHATBOT|USER|SYSTEM to identify who the message is coming from.",
+        title="One of model|user|system to identify who the message is coming from.",
     )
     message: str | None = Field(
         title="Contents of the chat message.",
@@ -46,7 +46,6 @@ class ChatMessage(BaseModel):
         }
 
 
-# TODO: fix titles of these types
 class ChatResponse(BaseModel):
     event_type: ClassVar[StreamEvent] = Field()
 
@@ -191,4 +190,4 @@ class BaseChatRequest(BaseModel):
 
 
 class SearchChatRequest(BaseModel):
-    interviews: [Interview] = Field(title="The interviews that should be searched.")
+    interviews: List[Interview] = Field(title="The interviews that should be searched.")

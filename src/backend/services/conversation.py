@@ -2,13 +2,12 @@ from typing import List, Optional
 
 from fastapi import HTTPException
 
-from backend.chat.custom.custom import CustomChat
 from backend.crud import conversation as conversation_crud
 from backend.database_models import Message as MessageModel
 from backend.database_models.conversation import Conversation as ConversationModel
 from backend.database_models.database import DBSessionDep
-from backend.schemas.chat import ChatRole
-from backend.schemas.cohere_chat import CohereChatRequest
+from backend.model_deployments import TGIDeployment
+from backend.schemas.chat import BaseChatRequest, ChatRole
 from backend.schemas.context import Context
 from backend.schemas.conversation import Conversation
 from backend.schemas.message import Message
@@ -240,17 +239,15 @@ async def generate_conversation_title(
     try:
         chatlog = extract_details_from_conversation(conversation)
         prompt = GENERATE_TITLE_PROMPT % chatlog
-        chat_request = CohereChatRequest(
+        chat_request = BaseChatRequest(
             message=prompt,
             model=model,
         )
 
         response = await generate_chat_response(
             session,
-            CustomChat().chat(
+            TGIDeployment.invoke_chat(
                 chat_request,
-                stream=False,
-                agent_id=agent_id,
                 ctx=ctx,
             ),
             response_message=None,

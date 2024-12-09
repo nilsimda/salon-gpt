@@ -5,9 +5,8 @@ from pydantic import BaseModel
 
 from backend.database_models.message import MessageAgent
 from backend.schemas.citation import Citation
-from backend.schemas.interview import Interview
 from backend.schemas.file import ConversationFilePublic
-from backend.schemas.tool import ToolCall
+from backend.schemas.interview import Interview
 
 
 class MessageBase(BaseModel):
@@ -27,8 +26,6 @@ class Message(MessageBase):
     documents: List[Interview]
     citations: List[Citation]
     files: List[ConversationFilePublic]
-    tool_calls: List[ToolCall]
-    tool_plan: Union[str, None]
 
     agent: MessageAgent
 

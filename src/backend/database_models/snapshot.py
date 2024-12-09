@@ -1,5 +1,3 @@
-from typing import Optional
-
 from sqlalchemy import JSON, ForeignKey, ForeignKeyConstraint, Index, String
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -19,9 +17,6 @@ class Snapshot(Base):
 
     # snapshot is a json column
     snapshot: Mapped[str] = mapped_column(JSON)
-    agent_id: Mapped[str] = mapped_column(
-        ForeignKey("agents.id", ondelete="CASCADE"), nullable=True
-    )
 
     __table_args__ = (
         ForeignKeyConstraint(
@@ -33,7 +28,6 @@ class Snapshot(Base):
         Index("snapshot_user_id", user_id),
         Index("snapshot_last_message_id", last_message_id),
         Index("snapshot_conversation_id", conversation_id),
-        Index("snapshot_agent_id", agent_id),
     )
 
 

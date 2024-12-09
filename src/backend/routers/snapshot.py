@@ -1,6 +1,7 @@
+import json
+
 from fastapi import APIRouter, Depends, HTTPException
 
-from backend.chat.collate import to_dict
 from backend.config.routers import RouterName
 from backend.crud import snapshot as snapshot_crud
 from backend.database_models.database import DBSessionDep
@@ -197,3 +198,11 @@ async def delete_snapshot(
     snapshot_crud.delete_snapshot(session, snapshot_id, user_id)
 
     return DeleteSnapshotResponse()
+
+
+def to_dict(obj):
+    return json.loads(
+        json.dumps(
+            obj, default=lambda o: o.__dict__ if hasattr(o, "__dict__") else str(o)
+        )
+    )

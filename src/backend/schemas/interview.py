@@ -1,25 +1,15 @@
-from enum import StrEnum
-from typing import Union
+from typing import Optional
 
 from pydantic import BaseModel
 
 
-class InterviewType(StrEnum):
-    GD = "GD"
-    TI = "TI"
-    Memo = "Memo"
-
-class InterviewBase(BaseModel):
-    pass
-
-
 class Interview(BaseModel):
     text: str
-    id: str
+    interview_id: str
 
-    title: Union[str, None]
-    type: InterviewType
-    fields: Union[dict, None]
+    title: str
+    interview_class: str
+    fields: Optional[dict] = None
 
     class Config:
         from_attributes = True

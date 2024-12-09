@@ -15,7 +15,6 @@ from backend.database_models.file import File as FileModel
 from backend.schemas.context import Context
 from backend.schemas.file import ConversationFilePublic, File
 from backend.services import utils
-from backend.services.agent import validate_agent_exists
 from backend.services.context import get_context
 from backend.services.logger.utils import LoggerFactory
 
@@ -118,50 +117,6 @@ class FileService:
 
         return uploaded_files
 
-    def get_files_by_agent_id(
-        self, session: DBSessionDep, user_id: str, agent_id: str, ctx: Context
-    ) -> list[File]:
-        """
-        Get files by agent ID
-
-        Args:
-            session (DBSessionDep): The database session
-            user_id (str): The user ID
-            agent_id (str): The agent ID
-
-        Returns:
-            list[File]: The files that were created
-        """
-        from backend.config.tools import ToolName
-        from backend.tools.files import FileToolsArtifactTypes
-
-        agent = validate_agent_exists(session, agent_id, user_id)
-
-        files = []
-        agent_tool_metadata = agent.tools_metadata
-        if agent_tool_metadata is not None and len(agent_tool_metadata) > 0:
-            artifacts = next(
-                (
-                    tool_metadata.artifacts
-                    for tool_metadata in agent_tool_metadata
-                    if tool_metadata.tool_name == ToolName.Read_File
-                    or tool_metadata.tool_name == ToolName.Search_Interview
-                ),
-                [],  # Default value if the generator is empty
-            )
-
-            file_ids = list(
-                {
-                    artifact.get("id")
-                    for artifact in artifacts
-                    if artifact.get("type") == FileToolsArtifactTypes.local_file
-                }
-            )
-
-            files = file_crud.get_files_by_ids(session, file_ids, user_id)
-
-        return files
-
     def get_files_by_conversation_id(
         self, session: DBSessionDep, user_id: str, conversation_id: str, ctx: Context
     ) -> list[FileModel]:
@@ -258,9 +213,7 @@ class FileService:
         """
         logger = ctx.get_logger()
 
-        logger.info(
-                event=f"Deleting conversation {conversation_id} files from DB."
-            )
+        logger.info(event=f"Deleting conversation {conversation_id} files from DB.")
         file_crud.bulk_delete_files(session, file_ids, user_id)
 
     def get_files_by_message_id(

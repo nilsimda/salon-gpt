@@ -2,12 +2,9 @@ import json
 from typing import Any, AsyncGenerator, Generator, List, Union
 from uuid import uuid4
 
-from cohere.types import StreamedChatResponse
 from fastapi import HTTPException, Request
 from fastapi.encoders import jsonable_encoder
 
-from backend.chat.collate import to_dict
-from backend.chat.enums import StreamEvent
 from backend.crud import conversation as conversation_crud
 from backend.crud import message as message_crud
 from backend.database_models.conversation import Conversation
@@ -18,22 +15,20 @@ from backend.database_models.message import (
     MessageAgent,
     MessageFileAssociation,
 )
-from backend.schemas import CohereChatRequest
-from backend.schemas.agent import Agent
+from backend.schemas import BaseChatRequest
 from backend.schemas.chat import (
-    BaseChatRequest,
     ChatMessage,
     ChatResponseEvent,
     ChatRole,
     NonStreamedChatResponse,
     StreamEnd,
+    StreamEvent,
     StreamEventType,
     StreamStart,
     StreamTextGeneration,
 )
 from backend.schemas.context import Context
 from backend.schemas.conversation import UpdateConversationRequest
-from backend.services.agent import validate_agent_exists
 
 
 def process_chat(
@@ -57,26 +52,9 @@ def process_chat(
         Tuple: Tuple containing necessary data to construct the responses.
     """
     user_id = ctx.get_user_id()
-    ctx.with_deployment_config()
     agent_id = ctx.get_agent_id()
 
-    if agent_id:
-        agent = validate_agent_exists(session, agent_id, user_id)
-        agent_schema = Agent.model_validate(agent)
-        ctx.with_agent(agent_schema)
-
-        if agent is None:
-            raise HTTPException(
-                status_code=404, detail=f"Agent with ID {agent_id} not found."
-            )
-
-        # Set the agent settings in the chat request
-        chat_request.model = agent.model
-        chat_request.preamble = agent.preamble
-
-    should_store = chat_request.chat_history is None(
-        chat_request
-    )
+    should_store = chat_request.chat_history is None
     conversation = get_or_create_conversation(
         session, chat_request, user_id, should_store, agent_id, chat_request.message
     )
@@ -108,14 +86,6 @@ def process_chat(
         id=str(uuid4()),
     )
 
-    if should_store:
-        attach_files_to_messages(
-            session,
-            user_id,
-            user_message.id,
-            chat_request.file_ids
-        )
-
     chat_history = create_chat_history(
         conversation, next_message_position, chat_request
     )
@@ -123,7 +93,6 @@ def process_chat(
     # co.chat expects either chat_history or conversation_id, not both
     chat_request.chat_history = chat_history
     chat_request.conversation_id = ""
-
 
     return (
         session,
@@ -137,10 +106,10 @@ def process_chat(
 
 def process_message_regeneration(
     session: DBSessionDep,
-    chat_request: CohereChatRequest,
+    chat_request: BaseChatRequest,
     request: Request,
     ctx: Context,
-) -> tuple[Any, CohereChatRequest, Message, list[str], bool, Context]:
+) -> tuple[Any, BaseChatRequest, Message, list[str], bool, Context]:
     """
     Process message regeneration.
 
@@ -156,14 +125,6 @@ def process_message_regeneration(
     ctx.with_deployment_config()
 
     user_id = ctx.get_user_id()
-    agent_id = ctx.get_agent_id()
-
-    if agent_id:
-        agent = validate_agent_exists(session, agent_id, user_id)
-        ctx.with_agent(Agent.model_validate(agent))
-
-        # Set the agent settings in the chat request
-        chat_request.preamble = agent.preamble
 
     conversation_id = chat_request.conversation_id
     ctx.with_conversation_id(conversation_id)
@@ -172,16 +133,13 @@ def process_message_regeneration(
     if not conversation:
         raise HTTPException(
             status_code=404,
-            detail=f"Conversation with ID: {conversation_id} not found."
+            detail=f"Conversation with ID: {conversation_id} not found.",
         )
 
     last_user_message = get_last_message(conversation, user_id, MessageAgent.USER)
 
     attach_files_to_messages(
-        session,
-        user_id,
-        last_user_message.id,
-        chat_request.file_ids
+        session, user_id, last_user_message.id, chat_request.file_ids
     )
 
     new_chatbot_message = create_message(
@@ -200,10 +158,10 @@ def process_message_regeneration(
         message.id
         for message in conversation.messages
         if (
-                message.is_active
-                and message.user_id == user_id
-                and message.position == last_user_message.position
-                and message.agent == MessageAgent.CHATBOT
+            message.is_active
+            and message.user_id == user_id
+            and message.position == last_user_message.position
+            and message.agent == MessageAgent.CHATBOT
         )
     ]
 
@@ -218,7 +176,7 @@ def process_message_regeneration(
         chat_request,
         new_chatbot_message,
         previous_chatbot_message_ids,
-        ctx
+        ctx,
     )
 
 
@@ -226,18 +184,18 @@ def get_last_message(
     conversation: Conversation, user_id: str, agent: MessageAgent
 ) -> Message:
     """
-       Retrieve the last message sent by a specific agent within a given conversation.
+    Retrieve the last message sent by a specific agent within a given conversation.
 
-       Args:
-           conversation (Conversation): The conversation containing the messages.
-           user_id (str): The user ID.
-           agent (MessageAgent): The agent whose last message is to be retrieved.
+    Args:
+        conversation (Conversation): The conversation containing the messages.
+        user_id (str): The user ID.
+        agent (MessageAgent): The agent whose last message is to be retrieved.
 
-       Returns:
-           Message: The last message sent by the agent.
+    Returns:
+        Message: The last message sent by the agent.
 
-       Raises:
-           HTTPException: If there are no messages from the specified agent in the conversation.
+    Raises:
+        HTTPException: If there are no messages from the specified agent in the conversation.
     """
     agent_messages = [
         message
@@ -283,7 +241,7 @@ def get_or_create_conversation(
         conversation = Conversation(
             user_id=user_id,
             id=chat_request.conversation_id,
-            agent_id=agent_id,
+            #agent_id=agent_id,
             title=title,
         )
 
@@ -356,7 +314,6 @@ def create_message(
         position=user_message_position,
         is_active=True,
         agent=agent,
-        tool_plan=tool_plan,
     )
 
     if should_store:
@@ -472,7 +429,7 @@ def update_conversation_after_turn(
 
 async def generate_chat_response(
     session: DBSessionDep,
-    model_deployment_stream: Generator[StreamedChatResponse, None, None],
+    model_deployment_stream: Generator[Any, None, None],
     response_message: Message,
     should_store: bool = True,
     ctx: Context = Context(),
@@ -597,7 +554,7 @@ async def generate_chat_stream(
             conversation_id,
             stream_end_data["text"],
             user_id,
-            kwargs.get("previous_response_message_ids")
+            kwargs.get("previous_response_message_ids"),
         )
 
 
@@ -612,8 +569,7 @@ def handle_stream_event(
     should_store: bool = True,
     user_id: str = "",
     next_message_position: int = 0,
-) -> tuple[StreamEventType, dict[str, Any], Message, dict[str, Interview]]:
-    logger = ctx.get_logger()
+) -> tuple[StreamEventType, dict[str, Any], Message]:
 
     handlers = {
         StreamEvent.STREAM_START: handle_stream_start,
@@ -621,12 +577,6 @@ def handle_stream_event(
         StreamEvent.STREAM_END: handle_stream_end,
     }
     event_type = event["event_type"]
-
-    if event_type not in handlers.keys():
-        logger.warning(
-            event=f"[Chat] Error handling stream event: Event type {event_type} not supported"
-        )
-        return None, stream_end_data, response_message, document_ids_to_document
 
     return handlers[event_type](
         event,
@@ -648,13 +598,14 @@ def handle_stream_start(
     response_message: Message,
     document_ids_to_document: dict[str, Interview],
     **kwargs: Any,
-) -> tuple[StreamStart, dict[str, Any], Message, dict[str, Interview]]:
+) -> tuple[StreamStart, dict[str, Any], Message]:
     event["conversation_id"] = conversation_id
     stream_event = StreamStart.model_validate(event)
     if response_message:
         response_message.generation_id = event["generation_id"]
     stream_end_data["generation_id"] = event["generation_id"]
-    return stream_event, stream_end_data, response_message, document_ids_to_document
+    return stream_event, stream_end_data, response_message
+
 
 def handle_stream_text_generation(
     event: dict[str, Any],
@@ -663,10 +614,19 @@ def handle_stream_text_generation(
     response_message: Message,
     document_ids_to_document: dict[str, Interview],
     **kwargs: Any,
-) -> tuple[StreamTextGeneration, dict[str, Any], Message, dict[str, Interview]]:
+) -> tuple[StreamTextGeneration, dict[str, Any], Message ]:
     stream_end_data["text"] += event["text"]
     stream_event = StreamTextGeneration.model_validate(event)
-    return stream_event, stream_end_data, response_message, document_ids_to_document
+    return stream_event, stream_end_data, response_message
+
+
+def to_dict(obj):
+    return json.loads(
+        json.dumps(
+            obj, default=lambda o: o.__dict__ if hasattr(o, "__dict__") else str(o)
+        )
+    )
+
 
 def handle_stream_end(
     event: dict[str, Any],
@@ -675,9 +635,8 @@ def handle_stream_end(
     response_message: Message,
     document_ids_to_document: dict[str, Interview],
     **kwargs: Any,
-) -> tuple[StreamEnd, dict[str, Any], Message, dict[str, Interview]]:
+) -> tuple[StreamEnd, dict[str, Any], Message]:
     if response_message:
-        response_message.citations = stream_end_data["citations"]
         response_message.text = stream_end_data["text"]
 
     stream_end_data["chat_history"] = (
@@ -685,4 +644,4 @@ def handle_stream_end(
     )
     stream_end = StreamEnd.model_validate(event | stream_end_data)
     stream_event = stream_end
-    return stream_event, stream_end_data, response_message, document_ids_to_document
+    return stream_event, stream_end_data, response_message

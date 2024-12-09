@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 from uuid import uuid4
 
 from sqlalchemy import (
@@ -43,16 +43,6 @@ class Conversation(Base):
     conversation_file_associations: Mapped[List["ConversationFileAssociation"]] = (
         relationship("ConversationFileAssociation", back_populates="conversation")
     )
-    agent_id: Mapped[str] = mapped_column(
-        ForeignKey("agents.id", ondelete="CASCADE"), nullable=True
-    )
-    organization_id: Mapped[Optional[str]] = mapped_column(
-        ForeignKey(
-            "organizations.id",
-            name="conversations_organization_id_fkey",
-            ondelete="CASCADE",
-        )
-    )
     is_pinned: Mapped[bool] = mapped_column(Boolean, default=False)
 
     @property
@@ -69,6 +59,6 @@ class Conversation(Base):
     __table_args__ = (
         UniqueConstraint("id", "user_id", name="conversation_id_user_id"),
         PrimaryKeyConstraint("id", "user_id", name="conversation_pkey"),
-        Index("conversation_user_agent_index", "user_id", "agent_id"),
+        Index("conversation_user_agent_index", "user_id"),
         Index("conversation_user_id_index", "id", "user_id", unique=True),
     )

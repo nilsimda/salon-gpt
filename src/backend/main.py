@@ -13,20 +13,13 @@ from backend.config.auth import (
 )
 from backend.config.routers import ROUTER_DEPENDENCIES
 from backend.config.settings import Settings
-from backend.routers.agent import default_agent_router
-from backend.routers.agent import router as agent_router
 from backend.routers.auth import router as auth_router
 from backend.routers.chat import router as chat_router
 from backend.routers.conversation import router as conversation_router
-from backend.routers.deployment import router as deployment_router
-from backend.routers.experimental_features import router as experimental_feature_router
-from backend.routers.model import router as model_router
-from backend.routers.organization import router as organization_router
 from backend.routers.scim import SCIMException, scim_exception_handler
 from backend.routers.scim import router as scim_router
 from backend.routers.snapshot import router as snapshot_router
 from backend.routers.study import router as study_router
-from backend.routers.tool import router as tool_router
 from backend.routers.user import router as user_router
 from backend.services.context import ContextMiddleware, get_context
 from backend.services.logger.middleware import LoggingMiddleware
@@ -45,15 +38,8 @@ def create_app():
         chat_router,
         user_router,
         conversation_router,
-        tool_router,
-        deployment_router,
-        experimental_feature_router,
-        agent_router,
-        default_agent_router,
         snapshot_router,
         study_router,
-        organization_router,
-        model_router,
         scim_router,
     ]
 

@@ -2,15 +2,12 @@ from typing import Any, Optional
 
 from pydantic import BaseModel
 
-from backend.crud import organization as organization_crud
 from backend.crud import user as user_crud
 from backend.database_models.database import DBSessionDep
-from backend.schemas import Organization
-from backend.schemas.agent import Agent, AgentToolMetadata
+from backend.schemas.agent import Agent
 from backend.schemas.study import Study
 from backend.schemas.user import User
 from backend.services.logger.utils import LoggerFactory
-from backend.services.utils import get_deployment_config
 
 
 class Context(BaseModel):
@@ -21,7 +18,6 @@ class Context(BaseModel):
     user_id: str = "default"
     user: Optional[User] = None
     agent: Optional[Agent] = None
-    agent_tool_metadata: Optional[AgentToolMetadata] = None
     model: Optional[str] = None
     deployment_name: Optional[str] = None
     deployment_config: Optional[dict] = None
@@ -29,8 +25,6 @@ class Context(BaseModel):
     agent_id: Optional[str] = None
     stream_start_ms: Optional[float] = None
     logger: Optional[Any] = None
-    organization_id: Optional[str] = None
-    organization: Optional[Organization] = None
     use_global_filtering: Optional[bool] = False
     study: Optional[Study] = None
     study_id: Optional[str] = None
@@ -89,21 +83,8 @@ class Context(BaseModel):
         self.agent = agent
         return self
 
-    def with_agent_tool_metadata(
-        self, agent_tool_metadata: AgentToolMetadata
-    ) -> "Context":
-        self.agent_tool_metadata = agent_tool_metadata
-        return self
-
     def with_model(self, model: str) -> "Context":
         self.model = model
-        return self
-
-    def with_deployment_config(self, deployment_config=None) -> "Context":
-        if deployment_config:
-            self.deployment_config = deployment_config
-        else:
-            self.deployment_config = get_deployment_config(self.request)
         return self
 
     def with_conversation_id(self, conversation_id: str) -> "Context":
@@ -120,31 +101,6 @@ class Context(BaseModel):
         self.agent_id = agent_id
         return self
 
-    def with_organization_id(self, organization_id: str) -> "Context":
-        self.organization_id = organization_id
-        return self
-
-    def with_organization(
-        self,
-        session: DBSessionDep | None = None,
-        organization: Organization | None = None,
-    ) -> "Context":
-        if not organization and not session:
-            return self
-
-        if not organization:
-            organization = organization_crud.get_organization(
-                session, self.organization_id
-            )
-            organization = (
-                Organization.model_validate(organization) if organization else None
-            )
-
-        if organization:
-            self.organization = organization
-
-        return self
-
     def with_global_filtering(self) -> "Context":
         self.use_global_filtering = True
         return self
@@ -152,9 +108,6 @@ class Context(BaseModel):
     def without_global_filtering(self) -> "Context":
         self.use_global_filtering = False
         return self
-
-    def get_organization(self):
-        return self.organization
 
     def get_stream_start_ms(self):
         return self.stream_start_ms
@@ -200,6 +153,3 @@ class Context(BaseModel):
 
     def get_logger(self) -> Any:
         return self.logger
-
-    def get_agent_tool_metadata(self):
-        return self.agent_tool_metadata

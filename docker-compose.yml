@@ -66,6 +66,8 @@ services:
       - HF_TOKEN=${HF_TOKEN}
     volumes:
       - /data/huggingface:/data
+    networks:
+      - proxynet
 
   backend:
     build:
@@ -136,7 +138,7 @@ services:
 
 volumes:
   db:
-    name: cohere_toolkit_db
+    name: salongpt_db
     driver: local
   hf_models:
     name: hf_models

@@ -3,26 +3,20 @@ from typing import Any, Generator
 from fastapi import APIRouter, Depends, Request
 from sse_starlette.sse import EventSourceResponse
 
-from backend.chat.custom.custom import CustomChat
 from backend.config.routers import RouterName
-from backend.crud import agent_tool_metadata as agent_tool_metadata_crud
 from backend.database_models.database import DBSessionDep
-from backend.schemas.agent import Agent, AgentToolMetadata
+from backend.model_deployments import TGIDeployment
 from backend.schemas.chat import (
     BaseChatRequest,
     ChatResponseEvent,
-    NonStreamedChatResponse,
 )
 from backend.schemas.context import Context
-from backend.services.agent import validate_agent_exists
 from backend.services.chat import (
-    generate_chat_response,
     generate_chat_stream,
     process_chat,
     process_message_regeneration,
 )
 from backend.services.context import get_context
-from backend.services.request_validators import validate_deployment_header
 
 router = APIRouter(
     prefix="/v1",
@@ -30,7 +24,7 @@ router = APIRouter(
 router.name = RouterName.CHAT
 
 
-@router.post("/chat-stream", dependencies=[Depends(validate_deployment_header)])
+@router.post("/chat-stream")
 async def chat_stream(
     session: DBSessionDep,
     chat_request: BaseChatRequest,
@@ -50,9 +44,9 @@ async def chat_stream(
         EventSourceResponse: Server-sent event response with chatbot responses.
     """
 
-    ctx.with_model(chat_request.model)
-    agent_id = chat_request.agent_id
-    ctx.with_agent_id(agent_id)
+    #ctx.with_model(chat_request.model)
+    #agent_id = chat_request.agent_id
+    #ctx.with_agent_id(agent_id)
 
     (
         session,
@@ -66,11 +60,9 @@ async def chat_stream(
     return EventSourceResponse(
         generate_chat_stream(
             session,
-            CustomChat().chat(
+            TGIDeployment().invoke_chat_stream(
                 chat_request,
-                stream=True,
-                session=session,
-                ctx=ctx,
+                ctx,
             ),
             response_message,
             should_store=should_store,
@@ -84,7 +76,7 @@ async def chat_stream(
     )
 
 
-@router.post("/chat-stream/regenerate", dependencies=[Depends(validate_deployment_header)])
+@router.post("/chat-stream/regenerate")
 async def regenerate_chat_stream(
     session: DBSessionDep,
     chat_request: BaseChatRequest,
@@ -108,20 +100,6 @@ async def regenerate_chat_stream(
     agent_id = chat_request.agent_id
     ctx.with_agent_id(agent_id)
 
-    if agent_id:
-        agent = validate_agent_exists(session, agent_id, ctx.get_user_id())
-        ctx.with_agent(Agent.model_validate(agent))
-
-        agent_tool_metadata = (
-            agent_tool_metadata_crud.get_all_agent_tool_metadata_by_agent_id(
-                session, agent_id
-            )
-        )
-        agent_tool_metadata_schema = [
-            AgentToolMetadata.model_validate(x) for x in agent_tool_metadata
-        ]
-        ctx.with_agent_tool_metadata(agent_tool_metadata_schema)
-
     (
         session,
         chat_request,
@@ -134,12 +112,9 @@ async def regenerate_chat_stream(
     return EventSourceResponse(
         generate_chat_stream(
             session,
-            CustomChat().chat(
+            TGIDeployment().invoke_chat_stream(
                 chat_request,
-                stream=True,
-                managed_tools=managed_tools,
-                session=session,
-                ctx=ctx,
+                ctx,
             ),
             new_response_message,
             next_message_position=new_response_message.position,
@@ -151,66 +126,3 @@ async def regenerate_chat_stream(
         send_timeout=300,
         ping=5,
     )
-
-@router.post("/chat", dependencies=[Depends(validate_deployment_header)])
-async def chat(
-    session: DBSessionDep,
-    chat_request: BaseChatRequest,
-    request: Request,
-    ctx: Context = Depends(get_context),
-) -> NonStreamedChatResponse:
-    """
-    Chat endpoint to handle user messages and return chatbot responses.
-
-    Args:
-        chat_request (CohereChatRequest): Chat request data.
-        session (DBSessionDep): Database session.
-        request (Request): Request object.
-        ctx (Context): Context object.
-
-    Returns:
-        NonStreamedChatResponse: Chatbot response.
-    """
-    ctx.with_model(chat_request.model)
-    agent_id = chat_request.agent_id
-    ctx.with_agent_id(agent_id)
-    user_id = ctx.get_user_id()
-
-    if agent_id:
-        agent = validate_agent_exists(session, agent_id, user_id)
-        agent_schema = Agent.model_validate(agent)
-        ctx.with_agent(agent_schema)
-        agent_tool_metadata = (
-            agent_tool_metadata_crud.get_all_agent_tool_metadata_by_agent_id(
-                session, agent_id
-            )
-        )
-        agent_tool_metadata_schema = [
-            AgentToolMetadata.model_validate(x) for x in agent_tool_metadata
-        ]
-        ctx.with_agent_tool_metadata(agent_tool_metadata_schema)
-
-    (
-        session,
-        chat_request,
-        response_message,
-        should_store,
-        managed_tools,
-        next_message_position,
-        ctx,
-    ) = process_chat(session, chat_request, request, ctx)
-
-    response = await generate_chat_response(
-        session,
-        CustomChat().chat(
-            chat_request,
-            stream=False,
-            managed_tools=managed_tools,
-            ctx=ctx,
-        ),
-        response_message,
-        should_store=should_store,
-        next_message_position=next_message_position,
-        ctx=ctx,
-    )
-    return response

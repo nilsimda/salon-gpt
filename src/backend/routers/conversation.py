@@ -3,16 +3,11 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi import File as RequestFile
 from fastapi import UploadFile as FastAPIUploadFile
-from starlette.responses import Response
 
-from backend.chat.custom.utils import get_deployment
 from backend.config.routers import RouterName
-from backend.crud import agent as agent_crud
 from backend.crud import conversation as conversation_crud
-from backend.crud import message as message_crud
 from backend.database_models import Conversation as ConversationModel
 from backend.database_models.database import DBSessionDep
-from backend.schemas.agent import Agent
 from backend.schemas.context import Context
 from backend.schemas.conversation import (
     ConversationPublic,
@@ -27,7 +22,6 @@ from backend.schemas.file import (
     ListConversationFile,
     UploadConversationFileResponse,
 )
-from backend.services.agent import validate_agent_exists
 from backend.services.context import get_context
 from backend.services.conversation import (
     filter_conversations,
@@ -41,7 +35,6 @@ from backend.services.file import (
     get_file_service,
     validate_file,
 )
-from backend.services.synthesizer import synthesize
 
 router = APIRouter(
     prefix="/v1/conversations",
@@ -72,8 +65,7 @@ async def get_conversation(
         HTTPException: If the conversation with the given ID is not found.
     """
     user_id = ctx.get_user_id()
-    conversation = conversation_crud.get_conversation(
-        session, conversation_id, user_id)
+    conversation = conversation_crud.get_conversation(session, conversation_id, user_id)
 
     if not conversation:
         raise HTTPException(
@@ -84,10 +76,8 @@ async def get_conversation(
     files = get_file_service().get_files_by_conversation_id(
         session, user_id, conversation.id, ctx
     )
-    files_with_conversation_id = attach_conversation_id_to_files(
-        conversation.id, files)
-    messages = get_messages_with_files(
-        session, user_id, conversation.messages, ctx)
+    files_with_conversation_id = attach_conversation_id_to_files(conversation.id, files)
+    messages = get_messages_with_files(session, user_id, conversation.messages, ctx)
     _ = validate_conversation(session, conversation_id, user_id)
 
     conversation = ConversationPublic(
@@ -136,7 +126,12 @@ async def list_conversations(
     user_id = ctx.get_user_id()
 
     conversations = conversation_crud.get_conversations(
-        session, offset=offset, limit=limit, order_by=order_by, user_id=user_id, agent_id=agent_id
+        session,
+        offset=offset,
+        limit=limit,
+        order_by=order_by,
+        user_id=user_id,
+        agent_id=agent_id,
     )
 
     results = []
@@ -197,10 +192,8 @@ async def update_conversation(
     files = get_file_service().get_files_by_conversation_id(
         session, user_id, conversation.id, ctx
     )
-    messages = get_messages_with_files(
-        session, user_id, conversation.messages, ctx)
-    files_with_conversation_id = attach_conversation_id_to_files(
-        conversation.id, files)
+    messages = get_messages_with_files(session, user_id, conversation.messages, ctx)
+    files_with_conversation_id = attach_conversation_id_to_files(conversation.id, files)
     return ConversationPublic(
         id=conversation.id,
         user_id=user_id,
@@ -231,9 +224,7 @@ async def toggle_conversation_pin(
     files = get_file_service().get_files_by_conversation_id(
         session, user_id, conversation.id, ctx
     )
-    files_with_conversation_id = attach_conversation_id_to_files(
-        conversation.id, files
-    )
+    files_with_conversation_id = attach_conversation_id_to_files(conversation.id, files)
     return ConversationWithoutMessages(
         id=conversation.id,
         user_id=user_id,
@@ -304,16 +295,6 @@ async def search_conversations(
         list[ConversationWithoutMessages]: List of conversations that match the query.
     """
     user_id = ctx.get_user_id()
-    deployment_name = ctx.get_deployment_name()
-    model_deployment = get_deployment(deployment_name, ctx)
-
-    agent = None
-    if agent_id:
-        agent = validate_agent_exists(session, agent_id, user_id)
-
-    if agent_id:
-        agent_schema = Agent.model_validate(agent)
-        ctx.with_agent(agent_schema)
 
     conversations = conversation_crud.get_conversations(
         session, offset=offset, limit=limit, user_id=user_id, agent_id=agent_id
@@ -327,7 +308,6 @@ async def search_conversations(
         query,
         conversations,
         rerank_documents,
-        model_deployment,
         ctx,
     )
 
@@ -456,8 +436,7 @@ async def list_files(
     files = get_file_service().get_files_by_conversation_id(
         session, user_id, conversation_id, ctx
     )
-    files_with_conversation_id = attach_conversation_id_to_files(
-        conversation_id, files)
+    files_with_conversation_id = attach_conversation_id_to_files(conversation_id, files)
     return files_with_conversation_id
 
 
@@ -525,11 +504,6 @@ async def generate_title(
     conversation = validate_conversation(session, conversation_id, user_id)
     agent_id = conversation.agent_id if conversation.agent_id else None
 
-    if agent_id:
-        agent = agent_crud.get_agent_by_id(session, agent_id, user_id)
-        agent_schema = Agent.model_validate(agent)
-        ctx.with_agent(agent_schema)
-
     title, error = await generate_conversation_title(
         session,
         conversation,
@@ -546,45 +520,3 @@ async def generate_title(
         title=title,
         error=error,
     )
-
-
-# SYNTHESIZE
-@router.get("/{conversation_id}/synthesize/{message_id}")
-async def synthesize_message(
-    conversation_id: str,
-    message_id: str,
-    session: DBSessionDep,
-    ctx: Context = Depends(get_context),
-) -> Response:
-    """
-    Generate a synthesized audio for a specific message in a conversation.
-
-    Args:
-        conversation_id (str): Conversation ID.
-        message_id (str): Message ID.
-        session (DBSessionDep): Database session.
-        ctx (Context): Context object.
-
-    Returns:
-        Response: Synthesized audio file.
-
-    Raises:
-        HTTPException: If the message with the given ID is not found or synthesis fails.
-    """
-    user_id = ctx.get_user_id()
-    message = message_crud.get_conversation_message(session, conversation_id, message_id, user_id)
-
-    if not message:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Message with ID: {message_id} not found.",
-        )
-
-    try:
-        synthesized_audio = synthesize(message.text)
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error while message synthesis: {e}"
-        )
-
-    return Response(synthesized_audio, media_type="audio/mp3")

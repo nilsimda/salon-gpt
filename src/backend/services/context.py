@@ -44,12 +44,7 @@ class ContextMiddleware:
         agent_id = request.headers.get("Agent-Id")
         context.with_agent_id(agent_id)
 
-        organization_id = request.headers.get("Organization-Id", None)
-        context.with_organization_id(organization_id)
-
         context.without_global_filtering()
-        if organization_id:
-            context.with_global_filtering()
 
         context.with_logger()
 
