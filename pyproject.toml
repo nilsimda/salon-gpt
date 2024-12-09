@@ -28,7 +28,6 @@ bcrypt = "^4.1.2"
 pypdf = "^4.2.0"
 pyjwt = "^2.8.0"
 pydantic-settings = "^2.3.1"
-transformers = "^4.41.2"
 google_auth_oauthlib = "^1.2.0"
 google-auth-httplib2 = "^0.2.0"
 google-api-python-client = "^2.133.0"
@@ -43,9 +42,7 @@ structlog = "^24.4.0"
 pyyaml = "^6.0.1"
 nltk = "^3.9.1"
 hyperframe = "^6.0.1"
-diffusers = "^0.31.0"
-outlines = "^0.1.8"
-accelerate = "^1.2.0"
+huggingface-hub = "^0.26.5"
 
 [tool.poetry.group.dev]
 optional = true

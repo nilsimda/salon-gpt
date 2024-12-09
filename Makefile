@@ -38,9 +38,9 @@ exec-backend:
 exec-db:
 	docker exec -ti salon-gpt-db-1 bash
 
-.PHONY: check-gpus
-check-gpus:
-	docker exec -ti salon-gpt-ollama-1 nvidia-smi 
+.PHONY: exec-tgi
+exec-tgi:
+	docker exec -ti salon-gpt-tgi-1 bash
 
 .PHONY: migration
 migration:
@@ -67,11 +67,6 @@ install:
 setup:
 	poetry install --with setup,dev --verbose
 	poetry run python3 src/backend/cli/main.py
-
-.PHONY: win-setup
-win-setup:
-	poetry install --with setup --verbose
-	poetry run python src/backend/cli/main.py
 
 .PHONY: typecheck
 typecheck:
@@ -126,7 +121,3 @@ dev-sync:
 .PHONY: dev-sync-down
 dev-sync-down:
 	@docker compose down sync_worker sync_publisher flower
-
-.PHONY: pull-model
-pull-model:
-	docker exec -ti salon-gpt-ollama-1 ollama pull "${model}"

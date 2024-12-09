@@ -1,12 +1,23 @@
-from enum import StrEnum
+from enum import Enum, StrEnum
 from typing import Any, ClassVar, Dict, List, Union
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
-from backend.chat.enums import StreamEvent
 from backend.schemas.citation import Citation
 from backend.schemas.interview import Interview
+
+
+class StreamEvent(str, Enum):
+    """
+    Stream Events returned by Cohere's chat stream response.
+    """
+
+    STREAM_START = "stream-start"
+    SEARCH_RESULTS = "search-results"
+    TEXT_GENERATION = "text-generation"
+    STREAM_END = "stream-end"
+    NON_STREAMED_CHAT_RESPONSE = "non-streamed-chat-response"
 
 
 class ChatRole(StrEnum):
@@ -15,6 +26,7 @@ class ChatRole(StrEnum):
     CHATBOT = "CHATBOT"
     USER = "USER"
     SYSTEM = "SYSTEM"
+
 
 class ChatMessage(BaseModel):
     """A list of previous messages between the user and the model, meant to give the model conversational context for responding to the user's message."""
@@ -55,6 +67,7 @@ class StreamTextGeneration(ChatResponse):
     text: str = Field(
         title="Contents of the chat message.",
     )
+
 
 class StreamSearchResults(ChatResponse):
     event_type: ClassVar[StreamEvent] = StreamEvent.SEARCH_RESULTS
@@ -136,12 +149,14 @@ class NonStreamedChatResponse(ChatResponse):
         default=None,
     )
 
+
 StreamEventType = Union[
     StreamStart,
     StreamTextGeneration,
     StreamEnd,
     NonStreamedChatResponse,
 ]
+
 
 class ChatResponseEvent(BaseModel):
     event: StreamEvent = Field(
@@ -152,13 +167,14 @@ class ChatResponseEvent(BaseModel):
         title="Data returned from chat response of a given event type",
     )
 
+
 class BaseChatRequest(BaseModel):
     user_id: str = Field(
-         title="A user id to store to store the conversation under.", exclude=True
+        title="A user id to store to store the conversation under.", exclude=True
     )
 
-    description: str = Field(
-        title="The description of the synthetic user.",
+    system: str = Field(
+        title="The system prompt to use.",
     )
 
     message: str = Field(
@@ -172,3 +188,7 @@ class BaseChatRequest(BaseModel):
         default_factory=lambda: str(uuid4()),
         title="To store a conversation then create a conversation id and use it for every related request",
     )
+
+
+class SearchChatRequest(BaseModel):
+    interviews: [Interview] = Field(title="The interviews that should be searched.")

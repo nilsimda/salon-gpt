@@ -1,7 +1,3 @@
-from backend.model_deployments.faster_whisper_platform import FasterWhisperDeployment
-from backend.model_deployments.ollama_platform import OllamaDeployment
+from backend.model_deployments.tgi import TGIDeployment
 
-__all__ = [
-    "OllamaDeployment",
-    "FasterWhisperDeployment",
-]
+__all__ = ["TGIDeployment"]
