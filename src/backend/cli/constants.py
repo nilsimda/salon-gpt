@@ -35,7 +35,7 @@ WELCOME_MESSAGE = r"""
 ╚█████╔╝╚█████╔╝██║  ██║███████╗██║  ██║███████╗    ██║   ╚█████╔╝╚█████╔╝███████╗██║ ╚██╗██║   ██║
  ╚════╝  ╚════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚══════╝    ╚═╝    ╚════╝  ╚════╝ ╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝
 """
-DATABASE_URL_DEFAULT = "postgresql+psycopg2://postgres:postgres@db:5432"
+DATABASE_URL_DEFAULT = "postgresql://postgres:postgres@db:5432"
 REDIS_URL_DEFAULT = "redis://:redis@redis:6379"
 PYTHON_INTERPRETER_URL_DEFAULT = "http://terrarium:8080"
 NEXT_PUBLIC_API_HOSTNAME_DEFAULT = "http://localhost:8000"
