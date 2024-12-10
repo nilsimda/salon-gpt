@@ -26,7 +26,7 @@ from backend.schemas.scim import (
 SCIM_PREFIX = "/scim/v2"
 scim_auth = Settings().auth.scim
 router = APIRouter(prefix=SCIM_PREFIX)
-router.name = RouterName.SCIM
+router.name = RouterName.SCIM  # type: ignore
 
 
 class SCIMException(Exception):

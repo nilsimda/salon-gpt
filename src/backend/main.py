@@ -73,17 +73,6 @@ app = create_app()
 
 @app.exception_handler(Exception)
 async def validation_exception_handler(request: Request, exc: Exception):
-    ctx = get_context(request)
-    logger = ctx.get_logger()
-
-    logger.exception(
-        event="Unhandled exception",
-        error=str(exc),
-        method=request.method,
-        url=request.url,
-        ctx=ctx,
-    )
-
     return JSONResponse(
         status_code=500,
         content={

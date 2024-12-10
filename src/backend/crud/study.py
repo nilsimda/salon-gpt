@@ -2,8 +2,8 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 
-from backend.database_models.study import Study
 from backend.database_models.interview import Interview
+from backend.database_models.study import Study
 from backend.services.transaction import validate_transaction
 
 
@@ -26,8 +26,7 @@ def create_study(db: Session, study: Study) -> Study:
 
 
 @validate_transaction
-def get_study_by_id(
-    db: Session, study_id: str) -> Study:
+def get_study_by_id(db: Session, study_id: str) -> Optional[Study]:
     """
     Get a study by its ID.
 
@@ -42,7 +41,7 @@ def get_study_by_id(
 
 
 @validate_transaction
-def get_study_by_name(db: Session, study_name: str, user_id: str) -> Study:
+def get_study_by_name(db: Session, study_name: str, user_id: str) -> Optional[Study]:
     """
     Get a study by its name.
 
@@ -54,6 +53,7 @@ def get_study_by_name(db: Session, study_name: str, user_id: str) -> Study:
       Study: Study with the given name.
     """
     return db.query(Study).filter(Study.name == study_name).first()
+
 
 @validate_transaction
 def get_interviews_by_study(db: Session, study_id: str) -> list[Interview]:
@@ -68,6 +68,7 @@ def get_interviews_by_study(db: Session, study_id: str) -> list[Interview]:
       list[Interview]: List of interviews.
     """
     return db.query(Interview).filter(Interview.study_id == study_id).all()
+
 
 @validate_transaction
 def get_studies(
@@ -94,11 +95,10 @@ def get_studies(
     return query.offset(offset).limit(limit).all()
 
 
-
 @validate_transaction
-def delete_study(db: Session, study_id: str, user_id: str) -> bool:
+def delete_study(db: Session, study_id: str) -> bool:
     """
-    Delete an Study by ID if the Study was created by the user_id given.
+    Delete a Study by ID.
 
     Args:
         db (Session): Database session.
@@ -107,7 +107,7 @@ def delete_study(db: Session, study_id: str, user_id: str) -> bool:
     Returns:
       bool: True if the Study was deleted, False otherwise
     """
-    study_query = db.query(Study).filter(Study.id == study_id, Study.user_id == user_id)
+    study_query = db.query(Study).filter(Study.id == study_id)
     study = study_query.first()
 
     if not study:

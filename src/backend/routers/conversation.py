@@ -1,6 +1,7 @@
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Request
+from pydantic import parse_obj_as
 
 from backend.config.routers import RouterName
 from backend.crud import conversation as conversation_crud
@@ -24,7 +25,7 @@ from backend.services.conversation import (
 router = APIRouter(
     prefix="/v1/conversations",
 )
-router.name = RouterName.CONVERSATION
+router.name = RouterName.CONVERSATION  # type: ignore
 
 
 # CONVERSATIONS
@@ -250,6 +251,7 @@ async def search_conversations(
 
     if not conversations:
         return []
+    conversations = parse_obj_as(list[Conversation], conversations)
 
     rerank_documents = get_documents_to_rerank(conversations)
     filtered_documents = await filter_conversations(
@@ -283,7 +285,6 @@ async def generate_title(
     user_id: str,
     session: DBSessionDep,
     request: Request,
-    model: Optional[str] = "command-r",
 ) -> GenerateTitleResponse:
     """
     Generate a title for a conversation and update the conversation with the generated title.
@@ -302,14 +303,11 @@ async def generate_title(
     """
 
     conversation = validate_conversation(session, conversation_id, user_id)
-    agent_id = conversation.agent_id if conversation.agent_id else None
 
     title, error = await generate_conversation_title(
         session,
-        conversation,
+        parse_obj_as(Conversation, conversation),
         user_id,
-        agent_id,
-        model,
     )
 
     conversation_crud.update_conversation(

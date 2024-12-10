@@ -1,7 +1,7 @@
 import sys
 from typing import Any, List, Optional, Tuple, Type
 
-from pydantic import AliasChoices, BaseModel, Field
+from pydantic import AliasChoices, Field
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
@@ -36,7 +36,7 @@ SECRETS_FILE_PATH = (
 # Then add the env variables as an AliasChoices in the Field - these aren't nested
 
 
-class GoogleOAuthSettings(BaseSettings, BaseModel):
+class GoogleOAuthSettings(BaseSettings):
     model_config = SETTINGS_CONFIG
     client_id: Optional[str] = Field(
         default=None, validation_alias=AliasChoices("GOOGLE_CLIENT_ID", "client_id")
@@ -47,7 +47,7 @@ class GoogleOAuthSettings(BaseSettings, BaseModel):
     )
 
 
-class OIDCSettings(BaseSettings, BaseModel):
+class OIDCSettings(BaseSettings):
     model_config = SETTINGS_CONFIG
     client_id: Optional[str] = Field(
         default=None, validation_alias=AliasChoices("OIDC_CLIENT_ID", "client_id")
@@ -64,7 +64,7 @@ class OIDCSettings(BaseSettings, BaseModel):
     )
 
 
-class SCIMAuth(BaseSettings, BaseModel):
+class SCIMAuth(BaseSettings):
     model_config = SETTINGS_CONFIG
     username: Optional[str] = Field(
         default=None, validation_alias=AliasChoices("SCIM_USER", "username")
@@ -74,7 +74,7 @@ class SCIMAuth(BaseSettings, BaseModel):
     )
 
 
-class AuthSettings(BaseSettings, BaseModel):
+class AuthSettings(BaseSettings):
     model_config = SETTINGS_CONFIG
     enabled_auth: Optional[List[str]] = None
     secret_key: Optional[str] = Field(
@@ -94,7 +94,7 @@ class AuthSettings(BaseSettings, BaseModel):
     scim: Optional[SCIMAuth] = Field(default=SCIMAuth())
 
 
-class FeatureFlags(BaseSettings, BaseModel):
+class FeatureFlags(BaseSettings):
     model_config = SETTINGS_CONFIG
     use_agents_view: Optional[bool] = Field(
         default=False,
@@ -102,7 +102,7 @@ class FeatureFlags(BaseSettings, BaseModel):
     )
 
 
-class GDriveSettings(BaseSettings, BaseModel):
+class GDriveSettings(BaseSettings):
     model_config = SETTINGS_CONFIG
     client_id: Optional[str] = Field(
         default=None,
@@ -120,7 +120,7 @@ class GDriveSettings(BaseSettings, BaseModel):
     )
 
 
-class DatabaseSettings(BaseSettings, BaseModel):
+class DatabaseSettings(BaseSettings):
     model_config = SETTINGS_CONFIG
     url: Optional[str] = Field(
         default="postgresql://postgres:postgres@db:5432",
@@ -131,21 +131,21 @@ class DatabaseSettings(BaseSettings, BaseModel):
     )
 
 
-class RedisSettings(BaseSettings, BaseModel):
+class RedisSettings(BaseSettings):
     model_config = SETTINGS_CONFIG
     url: Optional[str] = Field(
         default=None, validation_alias=AliasChoices("REDIS_URL", "url")
     )
 
 
-class GoogleCloudSettings(BaseSettings, BaseModel):
+class GoogleCloudSettings(BaseSettings):
     model_config = SETTINGS_CONFIG
     api_key: Optional[str] = Field(
         default=None, validation_alias=AliasChoices("GOOGLE_CLOUD_API_KEY", "api_key")
     )
 
 
-class DeploymentSettings(BaseSettings, BaseModel):
+class DeploymentSettings(BaseSettings):
     model_config = SETTINGS_CONFIG
     default_deployment: Optional[str] = None
     enabled_deployments: Optional[List[str]] = None
@@ -160,9 +160,9 @@ class Settings(BaseSettings):
     """
 
     model_config = SETTINGS_CONFIG
-    auth: Optional[AuthSettings] = Field(default=AuthSettings())
+    auth: AuthSettings = Field(default=AuthSettings())
     feature_flags: Optional[FeatureFlags] = Field(default=FeatureFlags())
-    database: Optional[DatabaseSettings] = Field(default=DatabaseSettings())
+    database: DatabaseSettings = Field(default=DatabaseSettings())
     redis: Optional[RedisSettings] = Field(default=RedisSettings())
     google_cloud: Optional[GoogleCloudSettings] = Field(default=GoogleCloudSettings())
     deployments: Optional[DeploymentSettings] = Field(default=DeploymentSettings())

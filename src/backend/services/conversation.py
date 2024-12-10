@@ -27,7 +27,7 @@ SEARCH_RELEVANCE_THRESHOLD = 0.3
 
 def validate_conversation(
     session: DBSessionDep, conversation_id: str, user_id: str
-) -> Conversation:
+) -> ConversationModel:
     """Validates if a conversation exists and belongs to the user
 
     Args:
@@ -53,8 +53,7 @@ def validate_conversation(
 def extract_details_from_conversation(
     convo: Conversation,
     num_turns: int = 5,
-    ignore_system: str = True,
-    ignore_tool: str = True,
+    ignore_system: bool = True,
 ) -> str:
     """
     Extracts the last num_turns from a conversation, ignoring system and tool messages
@@ -76,10 +75,6 @@ def extract_details_from_conversation(
     turns = []
     for i in range(start_turn, len_messages):
         message = messages[i]
-
-        # Ignore tool messages
-        if ignore_tool and message.agent == ChatRole.TOOL:
-            continue
 
         if ignore_system and message.agent == ChatRole.SYSTEM:
             continue
@@ -151,7 +146,6 @@ async def filter_conversations(
     query: str,
     conversations: List[Conversation],
     rerank_documents: List[str],
-    model_deployment,
 ) -> List[Conversation]:
     """Filter conversations based on the rerank score
 
@@ -166,40 +160,18 @@ async def filter_conversations(
         List[Conversation]: List of filtered conversations
     """
     # if rerank is not enabled, filter out conversations that don't contain the query
-    if not model_deployment.rerank_enabled:
-        filtered_conversations = []
+    filtered_conversations = []
+    for rerank_document, conversation in zip(rerank_documents, conversations):
+        if query.lower() in rerank_document.lower():
+            filtered_conversations.append(conversation)
 
-        for rerank_document, conversation in zip(rerank_documents, conversations):
-            if query.lower() in rerank_document.lower():
-                filtered_conversations.append(conversation)
-
-        return filtered_conversations
-
-    # Rerank documents
-    res = await model_deployment.invoke_rerank(
-        query=query,
-        documents=rerank_documents,
-    )
-
-    # Sort conversations by rerank score
-    res["results"].sort(key=lambda x: x["relevance_score"], reverse=True)
-
-    # Filter out conversations with low relevance score
-    reranked_conversations = [
-        conversations[r["index"]]
-        for r in res["results"]
-        if r["relevance_score"] > SEARCH_RELEVANCE_THRESHOLD
-    ]
-
-    return reranked_conversations
+    return filtered_conversations
 
 
 async def generate_conversation_title(
     session: DBSessionDep,
-    conversation: ConversationModel,
+    conversation: Conversation,
     user_id: str,
-    agent_id: str,
-    model: Optional[str] = None,
 ) -> tuple[str, str]:
     """Generate a title for a conversation
 

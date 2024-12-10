@@ -8,7 +8,7 @@ from backend.schemas.user import CreateUser, DeleteUser, UpdateUser, User
 from backend.schemas.user import User as UserSchema
 
 router = APIRouter(prefix="/v1/users")
-router.name = RouterName.USER
+router.name = RouterName.USER  # type: ignore
 
 
 @router.post("", response_model=User)

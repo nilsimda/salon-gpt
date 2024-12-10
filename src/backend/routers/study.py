@@ -25,7 +25,7 @@ from backend.services.study import (
 router = APIRouter(
     prefix="/v1/studies",
 )
-router.name = RouterName.STUDY
+router.name = RouterName.STUDY  # type: ignore
 
 
 @router.post(

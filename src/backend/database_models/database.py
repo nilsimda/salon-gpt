@@ -11,6 +11,7 @@ from backend.database_models.base import CustomFilterQuery
 load_dotenv()
 
 SQLALCHEMY_DATABASE_URL = Settings().database.url
+assert SQLALCHEMY_DATABASE_URL is not None, "DATABASE_URL is not set"
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, pool_size=5, max_overflow=10, pool_timeout=30
 )
