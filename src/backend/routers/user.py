@@ -1,13 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request
 
 from backend.config.routers import RouterName
 from backend.crud import user as user_crud
 from backend.database_models import User as UserModel
 from backend.database_models.database import DBSessionDep
-from backend.schemas.context import Context
 from backend.schemas.user import CreateUser, DeleteUser, UpdateUser, User
 from backend.schemas.user import User as UserSchema
-from backend.services.context import get_context
 
 router = APIRouter(prefix="/v1/users")
 router.name = RouterName.USER
@@ -17,7 +15,6 @@ router.name = RouterName.USER
 async def create_user(
     user: CreateUser,
     session: DBSessionDep,
-    ctx: Context = Depends(get_context),
 ) -> User:
     """
     Create a new user.
@@ -34,7 +31,6 @@ async def create_user(
     db_user = user_crud.create_user(session, db_user)
 
     user_schema = UserSchema.model_validate(db_user)
-    ctx.with_user(user=user_schema)
 
     return db_user
 
@@ -45,7 +41,6 @@ async def list_users(
     offset: int = 0,
     limit: int = 100,
     session: DBSessionDep,
-    ctx: Context = Depends(get_context),
 ) -> list[User]:
     """
     List all users.
@@ -66,7 +61,6 @@ async def list_users(
 async def get_user(
     user_id: str,
     session: DBSessionDep,
-    ctx: Context = Depends(get_context),
 ) -> User:
     """
     Get a user by ID.
@@ -90,7 +84,6 @@ async def get_user(
         )
 
     user_schema = UserSchema.model_validate(user)
-    ctx.with_user(user=user_schema)
     return user
 
 
@@ -100,7 +93,6 @@ async def update_user(
     new_user: UpdateUser,
     session: DBSessionDep,
     request: Request,
-    ctx: Context = Depends(get_context),
 ) -> User:
     """
     Update a user by ID.
@@ -127,7 +119,6 @@ async def update_user(
 
     user = user_crud.update_user(session, user, new_user)
     user_schema = UserSchema.model_validate(user)
-    ctx.with_user(user=user_schema)
 
     return user
 
@@ -136,7 +127,6 @@ async def update_user(
 async def delete_user(
     user_id: str,
     session: DBSessionDep,
-    ctx: Context = Depends(get_context),
 ) -> DeleteUser:
     """ "
     Delete a user by ID.
@@ -160,7 +150,6 @@ async def delete_user(
         )
 
     user_schema = UserSchema.model_validate(user)
-    ctx.with_user(user=user_schema)
     user_crud.delete_user(session, user_id)
 
     return DeleteUser()

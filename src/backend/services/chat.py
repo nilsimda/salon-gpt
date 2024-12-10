@@ -1,5 +1,5 @@
 import json
-from typing import Any, AsyncGenerator, Generator
+from typing import Any, AsyncGenerator, Generator, Optional
 from uuid import uuid4
 
 from fastapi import HTTPException, Request
@@ -59,6 +59,20 @@ def process_chat(
     # Get position to put next message in
     next_message_position = get_next_message_position(conversation)
 
+    # store user message
+    create_message(
+        session,
+        chat_request,
+        conversation.id,
+        user_id,
+        next_message_position,
+        chat_request.message,
+        MessageAgent.USER,
+        should_store,
+        id=str(uuid4()),
+    )
+
+    # store chatbot message
     chatbot_message = create_message(
         session,
         chat_request,
@@ -83,73 +97,6 @@ def process_chat(
         chatbot_message,
         should_store,
         next_message_position,
-    )
-
-
-def process_message_regeneration(
-    session: DBSessionDep,
-    chat_request: BaseChatRequest,
-    request: Request,
-) -> tuple[DBSessionDep, BaseChatRequest, Message, list[str]]:
-    """
-    Process message regeneration.
-
-    Args:
-        session (DBSessionDep): Database session.
-        chat_request (CohereChatRequest): Chat request data.
-        request (Request): Request object.
-        ctx (Context): Context object.
-
-    Returns:
-        Tuple: Tuple containing necessary data to regenerate message.
-    """
-    user_id = chat_request.user_id
-
-    conversation_id = chat_request.conversation_id
-
-    conversation = conversation_crud.get_conversation(session, conversation_id, user_id)
-    if not conversation:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Conversation with ID: {conversation_id} not found.",
-        )
-
-    last_user_message = get_last_message(conversation, user_id, MessageAgent.USER)
-
-    new_chatbot_message = create_message(
-        session,
-        chat_request,
-        conversation.id,
-        user_id,
-        last_user_message.position,
-        "",
-        MessageAgent.CHATBOT,
-        False,
-        id=str(uuid4()),
-    )
-
-    previous_chatbot_message_ids = [
-        message.id
-        for message in conversation.messages
-        if (
-            message.is_active
-            and message.user_id == user_id
-            and message.position == last_user_message.position
-            and message.agent == MessageAgent.CHATBOT
-        )
-    ]
-
-    chat_request.message = last_user_message.text
-    chat_request.conversation_id = ""
-    chat_request.chat_history = create_chat_history(
-        conversation, last_user_message.position, chat_request
-    )
-
-    return (
-        session,
-        chat_request,
-        new_chatbot_message,
-        previous_chatbot_message_ids,
     )
 
 
@@ -365,11 +312,11 @@ def update_conversation_after_turn(
 
 async def generate_chat_response(
     session: DBSessionDep,
-    model_deployment_stream: Generator[Any, None, None],
+    model_deployment_stream: AsyncGenerator[Any, Any],
     response_message: Message,
     should_store: bool = True,
     **kwargs: Any,
-) -> NonStreamedChatResponse:
+) -> Optional[StreamEnd]:
     """
     Generate chat response from model deployment non streaming response.
     Use the stream to generate the response and all the intermediate steps, then
@@ -377,7 +324,7 @@ async def generate_chat_response(
 
     Args:
         session (DBSessionDep): Database session.
-        model_deployment_stream (Generator[StreamResponse, None, None]): Model deployment stream.
+        model_deployment_stream (AsyncGenerator[Any, Any]): Model deployment stream.
         response_message (Message): Response message object.
         should_store (bool): Whether to store the conversation in the database.
         ctx (Context): Context object.
@@ -399,18 +346,13 @@ async def generate_chat_response(
         event = json.loads(event)
         if event["event"] == StreamEvent.STREAM_END:
             data = event["data"]
-            response_id = ctx.get_trace_id()
             generation_id = response_message.generation_id if response_message else None
 
-            non_streamed_chat_response = NonStreamedChatResponse(
+            non_streamed_chat_response = StreamEnd(
                 text=data.get("text", ""),
-                response_id=response_id,
                 generation_id=generation_id,
                 chat_history=data.get("chat_history", []),
                 finish_reason=data.get("finish_reason", ""),
-                search_results=data.get("search_results", []),
-                event_type=StreamEvent.NON_STREAMED_CHAT_RESPONSE,
-                conversation_id=ctx.get_conversation_id(),
                 error=data.get("error", None),
             )
 

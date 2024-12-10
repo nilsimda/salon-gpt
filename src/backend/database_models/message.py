@@ -11,7 +11,6 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.database_models.base import Base
-from backend.database_models.citation import Citation
 
 
 class MessageAgent(StrEnum):
@@ -33,7 +32,6 @@ class Message(Base):
     position: Mapped[int]
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     generation_id: Mapped[str] = mapped_column(String, nullable=True)
-    citations: Mapped[List[Citation]] = relationship()
 
     agent: Mapped[MessageAgent] = mapped_column(
         Enum(MessageAgent, native_enum=False),

@@ -5,9 +5,6 @@ from backend.crud import conversation as conversation_crud
 from backend.crud import study as study_crud
 from backend.database_models.database import DBSessionDep
 from backend.services.auth.utils import get_header_user_id
-from backend.services.logger.utils import LoggerFactory
-
-logger = LoggerFactory().get_logger()
 
 # TODO: validate searchrequest/transcription request
 
@@ -27,15 +24,16 @@ def validate_user_header(session: DBSessionDep, request: Request):
 
     user_id = get_header_user_id(request)
     if not user_id:
-        logger.error(event="User-Id required in request headers.")
+        print("User-Id required in request headers.")
         raise HTTPException(
             status_code=401, detail="User-Id required in request headers."
         )
 
     user = user_crud.get_user(session, user_id)
     if not user:
-        logger.error(event="User not found.", user_id=user_id)
+        print(f"User {user_id} not found.")
         raise HTTPException(status_code=401, detail="User not found.")
+
 
 async def validate_chat_request(session: DBSessionDep, request: Request):
     """

@@ -9,23 +9,19 @@ from backend.crud import blacklist as blacklist_crud
 from backend.database_models import Blacklist
 from backend.database_models.database import DBSessionDep
 from backend.schemas.auth import JWTResponse, ListAuthStrategy, Login, Logout
-from backend.schemas.context import Context
 from backend.services.auth.jwt import JWTService
 from backend.services.auth.request_validators import validate_authorization
 from backend.services.auth.utils import (
     get_or_create_user,
     is_enabled_authentication_strategy,
 )
-from backend.services.context import get_context
 
 router = APIRouter(prefix="/v1")
 router.name = RouterName.AUTH
 
 
 @router.get("/auth_strategies", response_model=list[ListAuthStrategy])
-def get_strategies(
-    ctx: Context = Depends(get_context),
-) -> list[ListAuthStrategy]:
+def get_strategies() -> list[ListAuthStrategy]:
     """
     Retrieves the currently enabled list of Authentication strategies.
 
@@ -61,9 +57,7 @@ def get_strategies(
 
 
 @router.post("/login", response_model=Union[JWTResponse, None])
-async def login(
-    login: Login, session: DBSessionDep, ctx: Context = Depends(get_context)
-):
+async def login(login: Login, session: DBSessionDep):
     """
     Logs user in, performing basic email/password auth.
     Verifies their credentials, retrieves the user and returns a JWT token.
@@ -79,13 +73,12 @@ async def login(
     Raises:
         HTTPException: If the strategy or payload are invalid, or if the login fails.
     """
-    logger = ctx.get_logger()
     strategy_name = login.strategy
     payload = login.payload
 
     if not is_enabled_authentication_strategy(strategy_name):
-        logger.error(
-            event=f"[Auth] Error logging in: Invalid authentication strategy {strategy_name}",
+        print(
+            f"[Auth] Error logging in: Invalid authentication strategy {strategy_name}"
         )
         raise HTTPException(
             status_code=422, detail=f"Invalid Authentication strategy: {strategy_name}."
@@ -96,9 +89,6 @@ async def login(
     strategy_payload = strategy.get_required_payload()
     if not set(strategy_payload).issubset(payload.keys()):
         missing_keys = [key for key in strategy_payload if key not in payload.keys()]
-        logger.error(
-            event=f"[Auth] Error logging in: Keys {missing_keys} missing from payload",
-        )
         raise HTTPException(
             status_code=422,
             detail=f"Missing the following keys in the payload: {missing_keys}.",
@@ -106,9 +96,6 @@ async def login(
 
     user = strategy.login(session, payload)
     if not user:
-        logger.error(
-            event=f"[Auth] Error logging in: Invalid credentials in payload {payload}",
-        )
         raise HTTPException(
             status_code=401,
             detail=f"Error performing {strategy_name} authentication with payload: {payload}.",
@@ -125,7 +112,6 @@ async def authorize(
     request: Request,
     session: DBSessionDep,
     code: str = None,
-    ctx: Context = Depends(get_context),
 ):
     """
     Callback authorization endpoint used for OAuth providers after authenticating on the provider's login screen.
@@ -143,12 +129,8 @@ async def authorize(
     Raises:
         HTTPException: If authentication fails, or strategy is invalid.
     """
-    logger = ctx.get_logger()
 
     if not code:
-        logger.error(
-            event="[Auth] Error authorizing login: No code provided",
-        )
         raise HTTPException(
             status_code=400,
             detail="Error calling /auth with invalid code query parameter.",
@@ -160,18 +142,12 @@ async def authorize(
             strategy_name = enabled_strategy_name
 
     if not strategy_name:
-        logger.error(
-            event=f"[Auth] Error authorizing login: Invalid strategy {strategy_name}",
-        )
         raise HTTPException(
             status_code=400,
             detail=f"Error calling /auth with invalid strategy name: {strategy_name}.",
         )
 
     if not is_enabled_authentication_strategy(strategy_name):
-        logger.error(
-            event=f"[Auth] Error authorizing login: Strategy {strategy_name} not enabled",
-        )
         raise HTTPException(
             status_code=404, detail=f"Invalid Authentication strategy: {strategy_name}."
         )
@@ -187,9 +163,6 @@ async def authorize(
         )
 
     if not userinfo:
-        logger.error(
-            event="[Auth] Error authorizing login: Invalid token",
-        )
         raise HTTPException(
             status_code=401, detail="Could not get user from auth token."
         )
@@ -207,7 +180,6 @@ async def logout(
     request: Request,
     session: DBSessionDep,
     token: dict | None = Depends(validate_authorization),
-    ctx: Context = Depends(get_context),
 ):
     """
     Logs out the current user, adding the given JWT token to the blacklist.

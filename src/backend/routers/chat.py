@@ -11,7 +11,6 @@ from backend.schemas.chat import (
 from backend.services.chat import (
     generate_chat_stream,
     process_chat,
-    process_message_regeneration,
 )
 
 router = APIRouter(
@@ -54,46 +53,6 @@ async def chat_stream(
             response_message,
             should_store=should_store,
             next_message_position=next_message_position,
-        ),
-        media_type="text/event-stream",
-        headers={"Connection": "keep-alive"},
-        send_timeout=300,
-        ping=5,
-    )
-
-
-@router.post("/chat-stream/regenerate")
-async def regenerate_chat_stream(
-    session: DBSessionDep,
-    chat_request: BaseChatRequest,
-    request: Request,
-) -> EventSourceResponse:
-    """
-    Endpoint to regenerate stream chat response for the last user message.
-
-    Args:
-        session (DBSessionDep): Database session.
-        chat_request (CohereChatRequest): Chat request data.
-        request (Request): Request object.
-        ctx (Context): Context object.
-
-    Returns:
-        EventSourceResponse: Server-sent event response with chatbot responses.
-    """
-    (
-        session,
-        chat_request,
-        new_response_message,
-        previous_response_message_ids,
-    ) = process_message_regeneration(session, chat_request, request)
-
-    return EventSourceResponse(
-        generate_chat_stream(
-            session,
-            TGIDeployment().invoke_chat_stream(chat_request),
-            new_response_message,
-            next_message_position=new_response_message.position,
-            previous_response_message_ids=previous_response_message_ids,
         ),
         media_type="text/event-stream",
         headers={"Connection": "keep-alive"},

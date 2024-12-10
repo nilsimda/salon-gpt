@@ -1,12 +1,10 @@
 import datetime
 import uuid
+from typing import Optional
 
 import jwt
 
 from backend.config.settings import Settings
-from backend.services.logger.utils import LoggerFactory
-
-logger = LoggerFactory().get_logger()
 
 
 class JWTService:
@@ -47,7 +45,7 @@ class JWTService:
 
         return token
 
-    def decode_jwt(self, token: str) -> dict:
+    def decode_jwt(self, token: str) -> Optional[dict]:
         """
         Decodes a given JWT token.
 
@@ -63,8 +61,8 @@ class JWTService:
             )
             return decoded_payload
         except jwt.ExpiredSignatureError:
-            logger.warning(event="[Auth] JWT token is expired.")
+            print("[Auth] JWT token is expired.")
             return None
         except jwt.InvalidTokenError:
-            logger.warning(event="[Auth] JWT token is invalid.")
+            print("[Auth] JWT token is expired.")
             return None

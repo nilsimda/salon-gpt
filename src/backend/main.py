@@ -18,11 +18,8 @@ from backend.routers.chat import router as chat_router
 from backend.routers.conversation import router as conversation_router
 from backend.routers.scim import SCIMException, scim_exception_handler
 from backend.routers.scim import router as scim_router
-from backend.routers.snapshot import router as snapshot_router
 from backend.routers.study import router as study_router
 from backend.routers.user import router as user_router
-from backend.services.context import ContextMiddleware, get_context
-from backend.services.logger.middleware import LoggingMiddleware
 
 load_dotenv()
 
@@ -38,7 +35,6 @@ def create_app():
         chat_router,
         user_router,
         conversation_router,
-        snapshot_router,
         study_router,
         scim_router,
     ]
@@ -67,8 +63,6 @@ def create_app():
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    app.add_middleware(LoggingMiddleware)
-    app.add_middleware(ContextMiddleware)  # This should be the first middleware
     app.add_exception_handler(SCIMException, scim_exception_handler)
 
     return app

@@ -1,12 +1,9 @@
 import datetime
-from typing import List, Optional, Union
+from typing import Optional, Union
 
 from pydantic import BaseModel
 
 from backend.database_models.message import MessageAgent
-from backend.schemas.citation import Citation
-from backend.schemas.file import ConversationFilePublic
-from backend.schemas.interview import Interview
 
 
 class MessageBase(BaseModel):
@@ -22,10 +19,6 @@ class Message(MessageBase):
 
     position: int
     is_active: bool
-
-    documents: List[Interview]
-    citations: List[Citation]
-    files: List[ConversationFilePublic]
 
     agent: MessageAgent
 

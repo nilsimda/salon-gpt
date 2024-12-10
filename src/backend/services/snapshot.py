@@ -62,11 +62,10 @@ def wrap_create_snapshot(
     last_message_id: str,
     user_id: str,
     conversation: Conversation,
-    ctx: Context,
 ) -> SnapshotModel:
     snapshot_agent = None
 
-    messages = get_messages_with_files(session, user_id, conversation.messages, ctx)
+    messages = get_messages_with_files(session, user_id, conversation.messages)
     snapshot_data = SnapshotData(
         title=conversation.title,
         description=conversation.description,
@@ -77,7 +76,6 @@ def wrap_create_snapshot(
 
     snapshot_model = SnapshotModel(
         user_id=user_id,
-        organization_id=conversation.organization_id,
         conversation_id=conversation.id,
         last_message_id=last_message_id,
         version=SNAPSHOT_VERSION,

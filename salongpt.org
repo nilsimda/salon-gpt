@@ -1,0 +1,4 @@
+* Backend
+** TODO Finish up prompts
+** TODO Add regenerate back
+** TODO Simplify chat stream a lot 

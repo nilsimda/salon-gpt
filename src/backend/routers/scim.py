@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
@@ -11,7 +11,6 @@ from backend.config.routers import RouterName
 from backend.database_models import DBSessionDep, UserGroupAssociation
 from backend.database_models import Group as DBGroup
 from backend.database_models import User as DBUser
-from backend.schemas.context import Context
 from backend.schemas.scim import (
     CreateGroup,
     CreateUser,
@@ -23,7 +22,6 @@ from backend.schemas.scim import (
     UpdateUser,
     User,
 )
-from backend.services.context import get_context
 
 SCIM_PREFIX = "/scim/v2"
 scim_auth = Settings().auth.scim
@@ -87,20 +85,16 @@ async def get_users(
 
 
 @router.get("/Users/{user_id}")
-async def get_user(
-    user_id: str, session: DBSessionDep, ctx: Context = Depends(get_context)
-):
-    logger = ctx.get_logger()
+async def get_user(user_id: str, session: DBSessionDep) -> User:
     db_user = user_crud.get_user(session, user_id)
     if not db_user:
-        logger.error(event="[SCIM] user not found", user_id=user_id)
         raise SCIMException(status_code=404, detail="User not found")
 
     return User.from_db_user(db_user)
 
 
 @router.post("/Users", status_code=201)
-async def create_user(user: CreateUser, session: DBSessionDep):
+async def create_user(user: CreateUser, session: DBSessionDep) -> User:
     db_user = user_crud.get_user_by_external_id(session, user.externalId)
     if not db_user:
         db_user = DBUser()
@@ -120,12 +114,9 @@ async def update_user(
     user_id: str,
     user: UpdateUser,
     session: DBSessionDep,
-    ctx: Context = Depends(get_context),
-):
-    logger = ctx.get_logger()
+) -> User:
     db_user = user_crud.get_user(session, user_id)
     if not db_user:
-        logger.error(event="[SCIM] user not found", user_id=user_id)
         raise SCIMException(status_code=404, detail="User not found")
 
     db_user.user_name = user.user_name
@@ -144,12 +135,9 @@ async def patch_user(
     user_id: str,
     patch: PatchUser,
     session: DBSessionDep,
-    ctx: Context = Depends(get_context),
-):
-    logger = ctx.get_logger()
+) -> User:
     db_user = user_crud.get_user(session, user_id)
     if not db_user:
-        logger.error(event="[SCIM] user not found", user_id=user_id)
         raise SCIMException(status_code=404, detail="User not found")
 
     for operation in patch.Operations:
@@ -199,20 +187,16 @@ async def get_groups(
 
 
 @router.get("/Groups/{group_id}")
-async def get_group(
-    group_id: str, session: DBSessionDep, ctx: Context = Depends(get_context)
-):
-    logger = ctx.get_logger()
+async def get_group(group_id: str, session: DBSessionDep) -> Group:
     db_group = group_crud.get_group(session, group_id)
     if not db_group:
-        logger.error(event="[SCIM] group not found", group_id=group_id)
         raise SCIMException(status_code=404, detail="Group not found")
 
     return Group.from_db_group(db_group)
 
 
 @router.post("/Groups", status_code=201)
-async def create_group(group: CreateGroup, session: DBSessionDep):
+async def create_group(group: CreateGroup, session: DBSessionDep) -> Group:
     db_group = group_crud.get_group_by_name(session, group.display_name)
     if not db_group:
         db_group = DBGroup()
@@ -228,12 +212,9 @@ async def patch_group(
     group_id: str,
     patch: PatchGroup,
     session: DBSessionDep,
-    ctx: Context = Depends(get_context),
-):
-    logger = ctx.get_logger()
+) -> Group:
     db_group = group_crud.get_group(session, group_id)
     if not db_group:
-        logger.error(event="[SCIM] group not found", group_id=group_id)
         raise SCIMException(status_code=404, detail="Group not found")
 
     for operation in patch.Operations:
@@ -265,13 +246,9 @@ async def patch_group(
 
 
 @router.delete("/Groups/{group_id}", status_code=204)
-async def delete_group(
-    group_id: str, session: DBSessionDep, ctx: Context = Depends(get_context)
-):
-    logger = ctx.get_logger()
+async def delete_group(group_id: str, session: DBSessionDep):
     db_group = group_crud.get_group(session, group_id)
     if not db_group:
-        logger.error(event="[SCIM] group not found", group_id=group_id)
         raise SCIMException(status_code=404, detail="Group not found")
     group_crud.delete_group(session, group_id)
 

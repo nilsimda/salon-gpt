@@ -6,7 +6,6 @@ from backend.config.routers import RouterName
 from backend.crud import study as study_crud
 from backend.database_models.database import DBSessionDep
 from backend.database_models.study import Study as StudyModel
-from backend.schemas.context import Context
 from backend.schemas.interview import Interview
 from backend.schemas.study import (
     CreateStudyRequest,
@@ -14,14 +13,12 @@ from backend.schemas.study import (
     Study,
     UpdateStudyRequest,
 )
-from backend.services.context import get_context
 from backend.services.request_validators import (
     validate_create_study_request,
     validate_update_study_request,
     validate_user_header,
 )
 from backend.services.study import (
-    raise_db_error,
     validate_study_exists,
 )
 
@@ -29,6 +26,7 @@ router = APIRouter(
     prefix="/v1/studies",
 )
 router.name = RouterName.STUDY
+
 
 @router.post(
     "",
@@ -41,7 +39,6 @@ router.name = RouterName.STUDY
 async def create_study(
     session: DBSessionDep,
     study: CreateStudyRequest,
-    ctx: Context = Depends(get_context),
 ) -> Study:
     """
     Create a study.
@@ -55,26 +52,19 @@ async def create_study(
     Raises:
         HTTPException: If the study creation fails.
     """
-    ctx.with_user(session)
-    logger = ctx.get_logger()
-
     study_data = StudyModel(
         name=study.name,
         description=study.description,
-        individual_interview_count=study.individual_interview_count,
         group_interview_count=study.group_interview_count,
-        organization_id=study.organization_id,
-        is_being_added = False
+        is_being_added=False,
     )
 
     try:
         created_study = study_crud.create_study(session, study_data)
-        study_schema = Study.model_validate(created_study)
-        ctx.with_study(study_schema)
         return created_study
     except Exception as e:
-        logger.exception(event=e)
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.get("", response_model=list[Study])
 async def list_studies(
@@ -83,7 +73,6 @@ async def list_studies(
     limit: int = 100,
     session: DBSessionDep,
     organization_id: Optional[str] = None,
-    ctx: Context = Depends(get_context),
 ) -> list[Study]:
     """
     List all studies.
@@ -97,31 +86,20 @@ async def list_studies(
     Returns:
         list[Study]: List of studies.
     """
-    user_id = ctx.get_user_id()
-    logger = ctx.get_logger()
-
-    if organization_id:
-        ctx.without_global_filtering()
-
     try:
         studies = study_crud.get_studies(
             session,
-            user_id=user_id,
             offset=offset,
             limit=limit,
             organization_id=organization_id,
         )
         return studies
     except Exception as e:
-        logger.exception(event=e)
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @router.get("/{study_id}", response_model=Study)
-async def get_study_by_id(
-    study_id: str,
-    session: DBSessionDep,
-    ctx: Context = Depends(get_context)
-) -> Study:
+async def get_study_by_id(study_id: str, session: DBSessionDep) -> Study:
     """
     Get study by ID.
 
@@ -136,11 +114,10 @@ async def get_study_by_id(
     Raises:
         HTTPException: If the study is not found.
     """
-    user_id = ctx.get_user_id()
     study = None
 
     try:
-        study = study_crud.get_study_by_id(session, study_id, user_id)
+        study = study_crud.get_study_by_id(session, study_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -150,9 +127,8 @@ async def get_study_by_id(
             detail=f"Study with ID {study_id} not found.",
         )
 
-    study_schema = Study.model_validate(study)
-    ctx.with_study(study_schema)
     return study
+
 
 @router.put(
     "/{study_id}",
@@ -166,7 +142,6 @@ async def update_study(
     study_id: str,
     new_study: UpdateStudyRequest,
     session: DBSessionDep,
-    ctx: Context = Depends(get_context),
 ) -> Study:
     """
     Update a study by ID.
@@ -183,26 +158,20 @@ async def update_study(
     Raises:
         HTTPException: If the study is not found.
     """
-    user_id = ctx.get_user_id()
-    ctx.with_user(session)
-    study = validate_study_exists(session, study_id, user_id)
+    study = validate_study_exists(session, study_id)
 
     try:
-        study = study_crud.update_study(
-            session, study, new_study, user_id
-        )
-        study_schema = Study.model_validate(study)
-        ctx.with_study(study_schema)
+        study = study_crud.update_study(session, study, new_study)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
     return study
 
+
 @router.delete("/{study_id}", response_model=DeleteStudy)
 async def delete_study(
     study_id: str,
     session: DBSessionDep,
-    ctx: Context = Depends(get_context),
 ) -> DeleteStudy:
     """
     Delete a study by ID.
@@ -218,21 +187,16 @@ async def delete_study(
     Raises:
         HTTPException: If the study is not found.
     """
-    user_id = ctx.get_user_id()
-    study = validate_study_exists(session, study_id, user_id)
-    study_schema = Study.model_validate(study)
-    ctx.with_study(study_schema)
-
-    deleted = study_crud.delete_study(session, study_id, user_id)
+    study = validate_study_exists(session, study_id)
+    deleted = study_crud.delete_study(session, study_id)
     if not deleted:
         raise HTTPException(status_code=401, detail="Could not delete Study.")
 
     return DeleteStudy()
 
+
 @router.get("/{study_id}/interviews", response_model=list[Interview])
-async def list_files(
-    study_id: str, session: DBSessionDep, ctx: Context = Depends(get_context)
-) -> list[Interview]:
+async def list_files(study_id: str, session: DBSessionDep) -> list[Interview]:
     """
     List all interviews from a study. Important - no pagination support yet.
 
@@ -247,7 +211,6 @@ async def list_files(
     Raises:
         HTTPException: If the study with the given ID is not found.
     """
-    user_id = ctx.get_user_id()
-    _ = validate_study_exists(session, study_id, user_id)
+    _ = validate_study_exists(session, study_id)
 
     return study_crud.get_interviews_by_study(session, study_id)

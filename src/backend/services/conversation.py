@@ -8,11 +8,9 @@ from backend.database_models.conversation import Conversation as ConversationMod
 from backend.database_models.database import DBSessionDep
 from backend.model_deployments import TGIDeployment
 from backend.schemas.chat import BaseChatRequest, ChatRole
-from backend.schemas.context import Context
 from backend.schemas.conversation import Conversation
 from backend.schemas.message import Message
 from backend.services.chat import generate_chat_response
-from backend.services.file import attach_conversation_id_to_files, get_file_service
 
 DEFAULT_TITLE = "New Conversation"
 GENERATE_TITLE_PROMPT = """# TASK
@@ -95,7 +93,7 @@ def extract_details_from_conversation(
 
 
 def get_messages_with_files(
-    session: DBSessionDep, user_id: str, messages: list[MessageModel], ctx: Context
+    session: DBSessionDep, user_id: str, messages: list[MessageModel]
 ) -> list[Message]:
     """
     Get messages and use the file service to get the files associated with each message
@@ -111,12 +109,6 @@ def get_messages_with_files(
     messages_with_file = []
 
     for message in messages:
-        files = get_file_service().get_files_by_message_id(
-            session, message.id, user_id, ctx
-        )
-        files_with_conversation_id = attach_conversation_id_to_files(
-            message.conversation_id, files
-        )
         messages_with_file.append(
             Message(
                 id=message.id,
@@ -126,11 +118,6 @@ def get_messages_with_files(
                 generation_id=message.generation_id,
                 position=message.position,
                 is_active=message.is_active,
-                files=files_with_conversation_id,
-                documents=[],
-                citations=message.citations,
-                tool_calls=message.tool_calls,
-                tool_plan=message.tool_plan,
                 agent=message.agent,
             )
         )
@@ -165,7 +152,6 @@ async def filter_conversations(
     conversations: List[Conversation],
     rerank_documents: List[str],
     model_deployment,
-    ctx: Context,
 ) -> List[Conversation]:
     """Filter conversations based on the rerank score
 
@@ -193,7 +179,6 @@ async def filter_conversations(
     res = await model_deployment.invoke_rerank(
         query=query,
         documents=rerank_documents,
-        ctx=ctx,
     )
 
     # Sort conversations by rerank score
@@ -212,8 +197,8 @@ async def filter_conversations(
 async def generate_conversation_title(
     session: DBSessionDep,
     conversation: ConversationModel,
+    user_id: str,
     agent_id: str,
-    ctx: Context,
     model: Optional[str] = None,
 ) -> tuple[str, str]:
     """Generate a title for a conversation
@@ -231,8 +216,6 @@ async def generate_conversation_title(
         str: Generated title
         str: Error message
     """
-    user_id = ctx.get_user_id()
-    logger = ctx.get_logger()
     title = ""
     error = None
 
@@ -249,13 +232,11 @@ async def generate_conversation_title(
             session,
             TGIDeployment().invoke_chat(
                 chat_request,
-                ctx=ctx,
             ),
             response_message=None,
             conversation_id=None,
             user_id=user_id,
             should_store=False,
-            ctx=ctx,
         )
 
         title = response.text

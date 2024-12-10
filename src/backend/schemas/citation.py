@@ -1,28 +1,21 @@
 from typing import Annotated
-
-from annotated_types import Len
 from pydantic import BaseModel, Field
 
 
 class Citation(BaseModel):
-    """
-    Represents a single quote with a confidence score.
-    """
-
-    text: str = Field(..., description="Zitat aus dem Interview")
+    text: str = Field(..., description="Der eigentliche Text des Zitats.")
     confidence_score: Annotated[
         float,
         Field(
+            ...,
+            description="Die Zuversichtlichkeit des Modells, dass das Zitat korrekt ist.",
             gt=0,
             lt=1,
-            description="Wie sicher bist du dir mit deiner Antwort auf einer Skala von 0.0-1.0",
         ),
     ]
 
 
 class CitationList(BaseModel):
-    """
-    Represents a list of quotes.
-    """
-
-    zitate: Annotated[list[Citation], Len(min_length=1, max_length=10)]
+    zitate: list[Citation] = Field(
+        ..., description="Eine Liste von Zitaten, die in einem Text gefunden wurden."
+    )
