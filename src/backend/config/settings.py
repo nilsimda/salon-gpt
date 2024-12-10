@@ -151,19 +151,6 @@ class DeploymentSettings(BaseSettings, BaseModel):
     enabled_deployments: Optional[List[str]] = None
 
 
-class LoggerSettings(BaseSettings, BaseModel):
-    model_config = SETTINGS_CONFIG
-    level: Optional[str] = Field(
-        default="INFO", validation_alias=AliasChoices("LOG_LEVEL", "level")
-    )
-    strategy: Optional[str] = Field(
-        default="structlog", validation_alias=AliasChoices("LOG_STRATEGY", "strategy")
-    )
-    renderer: Optional[str] = Field(
-        default="json", validation_alias=AliasChoices("LOG_RENDERER", "renderer")
-    )
-
-
 class Settings(BaseSettings):
     """
     Settings class used to grab environment variables from configuration.yaml
@@ -179,7 +166,6 @@ class Settings(BaseSettings):
     redis: Optional[RedisSettings] = Field(default=RedisSettings())
     google_cloud: Optional[GoogleCloudSettings] = Field(default=GoogleCloudSettings())
     deployments: Optional[DeploymentSettings] = Field(default=DeploymentSettings())
-    logger: Optional[LoggerSettings] = Field(default=LoggerSettings())
 
     @classmethod
     def settings_customise_sources(

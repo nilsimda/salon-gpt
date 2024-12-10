@@ -46,7 +46,7 @@ async def create_study(
     Args:
         session (DBSessionDep): Database session.
         study (CreateStudyRequest): Study data.
-        ctx (Context): Context object.
+          (Context): Context object.
     Returns:
         Study: Created study with no user ID or organization ID.
     Raises:
@@ -81,7 +81,7 @@ async def list_studies(
         offset (int): Offset to start the list.
         limit (int): Limit of studies to be listed.
         session (DBSessionDep): Database session.
-        ctx (Context): Context object.
+          (Context): Context object.
 
     Returns:
         list[Study]: List of studies.
@@ -106,7 +106,7 @@ async def get_study_by_id(study_id: str, session: DBSessionDep) -> Study:
     Args:
         study_id (str): Study ID.
         session (DBSessionDep): Database session.
-        ctx (Context): Context object.
+          (Context): Context object.
 
     Returns:
         Study: Study.
@@ -150,7 +150,7 @@ async def update_study(
         study_id (str): Study ID.
         new_study (UpdateStudyRequest): New study data.
         session (DBSessionDep): Database session.
-        ctx (Context): Context object.
+          (Context): Context object.
 
     Returns:
         Study: Updated study.
@@ -179,7 +179,7 @@ async def delete_study(
     Args:
         study_id (str): Study ID.
         session (DBSessionDep): Database session.
-        ctx (Context): Context object.
+          (Context): Context object.
 
     Returns:
         DeleteStudy: Empty response.
@@ -203,7 +203,7 @@ async def list_files(study_id: str, session: DBSessionDep) -> list[Interview]:
     Args:
         study_id (str): Study ID.
         session (DBSessionDep): Database session.
-        ctx (Context): Context object.
+          (Context): Context object.
 
     Returns:
         list[Interview]: List of interviews from the study.

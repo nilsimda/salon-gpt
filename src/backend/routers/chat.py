@@ -16,7 +16,7 @@ from backend.services.chat import (
 router = APIRouter(
     prefix="/v1",
 )
-router.name = RouterName.CHAT
+router.name = RouterName.CHAT  # type: ignore
 
 
 @router.post("/chat-stream")
@@ -32,7 +32,7 @@ async def chat_stream(
         session (DBSessionDep): Database session.
         chat_request (CohereChatRequest): Chat request data.
         request (Request): Request object.
-        ctx (Context): Context object.
+          (Context): Context object.
 
     Returns:
         EventSourceResponse: Server-sent event response with chatbot responses.
@@ -74,7 +74,7 @@ async def search_stream(
         session (DBSessionDep): Database session.
         search_request (SearchChatRequest): Search request data.
         request (Request): Request object.
-        ctx (Context): Context object.
+          (Context): Context object.
 
     Returns:
         EventSourceResponse: Server-sent event response with chatbot responses.

@@ -327,7 +327,7 @@ async def generate_chat_response(
         model_deployment_stream (AsyncGenerator[Any, Any]): Model deployment stream.
         response_message (Message): Response message object.
         should_store (bool): Whether to store the conversation in the database.
-        ctx (Context): Context object.
+          (Context): Context object.
         **kwargs (Any): Additional keyword arguments.
 
     Yields:
@@ -378,7 +378,7 @@ async def generate_chat_stream(
         conversation_id (str): Conversation ID.
         user_id (str): User ID.
         should_store (bool): Whether to store the conversation in the database.
-        ctx (Context): Context object.
+          (Context): Context object.
         **kwargs (Any): Additional keyword arguments.
 
     Yields:

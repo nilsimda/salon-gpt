@@ -17,7 +17,7 @@ from backend.services.auth.utils import (
 )
 
 router = APIRouter(prefix="/v1")
-router.name = RouterName.AUTH
+router.name = RouterName.AUTH  # type: ignore
 
 
 @router.get("/auth_strategies", response_model=list[ListAuthStrategy])
@@ -26,7 +26,7 @@ def get_strategies() -> list[ListAuthStrategy]:
     Retrieves the currently enabled list of Authentication strategies.
 
     Args:
-        ctx (Context): Context object.
+          (Context): Context object.
     Returns:
         List[dict]: List of dictionaries containing the enabled auth strategy names.
     """
@@ -65,7 +65,7 @@ async def login(login: Login, session: DBSessionDep):
     Args:
         login (Login): Login payload.
         session (DBSessionDep): Database session.
-        ctx (Context): Context object.
+          (Context): Context object.
 
     Returns:
         dict: JWT token on Basic auth success
@@ -121,7 +121,7 @@ async def authorize(
         request (Request): Current Request object.
         session (Session): DB session.
         code (str): OAuth code.
-        ctx (Context): Context object.
+          (Context): Context object.
 
     Returns:
         dict: Containing "token" key, on success.
@@ -188,7 +188,7 @@ async def logout(
         request (Request): current Request object.
         session (DBSessionDep): Database session.
         token (dict): JWT token payload.
-        ctx (Context): Context object.
+          (Context): Context object.
 
     Returns:
         dict: Empty on success

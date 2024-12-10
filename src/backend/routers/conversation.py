@@ -1,12 +1,9 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Request
-from fastapi import File as RequestFile
-from fastapi import UploadFile as FastAPIUploadFile
+from fastapi import APIRouter, HTTPException, Request
 
 from backend.config.routers import RouterName
 from backend.crud import conversation as conversation_crud
-from backend.database_models import Conversation as ConversationModel
 from backend.database_models.database import DBSessionDep
 from backend.schemas.conversation import (
     Conversation,
@@ -82,6 +79,7 @@ async def get_conversation(
 @router.get("", response_model=list[ConversationWithoutMessages])
 async def list_conversations(
     *,
+    user_id: str,
     offset: int = 0,
     limit: int = 100,
     order_by: Optional[str] = None,
@@ -103,8 +101,6 @@ async def list_conversations(
     Returns:
         list[ConversationWithoutMessages]: List of conversations.
     """
-    user_id = ctx.get_user_id()
-
     conversations = conversation_crud.get_conversations(
         session,
         offset=offset,
@@ -207,7 +203,7 @@ async def delete_conversation(
     Args:
         conversation_id (str): Conversation ID.
         session (DBSessionDep): Database session.
-        ctx (Context): Context object.
+          (Context): Context object.
 
     Returns:
         DeleteConversationResponse: Empty response.
@@ -242,7 +238,7 @@ async def search_conversations(
         offset (int): Offset to start the list.
         limit (int): Limit of conversations to be listed.
         agent_id (str): Query parameter for agent ID to optionally filter conversations by agent.
-        ctx (Context): Context object.
+          (Context): Context object.
 
     Returns:
         list[ConversationWithoutMessages]: List of conversations that match the query.
@@ -260,7 +256,6 @@ async def search_conversations(
         query,
         conversations,
         rerank_documents,
-        ctx,
     )
 
     results = []
@@ -297,7 +292,7 @@ async def generate_title(
         conversation_id (str): Conversation ID.
         session (DBSessionDep): Database session.
         request (Request): Request object.
-        ctx (Context): Context object.
+          (Context): Context object.
 
     Returns:
         str: Generated title for the conversation.

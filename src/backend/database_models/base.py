@@ -11,27 +11,6 @@ class CustomFilterQuery(Query):
     """
 
     def __new__(cls, *args, **kwargs):
-        from backend.services.context import GLOBAL_REQUEST_CONTEXT
-
-        request_ctx = GLOBAL_REQUEST_CONTEXT.get()
-        if request_ctx and request_ctx.use_global_filtering:
-            query = None
-            for field in cls.ALLOWED_FILTER_FIELDS:
-                if (
-                    args
-                    and hasattr(args[0][0], field)
-                    and hasattr(request_ctx, field)
-                    and getattr(request_ctx, field)
-                ):
-                    if query:
-                        query = query.filter_by(**{field: getattr(request_ctx, field)})
-                    else:
-                        query = Query(*args, **kwargs).filter_by(
-                            **{field: getattr(request_ctx, field)}
-                        )
-            if query:
-                return query
-
         return object.__new__(cls)
 
 

@@ -160,7 +160,7 @@ async def filter_conversations(
         conversations (List[Conversation]): List of conversations
         rerank_documents (List[str]): List of documents to rerank
         model_deployment: Model deployment object
-        ctx (Context): Context object
+          (Context): Context object
 
     Returns:
         List[Conversation]: List of filtered conversations
@@ -209,7 +209,7 @@ async def generate_conversation_title(
         conversation: Conversation object
         model_config: Model configuration
         agent_id: Agent ID
-        ctx: Context object
+         : Context object
         model: Model name
 
     Returns:
@@ -244,8 +244,5 @@ async def generate_conversation_title(
     except Exception as e:
         title = DEFAULT_TITLE
         error = str(e)
-        logger.error(
-            event=f"[Conversation] Error generating title: Conversation ID {conversation.id}, {e}",
-        )
 
     return title, error

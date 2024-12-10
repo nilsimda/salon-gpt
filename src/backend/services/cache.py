@@ -3,9 +3,6 @@ from typing import Any
 from redis import Redis
 
 from backend.config.settings import Settings
-from backend.services.logger.utils import LoggerFactory
-
-logger = LoggerFactory().get_logger()
 
 
 def get_client() -> Redis:
@@ -13,7 +10,6 @@ def get_client() -> Redis:
 
     if not redis_url:
         error = "Tried retrieving Redis client but redis.url in configuration.yaml is not set."
-        logger.error(event=error)
         raise ValueError(error)
 
     client = Redis.from_url(redis_url, decode_responses=True)

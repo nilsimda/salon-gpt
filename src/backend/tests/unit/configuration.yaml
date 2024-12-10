@@ -26,7 +26,3 @@ auth:
   enabled_auth:
   backend_hostname:
   frontend_hostname:
-logger:
-  level: INFO
-  strategy: structlog
-  renderer: json

@@ -22,7 +22,7 @@ async def create_user(
     Args:
         user (CreateUser): User data to be created.
         session (DBSessionDep): Database session.
-        ctx (Context): Context object.
+          (Context): Context object.
 
     Returns:
         User: Created user.
@@ -49,7 +49,7 @@ async def list_users(
         offset (int): Offset to start the list.
         limit (int): Limit of users to be listed.
         session (DBSessionDep): Database session.
-        ctx (Context): Context object.
+          (Context): Context object.
 
     Returns:
         list[User]: List of users.
@@ -68,7 +68,7 @@ async def get_user(
     Args:
         user_id (str): User ID.
         session (DBSessionDep): Database session.
-        ctx (Context): Context object.
+          (Context): Context object.
 
     Returns:
         User: User with the given ID.
@@ -102,7 +102,7 @@ async def update_user(
         new_user (UpdateUser): New user data.
         session (DBSessionDep): Database session.
         request (Request): Request object.
-        ctx (Context): Context object
+          (Context): Context object
 
     Returns:
         User: Updated user.
@@ -134,7 +134,7 @@ async def delete_user(
     Args:
         user_id (str): User ID.
         session (DBSessionDep): Database session.
-        ctx (Context): Context object.
+          (Context): Context object.
 
     Returns:
         DeleteUser: Empty response.
