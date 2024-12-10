@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
-from backend.schemas.citation import Citation
+from backend.schemas.citation import CitationList
 from backend.schemas.interview import Interview
 
 
@@ -17,7 +17,6 @@ class StreamEvent(str, Enum):
     SEARCH_RESULTS = "search-results"
     TEXT_GENERATION = "text-generation"
     STREAM_END = "stream-end"
-    NON_STREAMED_CHAT_RESPONSE = "non-streamed-chat-response"
 
 
 class ChatRole(StrEnum):
@@ -71,13 +70,11 @@ class StreamTextGeneration(ChatResponse):
 class StreamSearchResults(ChatResponse):
     event_type: ClassVar[StreamEvent] = StreamEvent.SEARCH_RESULTS
 
-    search_results: List[Dict[str, Any]] = Field(
-        title="Search results used to generate grounded response with citations.",
-        default=[],
+    search_results: CitationList = Field(
+        title="Search results found in the interview",
     )
-    interview: Interview = Field(
-        title="The interview in which was searched",
-        default=None,
+    interview_id: str = Field(
+        title="The id of the interview in which was searched",
     )
 
 
@@ -90,18 +87,7 @@ class StreamEnd(ChatResponse):
     text: str = Field(
         title="Contents of the chat message.",
     )
-    citations: List[Citation] = Field(
-        title="Citations for the chat message.", default=[]
-    )
-    documents: List[Interview] = Field(
-        title="Interviews used to generate grounded response with citations.",
-        default=[],
-    )
-    search_results: List[Dict[str, Any]] = Field(
-        title="Search results used to generate grounded response with citations.",
-        default=[],
-    )
-    finish_reason: str | None = (Field(default=None),)
+    finish_reason: str | None = Field(title="The finish reason", default=None)
     chat_history: List[ChatMessage] | None = Field(
         default=None,
         title="A list of entries used to construct the conversation. If provided, these messages will be used to build the prompt and the conversation_id will be ignored so no data will be stored to maintain state.",
@@ -112,48 +98,11 @@ class StreamEnd(ChatResponse):
     )
 
 
-class NonStreamedChatResponse(ChatResponse):
-    response_id: str | None = Field(
-        title="Unique identifier for the response.",
-    )
-    generation_id: str | None = Field(
-        title="Unique identifier for the generation.",
-    )
-    chat_history: List[ChatMessage] | None = Field(
-        title="A list of previous messages between the user and the model, meant to give the model conversational context for responding to the user's message.",
-    )
-    finish_reason: str = Field(
-        title="Reason the chat stream ended.",
-    )
-    text: str = Field(
-        title="Contents of the chat message.",
-    )
-    citations: List[Citation] | None = Field(
-        title="Citations for the chat message.",
-        default=[],
-    )
-    documents: List[Interview] | None = Field(
-        title="Interviews used to generate grounded response with citations.",
-        default=[],
-    )
-    search_results: List[Dict[str, Any]] | None = Field(
-        title="Search results used to generate grounded response with citations.",
-        default=[],
-    )
-    conversation_id: str | None = Field(
-        title="To store a conversation then create a conversation id and use it for every related request.",
-    )
-    error: str | None = Field(
-        title="Error message if the response is an error.",
-        default=None,
-    )
-
-
 StreamEventType = Union[
     StreamStart,
     StreamTextGeneration,
+    StreamSearchResults,
     StreamEnd,
-    NonStreamedChatResponse,
 ]
 
 
@@ -172,8 +121,8 @@ class BaseChatRequest(BaseModel):
         title="A user id to store to store the conversation under.", exclude=True
     )
 
-    system: str = Field(
-        title="The system prompt to use.",
+    agent_id: str = Field(
+        title="The agent_id to use for the chat request. This allows us to construct the correct system prompt.",
     )
 
     message: str = Field(
@@ -183,11 +132,12 @@ class BaseChatRequest(BaseModel):
         default=None,
         title="A list of entries used to construct the conversation. If provided, these messages will be used to build the prompt and the conversation_id will be ignored so no data will be stored to maintain state.",
     )
+
     conversation_id: str = Field(
         default_factory=lambda: str(uuid4()),
         title="To store a conversation then create a conversation id and use it for every related request",
     )
 
 
-class SearchChatRequest(BaseModel):
+class SearchChatRequest(BaseChatRequest):
     interviews: List[Interview] = Field(title="The interviews that should be searched.")

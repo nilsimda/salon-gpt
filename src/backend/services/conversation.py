@@ -241,12 +241,13 @@ async def generate_conversation_title(
         prompt = GENERATE_TITLE_PROMPT % chatlog
         chat_request = BaseChatRequest(
             message=prompt,
-            model=model,
+            user_id=user_id,
+            agent_id="basic",
         )
 
         response = await generate_chat_response(
             session,
-            TGIDeployment.invoke_chat(
+            TGIDeployment().invoke_chat(
                 chat_request,
                 ctx=ctx,
             ),

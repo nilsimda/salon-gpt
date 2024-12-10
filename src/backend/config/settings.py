@@ -1,5 +1,5 @@
 import sys
-from typing import List, Optional, Tuple, Type
+from typing import Any, List, Optional, Tuple, Type
 
 from pydantic import AliasChoices, BaseModel, Field
 from pydantic_settings import (
@@ -200,3 +200,12 @@ class Settings(BaseSettings):
             file_secret_settings,
             init_settings,
         )
+
+    def get(self, path: str) -> Any:
+        keys = path.split(".")
+        value = self
+        for key in keys:
+            value = getattr(value, key, None)
+            if value is None:
+                return None
+        return value

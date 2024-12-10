@@ -1,5 +1,5 @@
 import json
-from typing import Any, AsyncGenerator, Generator, List, Union
+from typing import Any, AsyncGenerator, Generator
 from uuid import uuid4
 
 from fastapi import HTTPException, Request
@@ -9,25 +9,21 @@ from backend.crud import conversation as conversation_crud
 from backend.crud import message as message_crud
 from backend.database_models.conversation import Conversation
 from backend.database_models.database import DBSessionDep
-from backend.database_models.interview import Interview
 from backend.database_models.message import (
     Message,
     MessageAgent,
-    MessageFileAssociation,
 )
 from backend.schemas import BaseChatRequest
 from backend.schemas.chat import (
     ChatMessage,
     ChatResponseEvent,
     ChatRole,
-    NonStreamedChatResponse,
     StreamEnd,
     StreamEvent,
     StreamEventType,
     StreamStart,
     StreamTextGeneration,
 )
-from backend.schemas.context import Context
 from backend.schemas.conversation import UpdateConversationRequest
 
 
@@ -35,10 +31,7 @@ def process_chat(
     session: DBSessionDep,
     chat_request: BaseChatRequest,
     request: Request,
-    ctx: Context,
-) -> tuple[
-    DBSessionDep, BaseChatRequest, Union[list[str], None], Message, str, str, dict
-]:
+) -> tuple[DBSessionDep, BaseChatRequest, Message, bool, int]:
     """
     Process a chat request.
 
@@ -46,34 +39,26 @@ def process_chat(
         chat_request (BaseChatRequest): Chat request data.
         session (DBSessionDep): Database session.
         request (Request): Request object.
-        ctx (Context): Context object.
 
     Returns:
         Tuple: Tuple containing necessary data to construct the responses.
     """
-    user_id = ctx.get_user_id()
-    agent_id = ctx.get_agent_id()
+    user_id = chat_request.user_id
+    agent_id = chat_request.agent_id
 
     should_store = chat_request.chat_history is None
     conversation = get_or_create_conversation(
-        session, chat_request, user_id, should_store, agent_id, chat_request.message
+        session,
+        chat_request,
+        user_id,
+        should_store,
+        agent_id,
+        chat_request.message,
     )
-
-    ctx.with_conversation_id(conversation.id)
 
     # Get position to put next message in
     next_message_position = get_next_message_position(conversation)
-    user_message = create_message(
-        session,
-        chat_request,
-        conversation.id,
-        user_id,
-        next_message_position,
-        chat_request.message,
-        MessageAgent.USER,
-        should_store,
-        id=str(uuid4()),
-    )
+
     chatbot_message = create_message(
         session,
         chat_request,
@@ -90,9 +75,7 @@ def process_chat(
         conversation, next_message_position, chat_request
     )
 
-    # co.chat expects either chat_history or conversation_id, not both
     chat_request.chat_history = chat_history
-    chat_request.conversation_id = ""
 
     return (
         session,
@@ -100,7 +83,6 @@ def process_chat(
         chatbot_message,
         should_store,
         next_message_position,
-        ctx,
     )
 
 
@@ -108,8 +90,7 @@ def process_message_regeneration(
     session: DBSessionDep,
     chat_request: BaseChatRequest,
     request: Request,
-    ctx: Context,
-) -> tuple[Any, BaseChatRequest, Message, list[str], bool, Context]:
+) -> tuple[DBSessionDep, BaseChatRequest, Message, list[str]]:
     """
     Process message regeneration.
 
@@ -122,12 +103,9 @@ def process_message_regeneration(
     Returns:
         Tuple: Tuple containing necessary data to regenerate message.
     """
-    ctx.with_deployment_config()
-
-    user_id = ctx.get_user_id()
+    user_id = chat_request.user_id
 
     conversation_id = chat_request.conversation_id
-    ctx.with_conversation_id(conversation_id)
 
     conversation = conversation_crud.get_conversation(session, conversation_id, user_id)
     if not conversation:
@@ -137,10 +115,6 @@ def process_message_regeneration(
         )
 
     last_user_message = get_last_message(conversation, user_id, MessageAgent.USER)
-
-    attach_files_to_messages(
-        session, user_id, last_user_message.id, chat_request.file_ids
-    )
 
     new_chatbot_message = create_message(
         session,
@@ -176,7 +150,6 @@ def process_message_regeneration(
         chat_request,
         new_chatbot_message,
         previous_chatbot_message_ids,
-        ctx,
     )
 
 
@@ -241,7 +214,7 @@ def get_or_create_conversation(
         conversation = Conversation(
             user_id=user_id,
             id=chat_request.conversation_id,
-            #agent_id=agent_id,
+            agent_id=agent_id,
             title=title,
         )
 
@@ -284,7 +257,6 @@ def create_message(
     agent: MessageAgent = MessageAgent.USER,
     should_store: bool = True,
     id: str | None = None,
-    tool_plan: str | None = None,
 ) -> Message:
     """
     Create a message object and store it in the database.
@@ -319,42 +291,6 @@ def create_message(
     if should_store:
         return message_crud.create_message(session, message)
     return message
-
-
-def attach_files_to_messages(
-    session: DBSessionDep,
-    user_id: str,
-    message_id: str,
-    file_ids: List[str] | None = None,
-) -> None:
-    """
-    Attach Files to Message if the message file association does not exists with the file ID
-
-    Args:
-        session (DBSessionDep): Database session.
-        user_id (str): User ID.
-        message_id (str): Message ID to attach to if needed.
-        file_ids (List): List of File IDs.
-
-    Returns:
-        None
-    """
-    if file_ids is not None:
-        for file_id in file_ids:
-            message_file_association = (
-                message_crud.get_message_file_association_by_file_id(
-                    session, file_id, user_id
-                )
-            )
-
-            # If the file is not associated with a file yet, create the association
-            if message_file_association is None:
-                message_crud.create_message_file_association(
-                    session,
-                    MessageFileAssociation(
-                        message_id=message_id, user_id=user_id, file_id=file_id
-                    ),
-                )
 
 
 def create_chat_history(
@@ -432,7 +368,6 @@ async def generate_chat_response(
     model_deployment_stream: Generator[Any, None, None],
     response_message: Message,
     should_store: bool = True,
-    ctx: Context = Context(),
     **kwargs: Any,
 ) -> NonStreamedChatResponse:
     """
@@ -456,7 +391,6 @@ async def generate_chat_response(
         model_deployment_stream,
         response_message,
         should_store,
-        ctx,
         **kwargs,
     )
 
@@ -488,7 +422,8 @@ async def generate_chat_stream(
     model_deployment_stream: AsyncGenerator[Any, Any],
     response_message: Message,
     should_store: bool = True,
-    ctx: Context = Context(),
+    user_id: str = "",
+    conversation_id: str = "",
     **kwargs: Any,
 ) -> AsyncGenerator[Any, Any]:
     """
@@ -507,15 +442,11 @@ async def generate_chat_stream(
     Yields:
         bytes: Byte representation of chat response event.
     """
-    conversation_id = ctx.get_conversation_id()
-    user_id = ctx.get_user_id()
 
     stream_end_data = {
         "message_id": response_message.id,
         "conversation_id": conversation_id,
-        "response_id": ctx.get_trace_id(),
         "text": "",
-        "search_results": [],
     }
 
     stream_event = None
@@ -529,7 +460,6 @@ async def generate_chat_stream(
             conversation_id,
             stream_end_data,
             response_message,
-            ctx,
             session=session,
             should_store=should_store,
             user_id=user_id,
@@ -563,14 +493,11 @@ def handle_stream_event(
     conversation_id: str,
     stream_end_data: dict[str, Any],
     response_message: Message,
-    ctx: Context,
-    document_ids_to_document: dict[str, Interview] = {},
-    session: DBSessionDep = None,
+    session: DBSessionDep,
     should_store: bool = True,
     user_id: str = "",
     next_message_position: int = 0,
 ) -> tuple[StreamEventType, dict[str, Any], Message]:
-
     handlers = {
         StreamEvent.STREAM_START: handle_stream_start,
         StreamEvent.TEXT_GENERATION: handle_stream_text_generation,
@@ -583,7 +510,6 @@ def handle_stream_event(
         conversation_id,
         stream_end_data,
         response_message,
-        document_ids_to_document,
         session=session,
         should_store=should_store,
         user_id=user_id,
@@ -596,7 +522,6 @@ def handle_stream_start(
     conversation_id: str,
     stream_end_data: dict[str, Any],
     response_message: Message,
-    document_ids_to_document: dict[str, Interview],
     **kwargs: Any,
 ) -> tuple[StreamStart, dict[str, Any], Message]:
     event["conversation_id"] = conversation_id
@@ -612,9 +537,8 @@ def handle_stream_text_generation(
     _: str,
     stream_end_data: dict[str, Any],
     response_message: Message,
-    document_ids_to_document: dict[str, Interview],
     **kwargs: Any,
-) -> tuple[StreamTextGeneration, dict[str, Any], Message ]:
+) -> tuple[StreamTextGeneration, dict[str, Any], Message]:
     stream_end_data["text"] += event["text"]
     stream_event = StreamTextGeneration.model_validate(event)
     return stream_event, stream_end_data, response_message
@@ -633,7 +557,6 @@ def handle_stream_end(
     _: str,
     stream_end_data: dict[str, Any],
     response_message: Message,
-    document_ids_to_document: dict[str, Interview],
     **kwargs: Any,
 ) -> tuple[StreamEnd, dict[str, Any], Message]:
     if response_message:

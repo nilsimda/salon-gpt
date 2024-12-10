@@ -18,7 +18,6 @@ from backend.services.request_validators import (
 class RouterName(StrEnum):
     AUTH = "auth"
     CHAT = "chat"
-    SEARCH = "search"
     TRANSCRIBE = "transcribe"
     CONVERSATION = "conversation"
     USER = "user"
@@ -40,18 +39,6 @@ ROUTER_DEPENDENCIES = {
         ],
     },
     RouterName.CHAT: {
-        "default": [
-            Depends(get_session),
-            Depends(validate_user_header),
-            Depends(validate_chat_request),
-        ],
-        "auth": [
-            Depends(get_session),
-            Depends(validate_chat_request),
-            Depends(validate_authorization),
-        ],
-    },
-    RouterName.SEARCH: {
         "default": [
             Depends(get_session),
             Depends(validate_user_header),
