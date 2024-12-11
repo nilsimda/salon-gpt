@@ -8,8 +8,9 @@ class Interview(BaseModel):
     id: str
 
     title: str
-    interview_class: str
+    interview_type: str
     fields: Optional[dict] = None
+    study_id: str
 
     class Config:
         from_attributes = True
