@@ -57,7 +57,7 @@ downgrade:
 .PHONY: reset-db
 reset-db:
 	docker compose down
-	docker volume rm cohere_toolkit_db
+	docker volume rm salongpt_db
 
 .PHONY: install
 install:

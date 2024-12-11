@@ -4,7 +4,9 @@ from uuid import uuid4
 
 from fastapi import HTTPException, Request
 from fastapi.encoders import jsonable_encoder
+from pydantic import parse_obj_as
 
+import backend.crud.interview as interview_crud
 from backend.crud import conversation as conversation_crud
 from backend.crud import message as message_crud
 from backend.database_models.conversation import Conversation
@@ -13,7 +15,7 @@ from backend.database_models.message import (
     Message,
     MessageAgent,
 )
-from backend.schemas import BaseChatRequest
+from backend.schemas import SalonChatRequest
 from backend.schemas.chat import (
     ChatMessage,
     ChatResponseEvent,
@@ -26,18 +28,19 @@ from backend.schemas.chat import (
     StreamTextGeneration,
 )
 from backend.schemas.conversation import UpdateConversationRequest
+from backend.schemas.interview import Interview
 
 
 def process_chat(
     session: DBSessionDep,
-    chat_request: BaseChatRequest,
+    chat_request: SalonChatRequest,
     request: Request,
-) -> tuple[DBSessionDep, BaseChatRequest, Message, bool, int]:
+) -> tuple[DBSessionDep, SalonChatRequest, Message, bool, int]:
     """
     Process a chat request.
 
     Args:
-        chat_request (BaseChatRequest): Chat request data.
+        chat_request (SalonChatRequest): Chat request data.
         session (DBSessionDep): Database session.
         request (Request): Request object.
 
@@ -86,12 +89,16 @@ def process_chat(
         id=str(uuid4()),
     )
 
+
+    chat_interviews = interview_crud.get_interviews_by_ids(session, chat_request.interview_ids) if chat_request.interview_ids else None
+
     chat_history = create_chat_history(
         conversation, next_message_position, chat_request
     )
 
     chat_request.chat_history = chat_history
     chat_request.conversation_id = conversation.id
+    chat_request.interviews = parse_obj_as(list[Interview], chat_interviews) if chat_interviews else None
 
     return (
         session,
@@ -136,7 +143,7 @@ def get_last_message(
 
 def get_or_create_conversation(
     session: DBSessionDep,
-    chat_request: BaseChatRequest,
+    chat_request: SalonChatRequest,
     user_id: str,
     should_store: bool,
     agent_id: str | None = None,
@@ -147,7 +154,7 @@ def get_or_create_conversation(
 
     Args:
         session (DBSessionDep): Database session.
-        chat_request (BaseChatRequest): Chat request data.
+        chat_request (SalonChatRequest): Chat request data.
         user_id (str): User ID.
         should_store (bool): Whether to store the conversation in the database.
 
@@ -198,7 +205,7 @@ def get_next_message_position(conversation: Conversation) -> int:
 
 def create_message(
     session: DBSessionDep,
-    chat_request: BaseChatRequest,
+    chat_request: SalonChatRequest,
     conversation_id: str,
     user_id: str,
     user_message_position: int,
@@ -212,7 +219,7 @@ def create_message(
 
     Args:
         session (DBSessionDep): Database session.
-        chat_request (BaseChatRequest): Chat request data.
+        chat_request (SalonChatRequest): Chat request data.
         conversation_id (str): Conversation ID.
         user_id (str): User ID.
         user_message_position (int): User message position.
@@ -241,11 +248,10 @@ def create_message(
         return message_crud.create_message(session, message)
     return message
 
-
 def create_chat_history(
     conversation: Conversation,
     user_message_position: int,
-    chat_request: BaseChatRequest,
+    chat_request: SalonChatRequest,
 ) -> list[ChatMessage]:
     """
     Create chat history from conversation messages or request.
@@ -253,7 +259,7 @@ def create_chat_history(
     Args:
         conversation (Conversation): Conversation object.
         user_message_position (int): User message position.
-        chat_request (BaseChatRequest): Chat request data.
+        chat_request (SalonChatRequest): Chat request data.
 
     Returns:
         list[ChatMessage]: List of chat messages.

@@ -9,9 +9,9 @@ SYSTEM_PROMPT_MAP = {
 }
 
 
-def get_system_prompt(agent_id: str, description="") -> str:
+def get_system_prompt(agent_id: str, description: str | None =None) -> str:
     if agent_id == "kerlin":
-        return get_kerlin_system_prompt(description)
+        return get_kerlin_system_prompt(description if description else "")
     return SYSTEM_PROMPT_MAP.get(agent_id, BASIC_SYSTEM_PROMPT)
 
 

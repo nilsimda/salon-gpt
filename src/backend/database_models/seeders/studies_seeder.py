@@ -5,44 +5,37 @@ from dotenv import load_dotenv
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from backend.database_models.interview import Interview
-
 load_dotenv()
-
-studies_d = {
-    "JackDaniels": "Eine Studie zum Thema Whiskey",
-    "InfiniteRoots": "Fleischersatz aus Pilzwurzeln",
-    "Wempe": "Luxus",
-}
-
 
 def studies_seed(op):
     """
-    Seed studies
+    Seed studies with their interviews.
     """
     _ = Session(op.get_bind())
 
-    for study_name, study_description in studies_d.items():
+    for study_folder in pathlib.Path("/data/transcripts/").glob("*"):
+        study_name = study_folder.stem
+        print(study_name)
         study_id = str(uuid4())
         sql_command = text(
             """
             INSERT INTO studies (
-                id, name, description, is_being_added, created_at, updated_at
+                id, name, description, is_transcribed, created_at, updated_at
             )
             VALUES (
-                :id, :name, :description, :is_being_added, now(), now()
+                :id, :name, :description, :is_transcribed, now(), now()
             )
             ON CONFLICT (id) DO NOTHING;
         """
         ).bindparams(
             id=study_id,
             name=study_name,
-            description=study_description,
-            is_being_added=False,
+            description="",
+            is_transcribed=True,
         )
         op.execute(sql_command)
 
-        for path in pathlib.Path(f"src/backend/data/transcripts/{study_name}/").glob(
+        for path in study_folder.glob(
             "*.txt"
         ):
             print(path)
@@ -61,10 +54,10 @@ def studies_seed(op):
             sql_command = text(
                 """
                 INSERT INTO interviews (
-                    id, text, title, type, fields, study_id, created_at, updated_at
+                    id, text, title, interview_type, fields, study_id, created_at, updated_at
                 )
                 VALUES (
-                    :id, :text, :title, :type, :fields, :study_id, now(), now()
+                    :id, :text, :title, :interview_type, :fields, :study_id, now(), now()
                 )
                 ON CONFLICT (id) DO NOTHING;
             """
@@ -72,17 +65,15 @@ def studies_seed(op):
                 id=interview_id,
                 text=interview_text,
                 title=name,
-                type=type,
+                interview_type=type,
                 fields=None,
                 study_id=study_id,
             )
             op.execute(sql_command)
 
 
-def delete_default_models(op):
+def delete_studies(op):
     """
-    Delete deployments and models.
+    Delete studies.
     """
-    session = Session(op.get_bind())
-    session.query(Interview).delete()
-    session.commit()
+    pass

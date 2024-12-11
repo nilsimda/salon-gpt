@@ -7,7 +7,7 @@ from backend.database_models import Message as MessageModel
 from backend.database_models.conversation import Conversation as ConversationModel
 from backend.database_models.database import DBSessionDep
 from backend.model_deployments import TGIDeployment
-from backend.schemas.chat import BaseChatRequest, ChatRole
+from backend.schemas.chat import SalonChatRequest, ChatRole
 from backend.schemas.conversation import Conversation
 from backend.schemas.message import Message
 from backend.services.chat import generate_chat_response
@@ -194,7 +194,7 @@ async def generate_conversation_title(
     try:
         chatlog = extract_details_from_conversation(conversation)
         prompt = GENERATE_TITLE_PROMPT % chatlog
-        chat_request = BaseChatRequest(
+        chat_request = SalonChatRequest(
             message=prompt,
             user_id=user_id,
             agent_id="basic",

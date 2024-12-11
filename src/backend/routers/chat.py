@@ -1,15 +1,10 @@
-from typing import Union
-
 from fastapi import APIRouter, Request
 from sse_starlette.sse import EventSourceResponse
 
 from backend.config.routers import RouterName
 from backend.database_models.database import DBSessionDep
 from backend.model_deployments import TGIDeployment
-from backend.schemas.chat import (
-    BaseChatRequest,
-    SearchChatRequest,
-)
+from backend.schemas.chat import SalonChatRequest
 from backend.services.chat import (
     generate_chat_stream,
     process_chat,
@@ -24,7 +19,7 @@ router.name = RouterName.CHAT  # type: ignore
 @router.post("/chat-stream")
 async def chat_stream(
     session: DBSessionDep,
-    chat_request: Union[BaseChatRequest, SearchChatRequest],
+    chat_request: SalonChatRequest,
     request: Request,
 ) -> EventSourceResponse:
     """

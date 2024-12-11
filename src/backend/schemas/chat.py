@@ -117,7 +117,7 @@ class ChatResponseEvent(BaseModel):
     )
 
 
-class BaseChatRequest(BaseModel):
+class SalonChatRequest(BaseModel):
     user_id: str = Field(
         title="A user id to store to store the conversation under.", exclude=True
     )
@@ -138,10 +138,10 @@ class BaseChatRequest(BaseModel):
         default_factory=lambda: str(uuid4()),
         title="To store a conversation then create a conversation id and use it for every related request",
     )
+    # these options are only used for the search task
+    study_id: str | None = Field(title="The study_id to use for the chat request.", default=None)
+    interview_ids: list[str] | None = Field(title="The interview_ids that should be searched.", default=None)
+    interviews: list[Interview] | None = Field(title="The interviews that should be searched.", default=None)
 
-
-class SearchChatRequest(BaseChatRequest):
-    interviews: List[Interview] = Field(title="The interviews that should be searched.")
-
-class SimulateChatRequest(BaseChatRequest):
-    description: str = Field(title="Description of the user to simulate.")
+    # this option is only used for the syntehtic user task
+    description: str | None = Field(title="Description of the user to simulate.", default=None)

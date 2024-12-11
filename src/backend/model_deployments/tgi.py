@@ -1,12 +1,10 @@
-from typing import Any, AsyncGenerator, Union
+from typing import Any, AsyncGenerator
 
 from huggingface_hub import InferenceClient
 
 from backend.model_deployments.prompts import get_search_prompt, get_system_prompt
 from backend.schemas.chat import (
-    BaseChatRequest,
-    SearchChatRequest,
-    SimulateChatRequest,
+    SalonChatRequest,
     StreamEvent,
 )
 from backend.schemas.citation import CitationList
@@ -17,7 +15,7 @@ class TGIDeployment:
         self.client = InferenceClient(base_url)
 
     async def invoke_chat_stream(
-        self, chat_request: BaseChatRequest
+        self, chat_request: SalonChatRequest
     ) -> AsyncGenerator[Any, Any]:
         yield {
             "event_type": StreamEvent.STREAM_START,
@@ -33,8 +31,8 @@ class TGIDeployment:
 
         yield {"event_type": StreamEvent.STREAM_END, "finish_reason": "COMPLETE"}
 
-    async def handle_chat(self, chat_request: Union[BaseChatRequest, SimulateChatRequest]) -> AsyncGenerator[Any, Any]:
-        description = chat_request.description if isinstance(chat_request, SimulateChatRequest) else ""
+    async def handle_chat(self, chat_request: SalonChatRequest) -> AsyncGenerator[Any, Any]:
+        description = chat_request.description if chat_request.agent_id == "kerlin" else ""
 
         messages = [
             {
@@ -62,8 +60,10 @@ class TGIDeployment:
             }
 
     async def handle_search(
-        self, search_request: SearchChatRequest
+        self, search_request: SalonChatRequest
     ) -> AsyncGenerator[Any, Any]:
+
+        assert search_request.interviews is not None, "Interviews must be provided for search task."
 
         for interview in search_request.interviews:
             prompt: str = get_search_prompt(search_request.message, [], interview.text)
@@ -77,5 +77,5 @@ class TGIDeployment:
             yield {
                 "event_type": StreamEvent.SEARCH_RESULTS,
                 "search_results": CitationList.model_validate_json(output),
-                "interview_id": interview.interview_id,
+                "interview_id": interview.id,
             }

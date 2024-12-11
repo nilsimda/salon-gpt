@@ -7,7 +7,7 @@ curl --location 'http://localhost:8000/v1/chat-stream' \
 --header 'Content-Type: application/json' \
 --data '{
     "user_id": "test-user",
-    "message": "Was ?",
-    "description": "Name: Alexander Weber\nAlter: 34 Jahre\n\nBeschreibung:\nAlexander ist ein urbaner Genießer aus Hamburg. Mit 34 Jahren gehört er zur Zielgruppe, die Jack Daniel's mit modernem Lifestyle und gehobenem Geschmack verbindet. Er ist beruflich als Grafikdesigner tätig und schätzt kreative Produkte und handwerkliche Qualität. Alexander genießt abends gerne einen guten Whiskey in geselliger Runde oder allein, um nach einem langen Tag abzuschalten.\nEr ist offen für neue Produkte und Kombinationen und interessiert sich besonders für limitierte Editionen und Mix-Innovationen. Seine Freizeit verbringt er mit Freunden, hört gern Live-Musik und besucht gelegentlich Whiskey-Tastings, um sein Wissen zu erweitern.",
-    "agent_id": "kerlin"
+    "message": "Was wird zum Thema Honig gesagt?",
+    "agent_id": "zitatki",
+    "interview_ids": ["89f5bc6b-d887-4d40-95d9-99cb10a43c47"]
 }'
