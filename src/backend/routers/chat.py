@@ -1,3 +1,5 @@
+from typing import Union
+
 from fastapi import APIRouter, Request
 from sse_starlette.sse import EventSourceResponse
 
@@ -22,7 +24,7 @@ router.name = RouterName.CHAT  # type: ignore
 @router.post("/chat-stream")
 async def chat_stream(
     session: DBSessionDep,
-    chat_request: BaseChatRequest,
+    chat_request: Union[BaseChatRequest, SearchChatRequest],
     request: Request,
 ) -> EventSourceResponse:
     """
@@ -53,52 +55,10 @@ async def chat_stream(
             response_message,
             should_store=should_store,
             next_message_position=next_message_position,
+            conversation_id=chat_request.conversation_id,
+            user_id=chat_request.user_id,
         ),
         media_type="text/event-stream",
-        headers={"Connection": "keep-alive"},
-        send_timeout=300,
-        ping=5,
-    )
-
-
-@router.post("/search-stream")
-async def search_stream(
-    session: DBSessionDep,
-    search_request: SearchChatRequest,
-    request: Request,
-) -> EventSourceResponse:
-    """
-    Stream search endpoint to handle user messages and return search result responses.
-
-    Args:
-        session (DBSessionDep): Database session.
-        search_request (SearchChatRequest): Search request data.
-        request (Request): Request object.
-          (Context): Context object.
-
-    Returns:
-        EventSourceResponse: Server-sent event response with chatbot responses.
-    """
-
-    (
-        session,
-        search_request,
-        response_message,
-        should_store,
-        next_message_position,
-    ) = process_chat(session, search_request, request)
-
-    return EventSourceResponse(
-        generate_chat_stream(
-            session,
-            TGIDeployment().invoke_search_stream(
-                search_request,
-            ),
-            response_message,
-            should_store=should_store,
-            next_message_position=next_message_position,
-        ),
-        media_type="application/json",
         headers={"Connection": "keep-alive"},
         send_timeout=300,
         ping=5,

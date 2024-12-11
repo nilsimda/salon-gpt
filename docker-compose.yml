@@ -45,7 +45,7 @@ services:
       - ./data:/data
 
   tgi:
-    image: ghcr.io/huggingface/text-generation-inference:2.4.1
+    image: ghcr.io/huggingface/text-generation-inference:3.0.0
     restart: always
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:80/health" ]

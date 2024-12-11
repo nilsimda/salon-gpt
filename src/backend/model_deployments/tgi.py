@@ -1,14 +1,19 @@
-from typing import Any, AsyncGenerator
+from typing import Any, AsyncGenerator, Union
 
 from huggingface_hub import InferenceClient
 
-import backend.model_deployments.prompts as prompts
-from backend.schemas.chat import BaseChatRequest, SearchChatRequest, StreamEvent
+from backend.model_deployments.prompts import get_search_prompt, get_system_prompt
+from backend.schemas.chat import (
+    BaseChatRequest,
+    SearchChatRequest,
+    SimulateChatRequest,
+    StreamEvent,
+)
 from backend.schemas.citation import CitationList
 
 
 class TGIDeployment:
-    def __init__(self, base_url="http://tgi:80/v1"):
+    def __init__(self, base_url="http://tgi:80"):
         self.client = InferenceClient(base_url)
 
     async def invoke_chat_stream(
@@ -18,11 +23,23 @@ class TGIDeployment:
             "event_type": StreamEvent.STREAM_START,
             "generation_id": "",
         }
+        handlers = {
+            "zitatki": self.handle_search,
+            "kerlin": self.handle_chat,
+            "basic": self.handle_chat,
+        }
+        async for item in handlers[chat_request.agent_id](chat_request):
+            yield item
+
+        yield {"event_type": StreamEvent.STREAM_END, "finish_reason": "COMPLETE"}
+
+    async def handle_chat(self, chat_request: Union[BaseChatRequest, SimulateChatRequest]) -> AsyncGenerator[Any, Any]:
+        description = chat_request.description if isinstance(chat_request, SimulateChatRequest) else ""
 
         messages = [
             {
                 "role": "system",
-                "content": prompts.get_system_promp(chat_request.agent_id),
+                "content": get_system_prompt(agent_id=chat_request.agent_id, description=description),
             }
         ]
 
@@ -32,9 +49,9 @@ class TGIDeployment:
 
         messages.append({"role": "user", "content": chat_request.message})
 
-        output = self.client.chat.completions.create(
-            model="tgi",
+        output = self.client.chat_completion(
             messages=messages,
+            seed=42,
             stream=True,
         )
 
@@ -44,20 +61,12 @@ class TGIDeployment:
                 "text": chunk.choices[0].delta.content,
             }
 
-        yield {"event_type": StreamEvent.STREAM_END, "finish_reason": "COMPLETE"}
-
-    async def invoke_search_stream(
+    async def handle_search(
         self, search_request: SearchChatRequest
     ) -> AsyncGenerator[Any, Any]:
-        yield {
-            "event_type": StreamEvent.STREAM_START,
-            "generation_id": "",
-        }
 
         for interview in search_request.interviews:
-            prompt: str = prompts.get_search_prompt(
-                search_request.message, [], interview.text
-            )
+            prompt: str = get_search_prompt(search_request.message, [], interview.text)
 
             output = self.client.text_generation(
                 prompt=prompt,
@@ -67,10 +76,6 @@ class TGIDeployment:
 
             yield {
                 "event_type": StreamEvent.SEARCH_RESULTS,
-                "text": output,
+                "search_results": CitationList.model_validate_json(output),
+                "interview_id": interview.interview_id,
             }
-
-        yield {"event_type": StreamEvent.STREAM_END, "finish_reason": "COMPLETE"}
-
-    async def invoke_chat(self, chat_request: BaseChatRequest) -> dict[str, str]:
-        return {"text": "Not implemented yet"}

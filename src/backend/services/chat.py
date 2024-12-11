@@ -1,5 +1,5 @@
 import json
-from typing import Any, AsyncGenerator, Generator, Optional
+from typing import Any, AsyncGenerator, Optional
 from uuid import uuid4
 
 from fastapi import HTTPException, Request
@@ -21,6 +21,7 @@ from backend.schemas.chat import (
     StreamEnd,
     StreamEvent,
     StreamEventType,
+    StreamSearchResults,
     StreamStart,
     StreamTextGeneration,
 )
@@ -90,6 +91,7 @@ def process_chat(
     )
 
     chat_request.chat_history = chat_history
+    chat_request.conversation_id = conversation.id
 
     return (
         session,
@@ -303,6 +305,11 @@ def update_conversation_after_turn(
 
     # Update conversation description with final message
     conversation = conversation_crud.get_conversation(session, conversation_id, user_id)
+    assert (
+        conversation is not None
+    ), (
+        f"Conversation with id {conversation_id} and user id {user_id} not found "
+    )  # this is mostly for type checking
     new_conversation = UpdateConversationRequest(
         description=final_message_text,
         user_id=conversation.user_id,
@@ -334,10 +341,10 @@ async def generate_chat_response(
         bytes: Byte representation of chat response event.
     """
     stream = generate_chat_stream(
-        session,
-        model_deployment_stream,
-        response_message,
-        should_store,
+        session=session,
+        model_deployment_stream=model_deployment_stream,
+        response_message=response_message,
+        should_store=should_store,
         **kwargs,
     )
 
@@ -363,9 +370,9 @@ async def generate_chat_stream(
     session: DBSessionDep,
     model_deployment_stream: AsyncGenerator[Any, Any],
     response_message: Message,
+    user_id: str,
+    conversation_id: str,
     should_store: bool = True,
-    user_id: str = "",
-    conversation_id: str = "",
     **kwargs: Any,
 ) -> AsyncGenerator[Any, Any]:
     """
@@ -378,7 +385,6 @@ async def generate_chat_stream(
         conversation_id (str): Conversation ID.
         user_id (str): User ID.
         should_store (bool): Whether to store the conversation in the database.
-          (Context): Context object.
         **kwargs (Any): Additional keyword arguments.
 
     Yields:
@@ -389,6 +395,7 @@ async def generate_chat_stream(
         "message_id": response_message.id,
         "conversation_id": conversation_id,
         "text": "",
+        "search_results": {},
     }
 
     stream_event = None
@@ -408,12 +415,10 @@ async def generate_chat_stream(
             next_message_position=kwargs.get("next_message_position", 0),
         )
 
-        print(stream_event)
-
         yield json.dumps(
             jsonable_encoder(
                 ChatResponseEvent(
-                    event=stream_event.event_type.value,
+                    event=StreamEvent(stream_event.event_type.value),
                     data=stream_event,
                 )
             )
@@ -443,6 +448,7 @@ def handle_stream_event(
     handlers = {
         StreamEvent.STREAM_START: handle_stream_start,
         StreamEvent.TEXT_GENERATION: handle_stream_text_generation,
+        StreamEvent.SEARCH_RESULTS: handle_stream_search_results,
         StreamEvent.STREAM_END: handle_stream_end,
     }
     event_type = event["event_type"]
@@ -483,6 +489,18 @@ def handle_stream_text_generation(
 ) -> tuple[StreamTextGeneration, dict[str, Any], Message]:
     stream_end_data["text"] += event["text"]
     stream_event = StreamTextGeneration.model_validate(event)
+    return stream_event, stream_end_data, response_message
+
+
+def handle_stream_search_results(
+    event: dict[str, Any],
+    _: str,
+    stream_end_data: dict[str, Any],
+    response_message: Message,
+    **kwargs: Any,
+) -> tuple[StreamSearchResults, dict[str, Any], Message]:
+    stream_end_data["search_results"][event["interview_id"]] = event["search_results"]
+    stream_event = StreamSearchResults.model_validate(event)
     return stream_event, stream_end_data, response_message
 
 

@@ -87,6 +87,7 @@ class StreamEnd(ChatResponse):
     text: str = Field(
         title="Contents of the chat message.",
     )
+    search_results: dict[str, CitationList] | None = Field(title="Search results found in the interviews", default=None)
     finish_reason: str | None = Field(title="The finish reason", default=None)
     chat_history: List[ChatMessage] | None = Field(
         default=None,
@@ -141,3 +142,6 @@ class BaseChatRequest(BaseModel):
 
 class SearchChatRequest(BaseChatRequest):
     interviews: List[Interview] = Field(title="The interviews that should be searched.")
+
+class SimulateChatRequest(BaseChatRequest):
+    description: str = Field(title="Description of the user to simulate.")

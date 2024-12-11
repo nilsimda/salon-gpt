@@ -28,6 +28,7 @@ class ConversationWithoutMessages(Conversation):
 
 class UpdateConversationRequest(BaseModel):
     title: Optional[str] = None
+    user_id: Optional[str] = None
     description: Optional[str] = None
 
     class Config:
