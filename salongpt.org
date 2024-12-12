@@ -1,5 +1,6 @@
 * Backend
 ** TODO Add regenerate back
+** TODO tests
 
 curl --location 'http://localhost:8000/v1/chat-stream' \
 --header 'User-Id: test-user' \
