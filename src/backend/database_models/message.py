@@ -14,8 +14,8 @@ from backend.database_models.base import Base
 
 
 class MessageAgent(StrEnum):
-    USER = "USER"
-    CHATBOT = "CHATBOT"
+    USER = "user"
+    CHATBOT = "assistant"
 
 
 class Message(Base):

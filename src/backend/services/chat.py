@@ -284,7 +284,7 @@ def create_chat_history(
     ]
     return [
         ChatMessage(
-            role=ChatRole(message.agent.value.upper()),
+            role=ChatRole(message.agent.value),
             message=message.text,
         )
         for message in text_messages

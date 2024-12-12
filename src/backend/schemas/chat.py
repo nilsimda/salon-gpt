@@ -22,7 +22,7 @@ class StreamEvent(str, Enum):
 class ChatRole(StrEnum):
     """One of model|user|system to identify who the message is coming from."""
 
-    MODEL = "model"
+    ASSISTANT = "assistant"
     USER = "user"
     SYSTEM = "system"
 

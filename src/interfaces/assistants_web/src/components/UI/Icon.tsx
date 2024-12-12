@@ -42,6 +42,7 @@ import {
   Paperclip,
   Pin,
   Profile,
+  Quote,
   Regenerate,
   Search,
   Setttings,
@@ -106,6 +107,7 @@ export const IconList = [
   'paperclip',
   'pin',
   'profile',
+  'quote',
   'regenerate',
   'search',
   'settings',
@@ -381,6 +383,11 @@ const getIcon = (name: IconName, kind: IconKind): React.ReactNode => {
     ['regenerate']: (
       <AccessibleIcon label="Regenerate">
         <Regenerate />
+      </AccessibleIcon>
+    ),
+    ['quote']: (
+      <AccessibleIcon label="Quote">
+        <Quote />
       </AccessibleIcon>
     ),
     ['search']: (

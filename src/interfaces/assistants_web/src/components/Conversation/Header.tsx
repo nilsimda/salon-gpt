@@ -12,7 +12,6 @@ type Props = {
 };
 
 export const Header: React.FC<Props> = ({ agentName }) => {
-  console.log('Header re-rendered with agentName:', agentName);
   const {
     conversation: { id },
   } = useConversationStore();

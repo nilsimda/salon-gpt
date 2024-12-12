@@ -36,7 +36,7 @@ const DEFAULT_LIGHT_COLOR = 'blue-800';
 const DEFAULT_CONTRAST_COLOR = 'marble-950';
 
 const getAssistantColor = (assistantId: string | undefined): string => {
-  if (!assistantId || assistantId === 'transcription' || assistantId === 'kerlin')
+  if (assistantId === 'zitatki' || assistantId === 'transcription' || assistantId === 'kerlin')
     return DEFAULT_COLOR;
 
   const idNumber = assistantId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);

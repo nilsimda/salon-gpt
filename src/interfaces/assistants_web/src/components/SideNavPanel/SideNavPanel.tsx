@@ -121,7 +121,7 @@ export const SideNavPanel: React.FC<{ className?: string }> = ({ className = '' 
             tooltip="Transkribiere Audio/Video Dateien"
             theme="mushroom"
             href="/a/transcription"
-            iconName="compass"
+            iconName="volume"
           />
 
           <AgentsSidePanelButton
@@ -129,7 +129,7 @@ export const SideNavPanel: React.FC<{ className?: string }> = ({ className = '' 
             tooltip="Finde Zitate aus Studien"
             theme="mushroom"
             href="/a/zitatki"
-            iconName="compass"
+            iconName="quote"
           />
         </div>
 

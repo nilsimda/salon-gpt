@@ -23,7 +23,6 @@ import {
   isStreamError,
 } from '@/salon-client';
 import { useCitationsStore, useConversationStore, useFilesStore, useParamsStore } from '@/stores';
-import { OutputFiles } from '@/stores/slices/citationsSlice';
 import { useStreamingStore } from '@/stores/streaming';
 import {
   BotState,
@@ -36,8 +35,6 @@ import {
   createLoadingMessage,
 } from '@/types/message';
 import {
-  createStartEndKey,
-  fixInlineCitationsForMarkdown,
   fixMarkdownImagesInText,
   replaceCodeBlockWithIframe,
   replaceTextWithCitations,
@@ -47,11 +44,9 @@ import {
 const USER_ERROR_MESSAGE = 'Something went wrong. This has been reported. ';
 const ABORT_REASON_USER = 'USER_ABORTED';
 
-type IdToDocument = { [documentId: string]: Document };
-
 type ChatRequestOverrides = Pick<
   SalonChatRequest,
-  'temperature' | 'model' | 'preamble' | 'tools' | 'interviews'
+  'agent_id' | 'conversation_id' | 'interview_ids' | 'description' 
 >;
 
 export type HandleSendChat = (
@@ -78,12 +73,6 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
     setPendingMessage,
   } = useConversationStore();
   const { mutateAsync: updateConversationTitle } = useUpdateConversationTitle();
-  const {
-    citations: { outputFiles: savedOutputFiles },
-    addSearchResults,
-    addCitation,
-    saveOutputFiles,
-  } = useCitationsStore();
   const {
     files: { composerFiles },
     clearComposerFiles,
@@ -155,9 +144,6 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
     let conversationId = '';
     let generationId = '';
     let citations: Citation[] = [];
-    let documentsMap: IdToDocument = {};
-    let outputFiles: OutputFiles = {};
-    let currentToolEventIndex = 0;
 
     // Temporarily store the streaming `parameters` partial JSON string for a tool call
     let toolCallParamaterStr = '';
@@ -226,8 +212,6 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
               }
 
               const responseText = data.text ?? '';
-
-              addSearchResults(data?.search_results ?? []);
 
               const outputText =
                 data?.finish_reason === FinishReason.MAX_TOKENS ? botResponse : responseText;
@@ -334,7 +318,9 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
   };
 
   const getChatRequest = (message: string, overrides?: ChatRequestOverrides): SalonChatRequest => {
-    const { tools: overrideTools, ...restOverrides } = overrides ?? {};
+    const { ...restOverrides } = overrides ?? {};
+
+    console.log("agent_id", agentId);
 
     return {
       message,

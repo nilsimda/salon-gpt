@@ -68,6 +68,7 @@ export class SalonClient {
     onError?: FetchEventSourceInit['onerror'];
   }) {
     const chatRequest = mapToChatRequest(request);
+    console.log('chatRequest', chatRequest);
     const requestBody = JSON.stringify({
       ...chatRequest,
     });

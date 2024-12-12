@@ -43,7 +43,7 @@ class TGIDeployment:
 
         if chat_request.chat_history is not None:
             for message in chat_request.chat_history:
-                messages.append(message.to_dict())
+                messages.append({"role": message.role.value, "content": message.message})
 
         messages.append({"role": "user", "content": chat_request.message})
 

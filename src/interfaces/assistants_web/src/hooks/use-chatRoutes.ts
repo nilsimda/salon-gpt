@@ -11,6 +11,7 @@ import {
   useSettingsStore,
 } from '@/stores';
 import { getQueryString } from '@/utils';
+import { BASE_AGENT } from '@/constants';
 
 export const useNavigateToNewChat = () => {
   const router = useRouter();
@@ -47,5 +48,5 @@ export const useChatRoutes = () => {
     };
   }, [params]);
 
-  return { agentId, conversationId: conversationId || id };
+  return { agentId: agentId || BASE_AGENT, conversationId: conversationId || id };
 };

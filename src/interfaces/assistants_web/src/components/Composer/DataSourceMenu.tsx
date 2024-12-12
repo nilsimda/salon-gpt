@@ -7,7 +7,8 @@ import { Icon, Switch, Text } from '@/components/UI';
 import { useBrandedColors, useListStudies } from '@/hooks';
 import { Study } from '@/salon-client';
 import { useParamsStore } from '@/stores';
-import { checkIsBaseAgent, cn } from '@/utils';
+import { cn } from '@/utils';
+import { BASE_AGENT } from '@/constants';
 
 export type Props = {
   agentName?: string;
@@ -19,7 +20,7 @@ export type Props = {
 export const DataSourceMenu: React.FC<Props> = ({ agentName }) => {
   const { data: studies } = useListStudies();
   const { text, contrastText, border, bg } = useBrandedColors(agentName);
-  const isBaseAgent = checkIsBaseAgent(agentName);
+  const isBaseAgent = agentName === BASE_AGENT;
 
   const {
     setParams,
