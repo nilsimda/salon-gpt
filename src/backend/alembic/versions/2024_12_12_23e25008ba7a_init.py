@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 1b366c4aa01f
+Revision ID: 23e25008ba7a
 Revises: 
-Create Date: 2024-12-11 17:03:24.879493
+Create Date: 2024-12-12 11:00:20.115719
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '1b366c4aa01f'
+revision: str = '23e25008ba7a'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -28,14 +28,6 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index('blacklist_token_id', 'blacklist', ['token_id'], unique=False)
-    op.create_table('groups',
-    sa.Column('display_name', sa.String(), nullable=False),
-    sa.Column('id', sa.String(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('display_name', name='unique_display_name')
-    )
     op.create_table('studies',
     sa.Column('id', sa.String(), nullable=False),
     sa.Column('name', sa.Text(), nullable=False),
@@ -91,17 +83,6 @@ def upgrade() -> None:
     sa.UniqueConstraint('id'),
     sa.UniqueConstraint('title', 'study_id', name='interview_title_study_id_uc')
     )
-    op.create_table('user_group',
-    sa.Column('user_id', sa.String(), nullable=False),
-    sa.Column('group_id', sa.String(), nullable=False),
-    sa.Column('display', sa.String(), nullable=False),
-    sa.Column('id', sa.String(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['group_id'], ['groups.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('user_id', 'group_id', 'id')
-    )
     op.create_table('messages',
     sa.Column('text', sa.String(), nullable=False),
     sa.Column('user_id', sa.String(), nullable=True),
@@ -130,14 +111,12 @@ def downgrade() -> None:
     op.drop_index('message_conversation_id_user_id', table_name='messages')
     op.drop_index('message_conversation_id', table_name='messages')
     op.drop_table('messages')
-    op.drop_table('user_group')
     op.drop_table('interviews')
     op.drop_index('conversation_user_id_index', table_name='conversations')
     op.drop_index('conversation_user_agent_index', table_name='conversations')
     op.drop_table('conversations')
     op.drop_table('users')
     op.drop_table('studies')
-    op.drop_table('groups')
     op.drop_index('blacklist_token_id', table_name='blacklist')
     op.drop_table('blacklist')
     # ### end Alembic commands ###

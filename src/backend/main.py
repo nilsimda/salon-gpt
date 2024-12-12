@@ -16,8 +16,6 @@ from backend.config.settings import Settings
 from backend.routers.auth import router as auth_router
 from backend.routers.chat import router as chat_router
 from backend.routers.conversation import router as conversation_router
-from backend.routers.scim import SCIMException, scim_exception_handler
-from backend.routers.scim import router as scim_router
 from backend.routers.study import router as study_router
 from backend.routers.user import router as user_router
 
@@ -36,7 +34,6 @@ def create_app():
         user_router,
         conversation_router,
         study_router,
-        scim_router,
     ]
 
     # Dynamically set router dependencies
@@ -45,6 +42,7 @@ def create_app():
     if is_authentication_enabled():
         # Required to save temporary OAuth state in session
         auth_secret = Settings().auth.secret_key
+        assert auth_secret, "Auth secret key must be set in .env"
         app.add_middleware(SessionMiddleware, secret_key=auth_secret)
         dependencies_type = "auth"
     for router in routers:
@@ -63,7 +61,6 @@ def create_app():
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    app.add_exception_handler(SCIMException, scim_exception_handler)
 
     return app
 

@@ -2,8 +2,8 @@
 
 import React from 'react';
 
-import { Study } from '@/salon-client';
 import { DataSourceMenu } from '@/components/Composer';
+import { Study } from '@/salon-client';
 import { cn } from '@/utils';
 
 type Props = {

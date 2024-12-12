@@ -3,7 +3,6 @@
 import { useMemo, useState } from 'react';
 import { Flipped, Flipper } from 'react-flip-toolkit';
 
-import { ConversationWithoutMessages as Conversation } from '@/salon-client';
 import {
   AgentIcon,
   ConversationListLoading,
@@ -11,6 +10,7 @@ import {
 } from '@/components/SideNavPanel';
 import { Icon, InputSearch, Text, Tooltip } from '@/components/UI';
 import { useConversations, useSearchConversations } from '@/hooks';
+import { ConversationWithoutMessages as Conversation } from '@/salon-client';
 import { useSettingsStore } from '@/stores';
 import { cn } from '@/utils';
 
@@ -162,22 +162,22 @@ const ChatsGroup: React.FC<{
   checkedConversations,
   handleCheckConversationToggle,
 }) => {
-    const { isLeftPanelOpen } = useSettingsStore();
+  const { isLeftPanelOpen } = useSettingsStore();
 
-    return (
-      <>
-        {isLeftPanelOpen && (
-          <Text styleAs="label" className="truncate dark:text-mushroom-800">
-            {title}
-          </Text>
-        )}
-        <ConversationListPanelGroup
-          conversations={conversations}
-          showWeekHeadings={showWeekHeadings}
-          checkedConversations={checkedConversations}
-          onCheckConversation={handleCheckConversationToggle}
-          className={cn('flex flex-col items-center space-y-1', { 'space-y-2': !isLeftPanelOpen })}
-        />
-      </>
-    );
-  };
+  return (
+    <>
+      {isLeftPanelOpen && (
+        <Text styleAs="label" className="truncate dark:text-mushroom-800">
+          {title}
+        </Text>
+      )}
+      <ConversationListPanelGroup
+        conversations={conversations}
+        showWeekHeadings={showWeekHeadings}
+        checkedConversations={checkedConversations}
+        onCheckConversation={handleCheckConversationToggle}
+        className={cn('flex flex-col items-center space-y-1', { 'space-y-2': !isLeftPanelOpen })}
+      />
+    </>
+  );
+};

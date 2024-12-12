@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 
-import { Study } from '@/salon-client';
 import { DeleteStudy } from '@/components/Modals/DeleteStudy';
 import { KebabMenu, Text } from '@/components/UI';
 import { useContextStore } from '@/context';
+import { Study } from '@/salon-client';
 
 type Props = {
   study?: Study;

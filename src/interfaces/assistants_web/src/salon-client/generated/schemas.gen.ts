@@ -25,11 +25,79 @@ export const $ChatMessage = {
     "A list of previous messages between the user and the model, meant to give the model conversational context for responding to the user's message.",
 } as const;
 
+export const $ChatResponseEvent = {
+  properties: {
+    event: {
+      $ref: '#/components/schemas/StreamEvent',
+      title: 'type of stream event',
+    },
+    data: {
+      anyOf: [
+        {
+          $ref: '#/components/schemas/StreamStart',
+        },
+        {
+          $ref: '#/components/schemas/StreamTextGeneration',
+        },
+        {
+          $ref: '#/components/schemas/StreamSearchResults',
+        },
+        {
+          $ref: '#/components/schemas/StreamEnd',
+        },
+      ],
+      title: 'Data returned from chat response of a given event type',
+    },
+  },
+  type: 'object',
+  required: ['event', 'data'],
+  title: 'ChatResponseEvent',
+} as const;
+
 export const $ChatRole = {
   type: 'string',
   enum: ['model', 'user', 'system'],
   title: 'ChatRole',
   description: 'One of model|user|system to identify who the message is coming from.',
+} as const;
+
+export const $Citation = {
+  properties: {
+    erklaerung: {
+      type: 'string',
+      title: 'Erklaerung',
+      description: 'Eine Erklärung, warum das Zitat relevant ist.',
+    },
+    text: {
+      type: 'string',
+      title: 'Text',
+      description: 'Der eigentliche Text des Zitats.',
+    },
+    bewertung: {
+      type: 'number',
+      title: 'Bewertung',
+      description: 'Die Zuversichtlichkeit des Modells, dass das Zitat korrekt ist.',
+    },
+  },
+  type: 'object',
+  required: ['erklaerung', 'text', 'bewertung'],
+  title: 'Citation',
+} as const;
+
+export const $CitationList = {
+  properties: {
+    zitate: {
+      items: {
+        $ref: '#/components/schemas/Citation',
+      },
+      type: 'array',
+      title: 'Zitate',
+      description: 'Eine Liste von Zitaten, die in einem Text gefunden wurden.',
+    },
+  },
+  type: 'object',
+  required: ['zitate'],
+  title: 'CitationList',
 } as const;
 
 export const $Conversation = {
@@ -817,6 +885,179 @@ export const $SalonChatRequest = {
   type: 'object',
   required: ['user_id', 'agent_id', 'message'],
   title: 'SalonChatRequest',
+} as const;
+
+export const $StreamEnd = {
+  properties: {
+    message_id: {
+      anyOf: [
+        {
+          type: 'string',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Message Id',
+    },
+    response_id: {
+      anyOf: [
+        {
+          type: 'string',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Response Id',
+    },
+    generation_id: {
+      anyOf: [
+        {
+          type: 'string',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Generation Id',
+    },
+    conversation_id: {
+      anyOf: [
+        {
+          type: 'string',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Conversation Id',
+    },
+    text: {
+      type: 'string',
+      title: 'Contents of the chat message.',
+    },
+    search_results: {
+      anyOf: [
+        {
+          additionalProperties: {
+            $ref: '#/components/schemas/CitationList',
+          },
+          type: 'object',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Search results found in the interviews',
+    },
+    finish_reason: {
+      anyOf: [
+        {
+          type: 'string',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'The finish reason',
+    },
+    chat_history: {
+      anyOf: [
+        {
+          items: {
+            $ref: '#/components/schemas/ChatMessage',
+          },
+          type: 'array',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title:
+        'A list of entries used to construct the conversation. If provided, these messages will be used to build the prompt and the conversation_id will be ignored so no data will be stored to maintain state.',
+    },
+    error: {
+      anyOf: [
+        {
+          type: 'string',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Error message if the response is an error.',
+    },
+  },
+  type: 'object',
+  required: ['text'],
+  title: 'StreamEnd',
+} as const;
+
+export const $StreamEvent = {
+  type: 'string',
+  enum: ['stream-start', 'search-results', 'text-generation', 'stream-end'],
+  title: 'StreamEvent',
+  description: "Stream Events returned by Cohere's chat stream response.",
+} as const;
+
+export const $StreamSearchResults = {
+  properties: {
+    search_results: {
+      $ref: '#/components/schemas/CitationList',
+      title: 'Search results found in the interview',
+    },
+    interview_id: {
+      type: 'string',
+      title: 'The id of the interview in which was searched',
+    },
+  },
+  type: 'object',
+  required: ['search_results', 'interview_id'],
+  title: 'StreamSearchResults',
+} as const;
+
+export const $StreamStart = {
+  properties: {
+    generation_id: {
+      anyOf: [
+        {
+          type: 'string',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Generation Id',
+    },
+    conversation_id: {
+      anyOf: [
+        {
+          type: 'string',
+        },
+        {
+          type: 'null',
+        },
+      ],
+      title: 'Conversation Id',
+    },
+  },
+  type: 'object',
+  title: 'StreamStart',
+  description: 'Stream start event.',
+} as const;
+
+export const $StreamTextGeneration = {
+  properties: {
+    text: {
+      type: 'string',
+      title: 'Contents of the chat message.',
+    },
+  },
+  type: 'object',
+  required: ['text'],
+  title: 'StreamTextGeneration',
+  description: 'Stream text generation event.',
 } as const;
 
 export const $Study = {

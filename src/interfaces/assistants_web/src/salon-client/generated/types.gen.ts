@@ -8,6 +8,11 @@ export type ChatMessage = {
   message?: string | null;
 };
 
+export type ChatResponseEvent = {
+  event: StreamEvent;
+  data: StreamStart | StreamTextGeneration | StreamSearchResults | StreamEnd;
+};
+
 /**
  * One of model|user|system to identify who the message is coming from.
  */
@@ -16,6 +21,28 @@ export enum ChatRole {
   USER = 'user',
   SYSTEM = 'system',
 }
+
+export type Citation = {
+  /**
+   * Eine Erklärung, warum das Zitat relevant ist.
+   */
+  erklaerung: string;
+  /**
+   * Der eigentliche Text des Zitats.
+   */
+  text: string;
+  /**
+   * Die Zuversichtlichkeit des Modells, dass das Zitat korrekt ist.
+   */
+  bewertung: number;
+};
+
+export type CitationList = {
+  /**
+   * Eine Liste von Zitaten, die in einem Text gefunden wurden.
+   */
+  zitate: Array<Citation>;
+};
 
 export type Conversation = {
   id: string;
@@ -199,6 +226,50 @@ export type SalonChatRequest = {
   description?: string | null;
 };
 
+export type StreamEnd = {
+  message_id?: string | null;
+  response_id?: string | null;
+  generation_id?: string | null;
+  conversation_id?: string | null;
+  text: string;
+  search_results?: {
+    [key: string]: CitationList;
+  } | null;
+  finish_reason?: string | null;
+  chat_history?: Array<ChatMessage> | null;
+  error?: string | null;
+};
+
+/**
+ * Stream Events returned by Cohere's chat stream response.
+ */
+export enum StreamEvent {
+  STREAM_START = 'stream-start',
+  SEARCH_RESULTS = 'search-results',
+  TEXT_GENERATION = 'text-generation',
+  STREAM_END = 'stream-end',
+}
+
+export type StreamSearchResults = {
+  search_results: CitationList;
+  interview_id: string;
+};
+
+/**
+ * Stream start event.
+ */
+export type StreamStart = {
+  generation_id?: string | null;
+  conversation_id?: string | null;
+};
+
+/**
+ * Stream text generation event.
+ */
+export type StreamTextGeneration = {
+  text: string;
+};
+
 export type Study = {
   id: string;
   created_at: string;
@@ -299,7 +370,7 @@ export type ChatStreamV1ChatStreamPostData = {
   requestBody: SalonChatRequest;
 };
 
-export type ChatStreamV1ChatStreamPostResponse = unknown;
+export type ChatStreamV1ChatStreamPostResponse = Array<ChatResponseEvent>;
 
 export type CreateUserV1UsersPostData = {
   requestBody: backend__schemas__user__CreateUser;
@@ -562,7 +633,7 @@ export type $OpenApiTs = {
         /**
          * Successful Response
          */
-        200: unknown;
+        200: Array<ChatResponseEvent>;
         /**
          * Validation Error
          */

@@ -1,8 +1,8 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { CreateStudyRequest, UpdateStudyRequest } from '@/salon-client';
 import { Button, CollapsibleSection } from '@/components/UI';
+import { CreateStudyRequest, UpdateStudyRequest } from '@/salon-client';
 import { cn } from '@/utils';
 
 import { DefineStudyStep } from './DefineStep';
@@ -144,29 +144,29 @@ const StepButtons: React.FC<{
   disabled = false,
   hide = false,
 }) => {
-    return (
-      <div
-        className={cn('flex w-full items-center justify-between pt-5', {
-          'justify-end': !handleBack,
-          hidden: hide,
-        })}
-      >
+  return (
+    <div
+      className={cn('flex w-full items-center justify-between pt-5', {
+        'justify-end': !handleBack,
+        hidden: hide,
+      })}
+    >
+      <Button
+        label="Zurück"
+        kind="secondary"
+        onClick={handleBack}
+        className={cn({ hidden: !handleBack })}
+      />
+      <div className="flex items-center gap-4">
         <Button
-          label="Zurück"
-          kind="secondary"
-          onClick={handleBack}
-          className={cn({ hidden: !handleBack })}
+          label={nextLabel}
+          theme="default"
+          kind="cell"
+          icon={isSubmit ? 'checkmark' : 'arrow-right'}
+          disabled={disabled}
+          onClick={handleNext}
         />
-        <div className="flex items-center gap-4">
-          <Button
-            label={nextLabel}
-            theme="default"
-            kind="cell"
-            icon={isSubmit ? 'checkmark' : 'arrow-right'}
-            disabled={disabled}
-            onClick={handleNext}
-          />
-        </div>
       </div>
-    );
-  };
+    </div>
+  );
+};

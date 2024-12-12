@@ -4,17 +4,17 @@ import { EventSourceMessage } from '@microsoft/fetch-event-source';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
+import { ChatResponseEvent } from '@/domain/chat';
 import {
-  SalonChatRequest,
   CohereNetworkError,
   Conversation,
   FinishReason,
+  SalonChatRequest,
   StreamEnd,
   StreamEvent,
   isUnauthorizedError,
   useSalonClient,
 } from '@/salon-client';
-import { ChatResponseEvent } from '@/domain/chat';
 
 interface StreamingParams {
   onRead: (data: ChatResponseEvent) => void;
@@ -30,17 +30,17 @@ export interface StreamingChatParams extends StreamingParams {
 
 const getUpdatedConversations =
   (conversationId: string | undefined, description: string = '') =>
-    (conversations: Conversation[] | undefined) => {
-      return conversations?.map((c) => {
-        if (c.id !== conversationId) return c;
+  (conversations: Conversation[] | undefined) => {
+    return conversations?.map((c) => {
+      if (c.id !== conversationId) return c;
 
-        return {
-          ...c,
-          description,
-          updatedAt: new Date().toISOString(),
-        };
-      });
-    };
+      return {
+        ...c,
+        description,
+        updatedAt: new Date().toISOString(),
+      };
+    });
+  };
 
 export const useStreamChat = () => {
   const abortControllerRef = useRef<AbortController | null>(null);

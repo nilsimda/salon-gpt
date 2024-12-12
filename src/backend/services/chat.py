@@ -29,12 +29,14 @@ from backend.schemas.chat import (
 )
 from backend.schemas.conversation import UpdateConversationRequest
 from backend.schemas.interview import Interview
+from backend.services.auth.utils import get_header_user_id
 
 
 def process_chat(
     session: DBSessionDep,
     chat_request: SalonChatRequest,
     request: Request,
+    user_id: str,
 ) -> tuple[DBSessionDep, SalonChatRequest, Message, bool, int]:
     """
     Process a chat request.
@@ -47,7 +49,6 @@ def process_chat(
     Returns:
         Tuple: Tuple containing necessary data to construct the responses.
     """
-    user_id = chat_request.user_id
     agent_id = chat_request.agent_id
 
     should_store = chat_request.chat_history is None
@@ -89,8 +90,11 @@ def process_chat(
         id=str(uuid4()),
     )
 
-
-    chat_interviews = interview_crud.get_interviews_by_ids(session, chat_request.interview_ids) if chat_request.interview_ids else None
+    chat_interviews = (
+        interview_crud.get_interviews_by_ids(session, chat_request.interview_ids)
+        if chat_request.interview_ids
+        else None
+    )
 
     chat_history = create_chat_history(
         conversation, next_message_position, chat_request
@@ -98,7 +102,9 @@ def process_chat(
 
     chat_request.chat_history = chat_history
     chat_request.conversation_id = conversation.id
-    chat_request.interviews = parse_obj_as(list[Interview], chat_interviews) if chat_interviews else None
+    chat_request.interviews = (
+        parse_obj_as(list[Interview], chat_interviews) if chat_interviews else None
+    )
 
     return (
         session,
@@ -247,6 +253,7 @@ def create_message(
     if should_store:
         return message_crud.create_message(session, message)
     return message
+
 
 def create_chat_history(
     conversation: Conversation,

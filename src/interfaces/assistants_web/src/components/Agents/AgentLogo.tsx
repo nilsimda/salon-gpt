@@ -1,6 +1,6 @@
-import { AgentPublic } from '@/salon-client';
 import { AudioLogo, QuoteLogo, Text } from '@/components/UI';
 import { useBrandedColors } from '@/hooks';
+import { AgentPublic } from '@/salon-client';
 import {
   checkIsBaseAgent,
   checkIsSyntheticUserAgent,

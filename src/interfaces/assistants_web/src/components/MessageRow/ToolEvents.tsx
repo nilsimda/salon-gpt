@@ -3,7 +3,6 @@
 import { Transition } from '@headlessui/react';
 import { Fragment, PropsWithChildren } from 'react';
 
-import { StreamSearchResults, StreamToolCallsGeneration, ToolCall } from '@/salon-client';
 import { Markdown } from '@/components/Markdown';
 import { Icon, IconName, Text } from '@/components/UI';
 import {
@@ -12,6 +11,7 @@ import {
   TOOL_PYTHON_INTERPRETER_ID,
   TOOL_WEB_SEARCH_ID,
 } from '@/constants';
+import { StreamSearchResults, StreamToolCallsGeneration, ToolCall } from '@/salon-client';
 import { cn, getToolIcon, getValidURL } from '@/utils';
 
 type Props = {

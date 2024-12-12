@@ -3,9 +3,9 @@
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
 import React from 'react';
 
-import { Study } from '@/salon-client';
 import { Icon, Switch, Text } from '@/components/UI';
 import { useBrandedColors, useListStudies } from '@/hooks';
+import { Study } from '@/salon-client';
 import { useParamsStore } from '@/stores';
 import { checkIsBaseAgent, cn, getToolIcon } from '@/utils';
 

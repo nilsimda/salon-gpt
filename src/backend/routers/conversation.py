@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import parse_obj_as
 
 from backend.config.routers import RouterName
@@ -14,6 +14,7 @@ from backend.schemas.conversation import (
     ToggleConversationPinRequest,
     UpdateConversationRequest,
 )
+from backend.services.auth.utils import get_header_user_id
 from backend.services.conversation import (
     filter_conversations,
     generate_conversation_title,
@@ -32,9 +33,9 @@ router.name = RouterName.CONVERSATION  # type: ignore
 @router.get("/{conversation_id}", response_model=Conversation)
 async def get_conversation(
     conversation_id: str,
-    user_id: str,
     session: DBSessionDep,
     request: Request,
+    user_id: str = Depends(get_header_user_id),
 ) -> Conversation:
     """
     Get a conversation by ID.

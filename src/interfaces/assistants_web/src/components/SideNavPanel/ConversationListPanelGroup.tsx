@@ -3,10 +3,10 @@
 import { useMemo } from 'react';
 import { Flipped, Flipper } from 'react-flip-toolkit';
 
-import { ConversationWithoutMessages as Conversation } from '@/salon-client';
 import { ConversationCard, ConversationListItem } from '@/components/SideNavPanel';
 import { Text } from '@/components/UI';
 import { useListAgents } from '@/hooks';
+import { ConversationWithoutMessages as Conversation } from '@/salon-client';
 import { useConversationStore } from '@/stores';
 import { getWeeksAgo } from '@/utils';
 

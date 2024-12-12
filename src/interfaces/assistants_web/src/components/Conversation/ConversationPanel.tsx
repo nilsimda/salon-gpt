@@ -3,9 +3,9 @@
 import { Transition } from '@headlessui/react';
 import { useState } from 'react';
 
-import { Interview } from '@/salon-client';
 import { Icon, IconButton, Text, Tooltip } from '@/components/UI';
 import { useChatRoutes, useSession } from '@/hooks';
+import { Interview } from '@/salon-client';
 import { useParamsStore, useSettingsStore } from '@/stores';
 
 type Props = {};

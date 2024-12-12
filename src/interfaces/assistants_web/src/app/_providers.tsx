@@ -7,12 +7,6 @@ import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
 
 import {
-  SalonClient,
-  SalonClientProvider,
-  CohereUnauthorizedError,
-  Fetch,
-} from '@/salon-client';
-import {
   GlobalHead,
   ToastNotification,
   ViewportFix,
@@ -21,6 +15,7 @@ import {
 import { ContextStore } from '@/context';
 import { env } from '@/env.mjs';
 import { useLazyRef } from '@/hooks';
+import { CohereUnauthorizedError, Fetch, SalonClient, SalonClientProvider } from '@/salon-client';
 import { clearAuthToken } from '@/server/actions';
 
 const makeSalonClient = (authToken?: string) => {

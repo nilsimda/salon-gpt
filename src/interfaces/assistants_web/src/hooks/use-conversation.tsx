@@ -1,5 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { DeleteConversations } from '@/components/Modals/DeleteConversations';
+import { EditConversationTitle } from '@/components/Modals/EditConversationTitle';
+import { useContextStore } from '@/context';
+import { useNavigateToNewChat, useNotify } from '@/hooks';
 import {
   ApiError,
   CohereNetworkError,
@@ -10,10 +14,6 @@ import {
   UpdateConversationRequest,
   useSalonClient,
 } from '@/salon-client';
-import { DeleteConversations } from '@/components/Modals/DeleteConversations';
-import { EditConversationTitle } from '@/components/Modals/EditConversationTitle';
-import { useContextStore } from '@/context';
-import { useNavigateToNewChat, useNotify } from '@/hooks';
 import { useConversationStore } from '@/stores';
 import { isAbortError } from '@/utils';
 

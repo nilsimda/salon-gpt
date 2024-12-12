@@ -7,6 +7,6 @@ export const mapToChatRequest = (request: SalonChatRequest): SalonChatRequest =>
     message: request.message,
     conversation_id: request.conversation_id,
     description: request.description,
-    interview_ids: request.interview_ids
+    interview_ids: request.interview_ids,
   };
 };

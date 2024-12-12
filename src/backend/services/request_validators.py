@@ -6,8 +6,6 @@ from backend.crud import study as study_crud
 from backend.database_models.database import DBSessionDep
 from backend.services.auth.utils import get_header_user_id
 
-# TODO: validate searchrequest/transcription request
-
 
 def validate_user_header(session: DBSessionDep, request: Request):
     """

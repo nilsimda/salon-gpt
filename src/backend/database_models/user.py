@@ -1,23 +1,9 @@
 from typing import Optional
 
-from sqlalchemy import ForeignKey, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.database_models.base import Base
-
-
-class UserGroupAssociation(Base):
-    __tablename__ = "user_group"
-
-    user_id: Mapped[str] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
-    )
-    group_id: Mapped[str] = mapped_column(
-        ForeignKey("groups.id", ondelete="CASCADE"), primary_key=True
-    )
-    display: Mapped[str] = mapped_column()
-
-    group = relationship("Group", back_populates="user_associations")
 
 
 class User(Base):

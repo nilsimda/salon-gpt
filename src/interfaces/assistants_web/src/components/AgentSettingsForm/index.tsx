@@ -4,7 +4,6 @@ import { uniqBy } from 'lodash';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-import { CreateAgentRequest, UpdateAgentRequest } from '@/salon-client';
 import { DataSourcesStep } from '@/components/AgentSettingsForm/DataSourcesStep';
 import { DefineAssistantStep } from '@/components/AgentSettingsForm/DefineStep';
 import { ToolsStep } from '@/components/AgentSettingsForm/ToolsStep';
@@ -12,6 +11,7 @@ import { VisibilityStep } from '@/components/AgentSettingsForm/VisibilityStep';
 import { Button, CollapsibleSection } from '@/components/UI';
 import { TOOL_GOOGLE_DRIVE_ID, TOOL_READ_DOCUMENT_ID, TOOL_SEARCH_FILE_ID } from '@/constants';
 import { useIsAgentNameUnique, useListTools, useOpenGoogleDrivePicker } from '@/hooks';
+import { CreateAgentRequest, UpdateAgentRequest } from '@/salon-client';
 import { DataSourceArtifact } from '@/types/tools';
 import { cn, getToolAuthUrl } from '@/utils';
 
@@ -100,23 +100,23 @@ export const AgentSettingsForm: React.FC<Props> = (props) => {
     const tools_metadata = [
       ...(googleFiles && googleFiles.length > 0
         ? [
-          {
-            tool_name: TOOL_GOOGLE_DRIVE_ID,
-            artifacts: googleFiles,
-          },
-        ]
+            {
+              tool_name: TOOL_GOOGLE_DRIVE_ID,
+              artifacts: googleFiles,
+            },
+          ]
         : []),
       ...(defaultUploadFiles && defaultUploadFiles.length > 0
         ? [
-          {
-            tool_name: TOOL_READ_DOCUMENT_ID,
-            artifacts: defaultUploadFiles,
-          },
-          {
-            tool_name: TOOL_SEARCH_FILE_ID,
-            artifacts: defaultUploadFiles,
-          },
-        ]
+            {
+              tool_name: TOOL_READ_DOCUMENT_ID,
+              artifacts: defaultUploadFiles,
+            },
+            {
+              tool_name: TOOL_SEARCH_FILE_ID,
+              artifacts: defaultUploadFiles,
+            },
+          ]
         : []),
     ];
     let tools = fields.tools ?? [];
@@ -142,12 +142,12 @@ export const AgentSettingsForm: React.FC<Props> = (props) => {
         const updatedArtifacts = [
           ...data.docs.map(
             (doc) =>
-            ({
-              id: doc.id,
-              name: doc.name,
-              type: doc.type,
-              url: doc.url,
-            } as DataSourceArtifact)
+              ({
+                id: doc.id,
+                name: doc.name,
+                type: doc.type,
+                url: doc.url,
+              } as DataSourceArtifact)
           ),
         ];
 
@@ -304,29 +304,29 @@ const StepButtons: React.FC<{
   disabled = false,
   hide = false,
 }) => {
-    return (
-      <div
-        className={cn('flex w-full items-center justify-between pt-5', {
-          'justify-end': !handleBack,
-          hidden: hide,
-        })}
-      >
+  return (
+    <div
+      className={cn('flex w-full items-center justify-between pt-5', {
+        'justify-end': !handleBack,
+        hidden: hide,
+      })}
+    >
+      <Button
+        label="Zurück"
+        kind="secondary"
+        onClick={handleBack}
+        className={cn({ hidden: !handleBack })}
+      />
+      <div className="flex items-center gap-4">
         <Button
-          label="Zurück"
-          kind="secondary"
-          onClick={handleBack}
-          className={cn({ hidden: !handleBack })}
+          label={nextLabel}
+          theme="default"
+          kind="cell"
+          icon={isSubmit ? 'checkmark' : 'arrow-right'}
+          disabled={disabled}
+          onClick={handleNext}
         />
-        <div className="flex items-center gap-4">
-          <Button
-            label={nextLabel}
-            theme="default"
-            kind="cell"
-            icon={isSubmit ? 'checkmark' : 'arrow-right'}
-            disabled={disabled}
-            onClick={handleNext}
-          />
-        </div>
       </div>
-    );
-  };
+    </div>
+  );
+};

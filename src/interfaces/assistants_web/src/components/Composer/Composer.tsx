@@ -42,7 +42,7 @@ export const Composer: React.FC<Props> = ({
   const [isDragDropInputActive, setIsDragDropInputActive] = useState(false);
 
   const isReadyToReceiveMessage = !isStreaming;
-  const canSend = isReadyToReceiveMessage && value.trim().length > 0
+  const canSend = isReadyToReceiveMessage && value.trim().length > 0;
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter') {
@@ -114,7 +114,7 @@ export const Composer: React.FC<Props> = ({
           'relative flex w-full flex-col',
           'transition ease-in-out',
           'rounded border bg-marble-980 dark:bg-volcanic-100',
-          'border-marble-800 dark:border-volcanic-200',
+          'border-marble-800 dark:border-volcanic-200'
         )}
         onDragEnter={() => setIsDragDropInputActive(true)}
         onDragOver={() => setIsDragDropInputActive(true)}
@@ -145,8 +145,9 @@ export const Composer: React.FC<Props> = ({
               'leading-[150%]'
             )}
             style={{
-              maxHeight: `${chatWindowHeight * (isSmallBreakpoint || breakpoint === 'md' ? 0.6 : 0.75)
-                }px`,
+              maxHeight: `${
+                chatWindowHeight * (isSmallBreakpoint || breakpoint === 'md' ? 0.6 : 0.75)
+              }px`,
             }}
             rows={1}
             onKeyDown={handleKeyDown}

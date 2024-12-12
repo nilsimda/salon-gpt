@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { ListAuthStrategy, useSalonClient } from '@/salon-client';
 import { env } from '@/env.mjs';
+import { ListAuthStrategy, useSalonClient } from '@/salon-client';
 
 export const useAuthConfig = (): {
   loginUrl: string;

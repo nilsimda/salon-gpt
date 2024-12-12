@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 
-import { isNotFoundError } from '@/salon-client';
 import { Icon, Text } from '@/components/UI';
 import { useChatRoutes } from '@/hooks';
+import { isNotFoundError } from '@/salon-client';
 import { cn } from '@/utils';
 
 import { Header } from './Header';

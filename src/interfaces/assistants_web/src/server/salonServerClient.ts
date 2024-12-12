@@ -1,9 +1,9 @@
 import fetch from 'cross-fetch';
 import { cookies } from 'next/headers';
 
-import { SalonClient, Fetch } from '@/salon-client';
 import { COOKIE_KEYS } from '@/constants';
 import { env } from '@/env.mjs';
+import { Fetch, SalonClient } from '@/salon-client';
 
 export const getSalonServerClient = () => {
   const cookieStore = cookies();

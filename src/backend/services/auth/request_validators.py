@@ -95,10 +95,3 @@ class BasicAuthValidation:
 
     def _compare_secret(self, actual: str, expected: str) -> bool:
         return secrets.compare_digest(actual.encode("utf8"), expected.encode("utf8"))
-
-
-class ScimAuthValidation(BasicAuthValidation):
-    def __init__(self) -> None:
-        settings = Settings()
-        scim_auth = settings.auth.scim or SCIMAuth()
-        super().__init__(username=scim_auth.username, password=scim_auth.password)

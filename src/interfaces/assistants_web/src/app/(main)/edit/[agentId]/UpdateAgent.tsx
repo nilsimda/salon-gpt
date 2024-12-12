@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import React, { useState } from 'react';
 
-import { AgentPublic } from '@/salon-client';
 import { AgentSettingsFields, AgentSettingsForm } from '@/components/AgentSettingsForm';
 import { MobileHeader } from '@/components/Global';
 import { DeleteAgent } from '@/components/Modals/DeleteAgent';
@@ -11,6 +10,7 @@ import { Button, Icon, Spinner, Text } from '@/components/UI';
 import { DEFAULT_AGENT_MODEL, DEPLOYMENT_OLLAMA } from '@/constants';
 import { useContextStore } from '@/context';
 import { useIsAgentNameUnique, useNotify, useUpdateAgent } from '@/hooks';
+import { AgentPublic } from '@/salon-client';
 
 type Props = {
   agent: AgentPublic;

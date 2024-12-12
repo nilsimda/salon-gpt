@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 
-import { AgentPublic } from '@/salon-client';
 import { ShareConversation } from '@/components/Modals/ShareConversation';
 import { KebabMenu, KebabMenuItem, QuoteLogo, Text, Tooltip } from '@/components/UI';
 import { useContextStore } from '@/context';
@@ -14,6 +13,7 @@ import {
   useIsDesktop,
   useToggleConversationPin,
 } from '@/hooks';
+import { AgentPublic } from '@/salon-client';
 import { useConversationStore, useSettingsStore } from '@/stores';
 import { cn, formatDateToShortDate } from '@/utils';
 

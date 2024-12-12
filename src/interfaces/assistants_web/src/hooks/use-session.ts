@@ -7,9 +7,9 @@ import { useCookies } from 'next-client-cookies';
 import { useRouter } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
 
-import { ApiError, JWTResponse, useSalonClient } from '@/salon-client';
 import { COOKIE_KEYS } from '@/constants';
 import { useServerAuthStrategies } from '@/hooks';
+import { ApiError, JWTResponse, useSalonClient } from '@/salon-client';
 import { clearAuthToken, setAuthToken } from '@/server/actions';
 
 interface LoginParams {

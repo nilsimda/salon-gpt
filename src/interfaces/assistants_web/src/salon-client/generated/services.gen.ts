@@ -71,7 +71,7 @@ import type {
 } from './types.gen';
 
 export class DefaultService {
-  constructor(public readonly httpRequest: BaseHttpRequest) { }
+  constructor(public readonly httpRequest: BaseHttpRequest) {}
 
   /**
    * Get Strategies
@@ -191,7 +191,7 @@ export class DefaultService {
    *
    * Args:
    * session (DBSessionDep): Database session.
-   * chat_request (SalonChatRequest): Chat request data.
+   * chat_request (CohereChatRequest): Chat request data.
    * request (Request): Request object.
    * (Context): Context object.
    *
@@ -199,7 +199,7 @@ export class DefaultService {
    * EventSourceResponse: Server-sent event response with chatbot responses.
    * @param data The data for the request.
    * @param data.requestBody
-   * @returns unknown Successful Response
+   * @returns ChatResponseEvent Successful Response
    * @throws ApiError
    */
   public chatStreamV1ChatStreamPost(

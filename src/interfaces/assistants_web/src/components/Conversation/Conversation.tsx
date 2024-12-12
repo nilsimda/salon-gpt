@@ -5,11 +5,7 @@ import React, { useRef } from 'react';
 import { Composer } from '@/components/Composer';
 import { Header } from '@/components/Conversation';
 import { MessagingContainer, WelcomeGuideTooltip } from '@/components/MessagingContainer';
-import {
-  WelcomeGuideStep,
-  useChat,
-  useWelcomeGuideState,
-} from '@/hooks';
+import { WelcomeGuideStep, useChat, useWelcomeGuideState } from '@/hooks';
 import { useConversationStore } from '@/stores';
 import { ConfigurableParams } from '@/stores/slices/paramsSlice';
 import { ChatMessage } from '@/types/message';

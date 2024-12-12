@@ -87,7 +87,9 @@ class StreamEnd(ChatResponse):
     text: str = Field(
         title="Contents of the chat message.",
     )
-    search_results: dict[str, CitationList] | None = Field(title="Search results found in the interviews", default=None)
+    search_results: dict[str, CitationList] | None = Field(
+        title="Search results found in the interviews", default=None
+    )
     finish_reason: str | None = Field(title="The finish reason", default=None)
     chat_history: List[ChatMessage] | None = Field(
         default=None,
@@ -118,10 +120,6 @@ class ChatResponseEvent(BaseModel):
 
 
 class SalonChatRequest(BaseModel):
-    user_id: str = Field(
-        title="A user id to store to store the conversation under.", exclude=True
-    )
-
     agent_id: str = Field(
         title="The agent_id to use for the chat request. This allows us to construct the correct system prompt.",
     )
@@ -139,9 +137,17 @@ class SalonChatRequest(BaseModel):
         title="To store a conversation then create a conversation id and use it for every related request",
     )
     # these options are only used for the search task
-    study_id: str | None = Field(title="The study_id to use for the chat request.", default=None)
-    interview_ids: list[str] | None = Field(title="The interview_ids that should be searched.", default=None)
-    interviews: list[Interview] | None = Field(title="The interviews that should be searched.", default=None)
+    study_id: str | None = Field(
+        title="The study_id to use for the chat request.", default=None
+    )
+    interview_ids: list[str] | None = Field(
+        title="The interview_ids that should be searched.", default=None
+    )
+    interviews: list[Interview] | None = Field(
+        title="The interviews that should be searched.", default=None
+    )
 
     # this option is only used for the syntehtic user task
-    description: str | None = Field(title="Description of the user to simulate.", default=None)
+    description: str | None = Field(
+        title="Description of the user to simulate.", default=None
+    )

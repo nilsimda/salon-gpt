@@ -2,10 +2,10 @@
 
 import React from 'react';
 
-import { AgentPublic, ManagedTool } from '@/salon-client';
 import { WelcomeGuideTooltip } from '@/components/MessagingContainer';
 import { Button, Icon, Text, ToggleCard } from '@/components/UI';
 import { useAvailableTools } from '@/hooks';
+import { AgentPublic, ManagedTool } from '@/salon-client';
 import { useParamsStore } from '@/stores';
 import { checkIsBaseAgent, cn, getToolIcon } from '@/utils';
 

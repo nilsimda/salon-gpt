@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
-import { ManagedTool } from '@/salon-client';
 import { Icon, IconName, Switch, Text } from '@/components/UI';
 import { AGENT_SETTINGS_TOOLS, TOOL_FALLBACK_ICON, TOOL_ID_TO_DISPLAY_INFO } from '@/constants';
+import { ManagedTool } from '@/salon-client';
 
 type Props = {
   tools?: ManagedTool[];

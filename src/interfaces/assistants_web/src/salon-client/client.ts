@@ -1,12 +1,12 @@
 import { FetchEventSourceInit, fetchEventSource } from '@microsoft/fetch-event-source';
 
 import {
-  SalonChatRequest,
-  SalonClientGenerated,
   CohereNetworkError,
   CohereUnauthorizedError,
   CreateUserV1UsersPostData,
   Fetch,
+  SalonChatRequest,
+  SalonClientGenerated,
   ToggleConversationPinRequest,
   UpdateConversationRequest,
 } from '@/salon-client';
@@ -45,7 +45,6 @@ export class SalonClient {
       return response;
     });
   }
-
 
   public async chat({
     request,
@@ -88,7 +87,7 @@ export class SalonClient {
   }
 
   public listConversations(params: {
-    userId: string
+    userId: string;
     offset?: number;
     limit?: number;
     orderBy?: string;
@@ -97,21 +96,31 @@ export class SalonClient {
     return this.salonService.default.listConversationsV1ConversationsGet(params);
   }
 
-  public getConversation({ conversationId, userId }: { conversationId: string, userId: string }) {
+  public getConversation({ conversationId, userId }: { conversationId: string; userId: string }) {
     return this.salonService.default.getConversationV1ConversationsConversationIdGet({
       conversationId,
       userId,
     });
   }
 
-  public deleteConversation({ conversationId, userId }: { conversationId: string, userId: string }) {
+  public deleteConversation({
+    conversationId,
+    userId,
+  }: {
+    conversationId: string;
+    userId: string;
+  }) {
     return this.salonService.default.deleteConversationV1ConversationsConversationIdDelete({
       conversationId,
       userId,
     });
   }
 
-  public editConversation(requestBody: UpdateConversationRequest, conversationId: string, userId: string) {
+  public editConversation(
+    requestBody: UpdateConversationRequest,
+    conversationId: string,
+    userId: string
+  ) {
     return this.salonService.default.updateConversationV1ConversationsConversationIdPut({
       conversationId: conversationId,
       userId: userId,
@@ -119,7 +128,11 @@ export class SalonClient {
     });
   }
 
-  public toggleConversationPin(requestBody: ToggleConversationPinRequest, conversationId: string, userId: string) {
+  public toggleConversationPin(
+    requestBody: ToggleConversationPinRequest,
+    conversationId: string,
+    userId: string
+  ) {
     return this.salonService.default.toggleConversationPinV1ConversationsConversationIdTogglePinPut(
       {
         conversationId: conversationId,
@@ -205,9 +218,10 @@ export class SalonClient {
     // this.salonService.default.oidcAuthorizeV1OidcAuthGet();
   }
 
-  public generateTitle({ conversationId, userId }: { conversationId: string, userId: string }) {
+  public generateTitle({ conversationId, userId }: { conversationId: string; userId: string }) {
     return this.salonService.default.generateTitleV1ConversationsConversationIdGenerateTitlePost({
-      conversationId, userId
+      conversationId,
+      userId,
     });
   }
 

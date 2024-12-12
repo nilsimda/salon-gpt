@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 
-import { SalonChatRequest, DEFAULT_CHAT_TEMPERATURE, Study } from '@/salon-client';
+import { DEFAULT_CHAT_TEMPERATURE, SalonChatRequest, Study } from '@/salon-client';
 
 import { StoreState } from '..';
 
