@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import React, { useState } from 'react';
 
-import { AgentPublic } from '@/cohere-client';
+import { AgentPublic } from '@/salon-client';
 import { AgentSettingsFields, AgentSettingsForm } from '@/components/AgentSettingsForm';
 import { MobileHeader } from '@/components/Global';
 import { DeleteAgent } from '@/components/Modals/DeleteAgent';

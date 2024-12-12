@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { useCohereClient } from '@/cohere-client';
+import { useSalonClient } from '@/salon-client';
 import { useConversationStore } from '@/stores';
 
 export enum SynthesisStatus {
@@ -11,7 +11,7 @@ export enum SynthesisStatus {
 }
 
 export const useSynthesizer = () => {
-  const client = useCohereClient();
+  const client = useSalonClient();
   const lastMessageIdRef = useRef<string | null>(null);
   const [audios, setAudios] = useState<Map<string, HTMLAudioElement>>(new Map());
   const {
@@ -60,11 +60,6 @@ export const useSynthesizer = () => {
     if (!audio) {
       audio = createEmptyAudioElement();
       setAudios((prev) => new Map(prev).set(messageId, audio!));
-    }
-
-    if (!audio.src) {
-      const blob = await client.synthesizeMessage(conversationId!, messageId);
-      audio.src = URL.createObjectURL(blob);
     }
 
     if (lastMessageIdRef.current === messageId) {

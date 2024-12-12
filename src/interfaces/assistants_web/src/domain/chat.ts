@@ -11,7 +11,7 @@ import {
   StreamToolCallsGeneration,
   StreamToolInput,
   StreamToolResult,
-} from '@/cohere-client';
+} from '@/salon-client';
 
 type ChatResponseEventStreamStart = {
   event: StreamEvent.STREAM_START;

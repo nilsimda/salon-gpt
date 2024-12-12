@@ -71,7 +71,7 @@ import type {
 } from './types.gen';
 
 export class DefaultService {
-  constructor(public readonly httpRequest: BaseHttpRequest) {}
+  constructor(public readonly httpRequest: BaseHttpRequest) { }
 
   /**
    * Get Strategies
@@ -191,7 +191,7 @@ export class DefaultService {
    *
    * Args:
    * session (DBSessionDep): Database session.
-   * chat_request (CohereChatRequest): Chat request data.
+   * chat_request (SalonChatRequest): Chat request data.
    * request (Request): Request object.
    * (Context): Context object.
    *

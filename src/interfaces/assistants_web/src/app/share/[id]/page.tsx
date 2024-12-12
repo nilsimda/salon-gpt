@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { PropsWithChildren, useEffect, useState } from 'react';
 
-import { Document } from '@/cohere-client';
+import { Document } from '@/salon-client';
 import { Icon, Spinner, Text } from '@/components/UI';
 import { DEFAULT_CONVERSATION_NAME, TOOL_PYTHON_INTERPRETER_ID } from '@/constants';
 import { useGetSnapshotByLinkId } from '@/hooks';

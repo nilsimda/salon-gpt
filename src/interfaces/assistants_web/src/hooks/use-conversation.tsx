@@ -8,8 +8,8 @@ import {
   DeleteConversationResponse,
   ToggleConversationPinRequest,
   UpdateConversationRequest,
-  useCohereClient,
-} from '@/cohere-client';
+  useSalonClient,
+} from '@/salon-client';
 import { DeleteConversations } from '@/components/Modals/DeleteConversations';
 import { EditConversationTitle } from '@/components/Modals/EditConversationTitle';
 import { useContextStore } from '@/context';
@@ -23,7 +23,7 @@ export const useConversations = (params: {
   orderBy?: string;
   agentId?: string;
 }) => {
-  const client = useCohereClient();
+  const client = useSalonClient();
 
   return useQuery<ConversationWithoutMessages[], ApiError>({
     queryKey: ['conversations', params.agentId],
@@ -40,7 +40,7 @@ export const useConversation = ({
   conversationId?: string;
   disabledOnMount?: boolean;
 }) => {
-  const client = useCohereClient();
+  const client = useSalonClient();
 
   return useQuery<ConversationPublic | undefined, Error>({
     queryKey: ['conversation', conversationId],
@@ -64,7 +64,7 @@ export const useConversation = ({
 };
 
 export const useEditConversation = () => {
-  const client = useCohereClient();
+  const client = useSalonClient();
   const queryClient = useQueryClient();
   return useMutation<
     ConversationPublic,
@@ -79,7 +79,7 @@ export const useEditConversation = () => {
 };
 
 export const useToggleConversationPin = () => {
-  const client = useCohereClient();
+  const client = useSalonClient();
   const queryClient = useQueryClient();
   return useMutation<
     ConversationWithoutMessages,
@@ -95,7 +95,7 @@ export const useToggleConversationPin = () => {
 };
 
 export const useDeleteConversation = () => {
-  const client = useCohereClient();
+  const client = useSalonClient();
   const queryClient = useQueryClient();
   return useMutation<DeleteConversationResponse, CohereNetworkError, { conversationId: string }>({
     mutationFn: ({ conversationId }: { conversationId: string }) =>

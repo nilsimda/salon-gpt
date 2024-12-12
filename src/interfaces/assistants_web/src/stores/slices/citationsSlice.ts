@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 
-import { Document } from '@/cohere-client';
+import { Document } from '@/salon-client';
 import { decodeBase64, mapExtensionToMimeType } from '@/utils';
 
 import { StoreState } from '..';

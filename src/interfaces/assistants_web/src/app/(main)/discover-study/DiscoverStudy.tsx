@@ -2,7 +2,7 @@
 
 import { useDeferredValue, useMemo, useState } from 'react';
 
-import { Study } from '@/cohere-client';
+import { Study } from '@/salon-client';
 import { MobileHeader } from '@/components/Global';
 import { Button, Input, Text } from '@/components/UI';
 import { useListStudies, useSession } from '@/hooks';

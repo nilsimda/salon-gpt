@@ -7,11 +7,11 @@ import { Swipeable } from '@/components/Global';
 import { HotKeys } from '@/components/HotKeys';
 import { SideNavPanel } from '@/components/SideNavPanel';
 import { COOKIE_KEYS } from '@/constants';
-import { getCohereServerClient } from '@/server/cohereServerClient';
+import { getSalonServerClient } from '@/server/salonServerClient';
 
 const MainLayout: NextPage<React.PropsWithChildren> = async ({ children }) => {
-  const cohereServerClient = getCohereServerClient();
-  const strategies = await cohereServerClient.getAuthStrategies();
+  const salonServerClient = getSalonServerClient();
+  const strategies = await salonServerClient.getAuthStrategies();
   if (strategies.length !== 0) {
     const cookieStore = cookies();
     const authToken = cookieStore.get(COOKIE_KEYS.authToken);
@@ -27,13 +27,13 @@ const MainLayout: NextPage<React.PropsWithChildren> = async ({ children }) => {
     queryClient.prefetchQuery({
       queryKey: ['listAgents'],
       queryFn: async () => {
-        const agents = await cohereServerClient.listAgents({});
+        const agents = await salonServerClient.listAgents({});
         return agents;
       },
     }),
     queryClient.prefetchQuery({
       queryKey: ['conversations', null], // we use null to indicate that we want to fetch all conversations
-      queryFn: async () => cohereServerClient.listConversations({ limit: 20 }),
+      queryFn: async () => salonServerClient.listConversations({ limit: 20 }),
     }),
   ]);
 

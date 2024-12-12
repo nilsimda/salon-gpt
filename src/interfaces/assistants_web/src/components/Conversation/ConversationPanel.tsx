@@ -3,9 +3,9 @@
 import { Transition } from '@headlessui/react';
 import { useState } from 'react';
 
-import { Interview, InterviewType } from '@/cohere-client';
+import { Interview } from '@/salon-client';
 import { Icon, IconButton, Text, Tooltip } from '@/components/UI';
-import { useBrandedColors, useChatRoutes, useListStudyFiles, useSession } from '@/hooks';
+import { useChatRoutes, useSession } from '@/hooks';
 import { useParamsStore, useSettingsStore } from '@/stores';
 
 type Props = {};
@@ -21,10 +21,10 @@ export const ConversationPanel: React.FC<Props> = () => {
 
   const session = useSession();
 
-  const { data: currentInterviews } = useListStudyFiles(selected_study?.id);
+  //const { data: currentInterviews } = useListStudyFiles(selected_study?.id);
 
   const groupedInterviews = interviews?.reduce((groups, interview) => {
-    const type = interview.type;
+    const type = interview.interview_type;
     if (!groups[type]) {
       groups[type] = [];
     }

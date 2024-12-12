@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 
-import { CohereChatRequest, DEFAULT_CHAT_TEMPERATURE, Study } from '@/cohere-client';
+import { SalonChatRequest, DEFAULT_CHAT_TEMPERATURE, Study } from '@/salon-client';
 
 import { StoreState } from '..';
 
@@ -14,9 +14,9 @@ const INITIAL_STATE: ConfigurableParams = {
   deploymentConfig: undefined,
 };
 
-export type ConfigurableParams = Pick<CohereChatRequest, 'temperature' | 'tools'> & {
+export type ConfigurableParams = Pick<SalonChatRequest, 'temperature' | 'tools'> & {
   preamble: string;
-  interviews: CohereChatRequest['interviews'];
+  interviews: SalonChatRequest['interviews'];
   selected_study?: Study;
   model?: string;
   deployment?: string;

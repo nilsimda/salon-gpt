@@ -1,4 +1,4 @@
-import { Citation } from '@/cohere-client';
+import { Citation } from '@/salon-client';
 
 /**
  * @description Helper function to temporarily ensure markdown image syntax provided by the model is correct.

@@ -3,23 +3,23 @@
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
 import React from 'react';
 
-import { AgentPublic, Study } from '@/cohere-client';
+import { Study } from '@/salon-client';
 import { Icon, Switch, Text } from '@/components/UI';
 import { useBrandedColors, useListStudies } from '@/hooks';
 import { useParamsStore } from '@/stores';
 import { checkIsBaseAgent, cn, getToolIcon } from '@/utils';
 
 export type Props = {
-  agent?: AgentPublic;
+  agentName?: string;
 };
 
 /**
  * @description Displays a list of available studies
  */
-export const DataSourceMenu: React.FC<Props> = ({ agent }) => {
+export const DataSourceMenu: React.FC<Props> = ({ agentName }) => {
   const { data: studies } = useListStudies();
-  const { text, contrastText, border, bg } = useBrandedColors(agent?.id);
-  const isBaseAgent = checkIsBaseAgent(agent);
+  const { text, contrastText, border, bg } = useBrandedColors(agentName);
+  const isBaseAgent = checkIsBaseAgent(agentName);
 
   const {
     setParams,

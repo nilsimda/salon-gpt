@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import { AgentPublic, ManagedTool } from '@/cohere-client';
+import { AgentPublic, ManagedTool } from '@/salon-client';
 import { WelcomeGuideTooltip } from '@/components/MessagingContainer';
 import { Button, Icon, Text, ToggleCard } from '@/components/UI';
 import { useAvailableTools } from '@/hooks';

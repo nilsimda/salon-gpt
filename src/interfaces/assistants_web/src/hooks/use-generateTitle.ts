@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { GenerateTitleResponse, useCohereClient } from '@/cohere-client';
+import { GenerateTitleResponse, useSalonClient } from '@/salon-client';
 
 export const useUpdateConversationTitle = () => {
-  const cohereClient = useCohereClient();
+  const salonClient = useSalonClient();
   const queryClient = useQueryClient();
   return useMutation<GenerateTitleResponse, Error, string>({
-    mutationFn: (conversationId) => cohereClient.generateTitle({ conversationId }),
+    mutationFn: (conversationId) => salonClient.generateTitle({ conversationId }),
     onSettled: () => queryClient.invalidateQueries({ queryKey: ['conversations'] }),
     retry: 1,
   });

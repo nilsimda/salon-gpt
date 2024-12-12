@@ -1,4 +1,4 @@
-import { Tool } from '@/cohere-client';
+import { Tool } from '@/salon-client';
 
 /**
  * Helper function to determine if grounding is on.

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { Citation } from '@/cohere-client';
+import { Citation } from '@/salon-client';
 import {
   CODE_BLOCK_REGEX_EXP,
   IFRAME_REGEX_EXP,

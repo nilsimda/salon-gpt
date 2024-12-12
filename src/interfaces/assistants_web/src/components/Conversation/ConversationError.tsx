@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { isNotFoundError } from '@/cohere-client';
+import { isNotFoundError } from '@/salon-client';
 import { Icon, Text } from '@/components/UI';
 import { useChatRoutes } from '@/hooks';
 import { cn } from '@/utils';

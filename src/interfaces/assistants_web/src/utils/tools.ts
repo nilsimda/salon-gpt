@@ -1,4 +1,4 @@
-import { Document } from '@/cohere-client';
+import { Document } from '@/salon-client';
 import { IconName } from '@/components/UI';
 import { TOOL_FALLBACK_ICON, TOOL_ID_TO_DISPLAY_INFO } from '@/constants';
 

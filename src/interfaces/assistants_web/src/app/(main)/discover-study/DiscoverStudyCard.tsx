@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { Study } from '@/cohere-client';
+import { Study } from '@/salon-client';
 import { DeleteStudy } from '@/components/Modals/DeleteStudy';
 import { KebabMenu, Text } from '@/components/UI';
 import { useContextStore } from '@/context';

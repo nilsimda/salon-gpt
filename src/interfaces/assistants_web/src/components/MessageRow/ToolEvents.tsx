@@ -3,7 +3,7 @@
 import { Transition } from '@headlessui/react';
 import { Fragment, PropsWithChildren } from 'react';
 
-import { StreamSearchResults, StreamToolCallsGeneration, ToolCall } from '@/cohere-client';
+import { StreamSearchResults, StreamToolCallsGeneration, ToolCall } from '@/salon-client';
 import { Markdown } from '@/components/Markdown';
 import { Icon, IconName, Text } from '@/components/UI';
 import {

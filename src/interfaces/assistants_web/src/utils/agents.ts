@@ -1,4 +1,4 @@
-import { AgentPublic } from '@/cohere-client';
+import { AgentPublic } from '@/salon-client';
 
 /**
  * @description Checks if the agent is the base agent.

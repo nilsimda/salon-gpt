@@ -2,20 +2,19 @@
 
 import React from 'react';
 
-import { AgentPublic, Study } from '@/cohere-client';
-import { DataSourceMenu, FilesMenu } from '@/components/Composer';
+import { Study } from '@/salon-client';
+import { DataSourceMenu } from '@/components/Composer';
 import { cn } from '@/utils';
 
 type Props = {
-  agent?: AgentPublic;
+  agentName?: string;
   study?: Study;
-  onUploadFile: (files: File[]) => void;
 };
 
 /**
  * @description Renders the bottom toolbar of the composer that shows available and selected data sources.
  */
-export const ComposerToolbar: React.FC<Props> = ({ agent, study, onUploadFile }) => {
+export const ComposerToolbar: React.FC<Props> = ({ agentName, study }) => {
   return (
     <div
       className={cn(
@@ -24,8 +23,7 @@ export const ComposerToolbar: React.FC<Props> = ({ agent, study, onUploadFile })
         'mx-2 py-2'
       )}
     >
-      <FilesMenu onUploadFile={onUploadFile} />
-      <DataSourceMenu agent={agent} />
+      <DataSourceMenu agentName={agentName} />
     </div>
   );
 };

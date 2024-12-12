@@ -1,30 +1,28 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { uniq } from 'lodash';
-import { useCallback, useMemo } from 'react';
 
 import {
   ApiError,
   CreateStudyRequest,
   Study,
   UpdateStudyRequest,
-  useCohereClient,
-} from '@/cohere-client';
+  useSalonClient,
+} from '@/salon-client';
 
 export const useListStudies = () => {
-  const cohereClient = useCohereClient();
+  const salonClient = useSalonClient();
   return useQuery({
     queryKey: ['listStudies'],
     queryFn: async () => {
-      return await cohereClient.listStudies({});
+      return await salonClient.listStudies({});
     },
   });
 };
 
 export const useCreateStudy = () => {
-  const cohereClient = useCohereClient();
+  const salonClient = useSalonClient();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (request: CreateStudyRequest) => cohereClient.createStudy(request),
+    mutationFn: (request: CreateStudyRequest) => salonClient.createStudy(request),
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['listStudies'] });
     },
@@ -32,12 +30,12 @@ export const useCreateStudy = () => {
 };
 
 export const useDeleteStudy = () => {
-  const cohereClient = useCohereClient();
+  const salonClient = useSalonClient();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (request: { agentId: string }) => {
       try {
-        return await cohereClient.deleteStudy(request);
+        return await salonClient.deleteStudy(request);
       } catch (e) {
         console.error(e);
         throw e;
@@ -50,7 +48,7 @@ export const useDeleteStudy = () => {
 };
 
 export const useStudy = ({ studyId }: { studyId?: string }) => {
-  const cohereClient = useCohereClient();
+  const salonClient = useSalonClient();
   return useQuery({
     queryKey: ['study', studyId],
     queryFn: async () => {
@@ -58,7 +56,7 @@ export const useStudy = ({ studyId }: { studyId?: string }) => {
         if (!studyId) {
           throw new Error('must have study id');
         }
-        return await cohereClient.getStudy(studyId);
+        return await salonClient.getStudy(studyId);
       } catch (e) {
         console.error(e);
         throw e;
@@ -80,10 +78,10 @@ export const useIsStudyNameUnique = () => {
 };
 
 export const useUpdateStudy = () => {
-  const cohereClient = useCohereClient();
+  const salonClient = useSalonClient();
   const queryClient = useQueryClient();
   return useMutation<Study, ApiError, { request: UpdateStudyRequest; studyId: string }>({
-    mutationFn: ({ request, studyId }) => cohereClient.updateStudy(request, studyId),
+    mutationFn: ({ request, studyId }) => salonClient.updateStudy(request, studyId),
     onSettled: (study) => {
       queryClient.invalidateQueries({ queryKey: ['study', study?.id] });
       queryClient.invalidateQueries({ queryKey: ['listStudies'] });

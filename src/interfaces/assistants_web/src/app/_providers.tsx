@@ -7,11 +7,11 @@ import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
 
 import {
-  CohereClient,
-  CohereClientProvider,
+  SalonClient,
+  SalonClientProvider,
   CohereUnauthorizedError,
   Fetch,
-} from '@/cohere-client';
+} from '@/salon-client';
 import {
   GlobalHead,
   ToastNotification,
@@ -23,9 +23,9 @@ import { env } from '@/env.mjs';
 import { useLazyRef } from '@/hooks';
 import { clearAuthToken } from '@/server/actions';
 
-const makeCohereClient = (authToken?: string) => {
+const makeSalonClient = (authToken?: string) => {
   const apiFetch: Fetch = async (resource, config) => await fetch(resource, config);
-  return new CohereClient({
+  return new SalonClient({
     hostname: env.NEXT_PUBLIC_API_HOSTNAME,
     fetch: apiFetch,
     authToken,
@@ -38,7 +38,7 @@ export const LayoutProviders: React.FC<React.PropsWithChildren<{ authToken?: str
 }) => {
   const router = useRouter();
 
-  const cohereClient = useMemo(() => makeCohereClient(authToken), [authToken]);
+  const salonClient = useMemo(() => makeSalonClient(authToken), [authToken]);
   const queryClient = useLazyRef(
     () =>
       new QueryClient({
@@ -62,7 +62,7 @@ export const LayoutProviders: React.FC<React.PropsWithChildren<{ authToken?: str
 
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={true}>
-      <CohereClientProvider client={cohereClient}>
+      <SalonClientProvider client={salonClient}>
         <QueryClientProvider client={queryClient}>
           <ContextStore>
             <ViewportFix />
@@ -73,7 +73,7 @@ export const LayoutProviders: React.FC<React.PropsWithChildren<{ authToken?: str
             {children}
           </ContextStore>
         </QueryClientProvider>
-      </CohereClientProvider>
+      </SalonClientProvider>
     </ThemeProvider>
   );
 };

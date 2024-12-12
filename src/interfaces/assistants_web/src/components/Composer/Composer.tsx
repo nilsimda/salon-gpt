@@ -3,11 +3,10 @@
 import { useResizeObserver } from '@react-hookz/web';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { AgentPublic, ManagedTool } from '@/cohere-client';
 import { ComposerError, ComposerFiles, ComposerToolbar } from '@/components/Composer';
 import { DragDropFileInput, Icon, STYLE_LEVEL_TO_CLASSES } from '@/components/UI';
 import { CHAT_COMPOSER_TEXTAREA_ID } from '@/constants';
-import { useAvailableTools, useBreakpoint, useIsDesktop } from '@/hooks';
+import { useBreakpoint, useIsDesktop } from '@/hooks';
 import { ConfigurableParams } from '@/stores/slices/paramsSlice';
 import { ChatMessage } from '@/types/message';
 import { cn } from '@/utils';
@@ -19,9 +18,7 @@ type Props = {
   onStop: VoidFunction;
   onSend: (message?: string, overrides?: Partial<ConfigurableParams>) => void;
   onChange: (message: string) => void;
-  onUploadFile: (files: File[]) => void;
-  agent?: AgentPublic;
-  tools?: ManagedTool[];
+  agentName?: string;
   chatWindowRef?: React.RefObject<HTMLDivElement>;
   lastUserMessage?: ChatMessage;
 };
@@ -29,12 +26,10 @@ type Props = {
 export const Composer: React.FC<Props> = ({
   value,
   isStreaming,
-  agent,
-  tools,
+  agentName,
   onSend,
   onChange,
   onStop,
-  onUploadFile,
   chatWindowRef,
   lastUserMessage,
 }) => {
@@ -42,15 +37,12 @@ export const Composer: React.FC<Props> = ({
   const breakpoint = useBreakpoint();
   const isSmallBreakpoint = breakpoint === 'sm';
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const { unauthedTools } = useAvailableTools({ agent, managedTools: tools });
-  const isToolAuthRequired = unauthedTools.length > 0;
 
   const [chatWindowHeight, setChatWindowHeight] = useState(0);
   const [isDragDropInputActive, setIsDragDropInputActive] = useState(false);
 
   const isReadyToReceiveMessage = !isStreaming;
-  const isComposerDisabled = isToolAuthRequired;
-  const canSend = isReadyToReceiveMessage && value.trim().length > 0 && !isComposerDisabled;
+  const canSend = isReadyToReceiveMessage && value.trim().length > 0
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter') {
@@ -76,10 +68,6 @@ export const Composer: React.FC<Props> = ({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (isComposerDisabled) {
-      return;
-    }
-
     onChange(e.target.value);
   };
 
@@ -127,9 +115,6 @@ export const Composer: React.FC<Props> = ({
           'transition ease-in-out',
           'rounded border bg-marble-980 dark:bg-volcanic-100',
           'border-marble-800 dark:border-volcanic-200',
-          {
-            'bg-marble-950 dark:bg-mushroom-150': isComposerDisabled,
-          }
         )}
         onDragEnter={() => setIsDragDropInputActive(true)}
         onDragOver={() => setIsDragDropInputActive(true)}
@@ -160,14 +145,12 @@ export const Composer: React.FC<Props> = ({
               'leading-[150%]'
             )}
             style={{
-              maxHeight: `${
-                chatWindowHeight * (isSmallBreakpoint || breakpoint === 'md' ? 0.6 : 0.75)
-              }px`,
+              maxHeight: `${chatWindowHeight * (isSmallBreakpoint || breakpoint === 'md' ? 0.6 : 0.75)
+                }px`,
             }}
             rows={1}
             onKeyDown={handleKeyDown}
             onChange={handleChange}
-            disabled={isComposerDisabled}
           />
           <button
             className={cn(
@@ -190,7 +173,7 @@ export const Composer: React.FC<Props> = ({
           </button>
         </div>
         <ComposerFiles />
-        <ComposerToolbar onUploadFile={onUploadFile} agent={agent} tools={tools} />
+        <ComposerToolbar agentName={agentName} />
       </div>
       <ComposerError className="pt-2" />
     </div>

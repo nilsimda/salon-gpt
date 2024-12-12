@@ -3,7 +3,7 @@ import {
   ListConversationFile,
   StreamToolCallsGeneration,
   StreamToolInput,
-} from '@/cohere-client';
+} from '@/salon-client';
 
 export enum BotState {
   LOADING = 'loading',

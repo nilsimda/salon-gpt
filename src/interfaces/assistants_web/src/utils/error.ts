@@ -1,4 +1,4 @@
-import { CohereNetworkError } from '@/cohere-client';
+import { CohereNetworkError } from '@/salon-client';
 
 export const isAbortError = (error: unknown) => {
   return error instanceof DOMException && error.name === 'AbortError';

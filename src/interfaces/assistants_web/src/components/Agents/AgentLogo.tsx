@@ -1,4 +1,4 @@
-import { AgentPublic } from '@/cohere-client';
+import { AgentPublic } from '@/salon-client';
 import { AudioLogo, QuoteLogo, Text } from '@/components/UI';
 import { useBrandedColors } from '@/hooks';
 import {

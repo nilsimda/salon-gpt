@@ -37,7 +37,7 @@ export const AllStyles: StoryFn<typeof Button> = () => (
           icon="add"
           label="Link Primary"
           theme="evolved-green"
-          href="https://cohere.com"
+          href="https://rheingold-salon.de"
         />
         <Button
           kind="primary"
@@ -45,7 +45,7 @@ export const AllStyles: StoryFn<typeof Button> = () => (
           label="Link disabled"
           theme="evolved-green"
           disabled
-          href="https://cohere.com"
+          href="https://rheingold-salon.de"
         />
       </div>
     </div>

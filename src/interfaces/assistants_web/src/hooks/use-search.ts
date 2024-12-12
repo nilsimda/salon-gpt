@@ -4,7 +4,7 @@ import { useDebouncedEffect } from '@react-hookz/web';
 import { matchSorter } from 'match-sorter';
 import { useState } from 'react';
 
-import { ConversationWithoutMessages } from '@/cohere-client';
+import { ConversationWithoutMessages } from '@/salon-client';
 
 /**
  * Hook in charge of searching conversations using:

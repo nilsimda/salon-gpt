@@ -1,6 +1,6 @@
 import { NextPage } from 'next';
 
-import { getCohereServerClient } from '@/server/cohereServerClient';
+import { getCohereServerClient } from '@/server/salonServerClient';
 
 import { UpdateAgent } from './UpdateAgent';
 
@@ -12,8 +12,8 @@ type Props = {
 };
 
 const Page: NextPage<Props> = async ({ params }) => {
-  const cohereServerClient = getCohereServerClient();
-  const agent = await cohereServerClient.getAgent(params.agentId);
+  const salonServerClient = getCohereServerClient();
+  const agent = await salonServerClient.getAgent(params.agentId);
 
   return <UpdateAgent agent={agent} />;
 };

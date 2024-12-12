@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { shallow } from 'zustand/shallow';
 
-import { Tool } from '@/cohere-client';
+import { Tool } from '@/salon-client';
 import { CitationsStore, createCitationsSlice } from '@/stores/slices/citationsSlice';
 import { ConversationStore, createConversationSlice } from '@/stores/slices/conversationSlice';
 import { FilesStore, createFilesSlice } from '@/stores/slices/filesSlice';

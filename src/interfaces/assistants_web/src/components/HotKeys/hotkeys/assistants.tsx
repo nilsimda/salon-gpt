@@ -1,11 +1,9 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
-import { AgentLogo } from '@/components/Agents/AgentLogo';
 import { SwitchAssistants } from '@/components/HotKeys/custom-views/SwitchAssistants';
 import { HotKeyGroupOption } from '@/components/HotKeys/domain';
-import { useChatRoutes, useRecentAgents } from '@/hooks';
 
 export const useAssistantHotKeys = ({
   displayRecentAgentsInDialog,
@@ -13,9 +11,6 @@ export const useAssistantHotKeys = ({
   displayRecentAgentsInDialog: boolean;
 }): HotKeyGroupOption[] => {
   const router = useRouter();
-  const pathname = usePathname();
-  const recentAgents = useRecentAgents(5);
-  const { agentId } = useChatRoutes();
 
   const navigateToAssistants = () => {
     router.push('/discover-agent');
@@ -58,34 +53,6 @@ export const useAssistantHotKeys = ({
           commands: [],
           registerGlobal: false,
         },
-        ...recentAgents.map((agent, index) => ({
-          name: agent.name,
-          displayInDialog: displayRecentAgentsInDialog,
-          label: (
-            <div className="flex gap-x-2">
-              <AgentLogo agent_id={agent.id} />
-              {agent.name}
-              {(agentId === agent.id || (!agent.id && pathname === '/')) && (
-                <span className="ml-2 rounded bg-mushroom-800 px-2 py-1 font-mono text-p-xs uppercase text-volcanic-300 dark:bg-volcanic-400 dark:text-marble-900">
-                  Selected
-                </span>
-              )}
-            </div>
-          ),
-          action: () => {
-            if (!agent.id) {
-              router.push('/');
-            } else {
-              router.push(`/a/${agent.id}`);
-            }
-          },
-          closeDialogOnRun: true,
-          commands: [`ctrl+space+${index + 1}`, `ctrl+space+${index + 1}`],
-          registerGlobal: true,
-          options: {
-            preventDefault: true,
-          },
-        })),
       ],
     },
   ];

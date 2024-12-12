@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 
-import { ListConversationFile as CohereFile } from '@/cohere-client';
+import { ListConversationFile as CohereFile } from '@/salon-client';
 
 import { StoreState } from '..';
 

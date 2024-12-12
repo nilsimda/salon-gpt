@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { ListAuthStrategy, useCohereClient } from '@/cohere-client';
+import { ListAuthStrategy, useSalonClient } from '@/salon-client';
 import { env } from '@/env.mjs';
 
 export const useAuthConfig = (): {
@@ -25,10 +25,10 @@ export const useAuthConfig = (): {
  * @description Hook to get authentication methods supported by the server.
  */
 export const useServerAuthStrategies = (options?: { enabled?: boolean }) => {
-  const cohereClient = useCohereClient();
+  const salonClient = useSalonClient();
   return useQuery({
     queryKey: ['authStrategies'],
-    queryFn: () => cohereClient.getAuthStrategies(),
+    queryFn: () => salonClient.getAuthStrategies(),
     refetchOnWindowFocus: false,
     ...options,
   });

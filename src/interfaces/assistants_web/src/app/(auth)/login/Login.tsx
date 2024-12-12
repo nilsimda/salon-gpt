@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { CohereUnauthorizedError, ListAuthStrategy } from '@/cohere-client';
+import { CohereUnauthorizedError, ListAuthStrategy } from '@/salon-client';
 import { AuthLink, OidcSSOButton } from '@/components/Auth';
 import { Button, Input, Text } from '@/components/UI';
 import { useAuthConfig, useNotify, useOidcAuthRoute, useSession } from '@/hooks';
@@ -38,11 +38,11 @@ const Login: React.FC = () => {
     return (
       loginStrategies
         ? loginStrategies.filter(
-            (strategy) =>
-              strategy.strategy !== 'Basic' &&
-              strategy.client_id !== null &&
-              strategy.authorization_endpoint !== null
-          )
+          (strategy) =>
+            strategy.strategy !== 'Basic' &&
+            strategy.client_id !== null &&
+            strategy.authorization_endpoint !== null
+        )
         : []
     ) as NoNullProperties<ListAuthStrategy>[];
   }, [loginStrategies]);

@@ -7,7 +7,7 @@ import { useCookies } from 'next-client-cookies';
 import { useRouter } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
 
-import { ApiError, JWTResponse, useCohereClient } from '@/cohere-client';
+import { ApiError, JWTResponse, useSalonClient } from '@/salon-client';
 import { COOKIE_KEYS } from '@/constants';
 import { useServerAuthStrategies } from '@/hooks';
 import { clearAuthToken, setAuthToken } from '@/server/actions';
@@ -45,14 +45,14 @@ export const useSession = () => {
     [authToken, authStrategies]
   );
 
-  const cohereClient = useCohereClient();
+  const salonClient = useSalonClient();
   const session = useMemo(
     () => (authToken ? (jwtDecode(authToken) as { context: UserSession }).context : null),
     [authToken]
   );
 
   const loginMutation = useMutation<JWTResponse | null, ApiError, LoginParams>({
-    mutationFn: (params) => cohereClient.login(params),
+    mutationFn: (params) => salonClient.login(params),
     onSuccess: async (data: JWTResponse | null) => {
       if (!data) {
         throw new Error('Invalid login');
@@ -65,13 +65,13 @@ export const useSession = () => {
   const logoutMutation = useMutation({
     mutationFn: async () => {
       await clearAuthToken();
-      return cohereClient.logout();
+      return salonClient.logout();
     },
   });
 
   const registerMutation = useMutation({
     mutationFn: async (params: RegisterParams) => {
-      return cohereClient.createUser({
+      return salonClient.createUser({
         fullname: params.name,
         email: params.email,
         password: params.password,
@@ -85,7 +85,7 @@ export const useSession = () => {
 
   const googleSSOMutation = useMutation({
     mutationFn: async (params: { code: string }) => {
-      return cohereClient.googleSSOAuth(params);
+      return salonClient.googleSSOAuth(params);
     },
     onSuccess: async (data: { token: string }) => {
       await setAuthToken(data.token);
@@ -96,7 +96,7 @@ export const useSession = () => {
   const oidcSSOMutation = useMutation({
     mutationFn: async (params: { code: string; strategy: string }) => {
       const codeVerifier = Cookies.get('code_verifier');
-      return cohereClient.oidcSSOAuth({
+      return salonClient.oidcSSOAuth({
         ...params,
         ...(codeVerifier && { codeVerifier }),
       });

@@ -1,4 +1,4 @@
-import { Message, MessageAgent } from '@/cohere-client';
+import { Message, MessageAgent } from '@/salon-client';
 import { BotState, ChatMessage, FulfilledMessage, MessageType, UserMessage } from '@/types/message';
 import {
   fixInlineCitationsForMarkdown,

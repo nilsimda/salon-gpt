@@ -8,7 +8,6 @@ import { MessagingContainer, WelcomeGuideTooltip } from '@/components/MessagingC
 import {
   WelcomeGuideStep,
   useChat,
-  useConversationFileActions,
   useWelcomeGuideState,
 } from '@/hooks';
 import { useConversationStore } from '@/stores';
@@ -26,7 +25,6 @@ type Props = {
  * composer, and the citation panel.
  */
 export const Conversation: React.FC<Props> = ({ agentName, startOptionsEnabled = false }) => {
-  const { uploadFiles } = useConversationFileActions();
   const { welcomeGuideState, finishWelcomeGuide } = useWelcomeGuideState();
   const {
     conversation: { messages, id: conversationId },
@@ -51,10 +49,6 @@ export const Conversation: React.FC<Props> = ({ agentName, startOptionsEnabled =
   });
 
   const chatWindowRef = useRef<HTMLDivElement>(null);
-
-  const handleUploadFile = async (files: File[]) => {
-    await uploadFiles(files, conversationId);
-  };
 
   const handleSend = (msg?: string, overrides?: Partial<ConfigurableParams>) => {
     send({ suggestedMessage: msg }, overrides);
@@ -86,7 +80,7 @@ export const Conversation: React.FC<Props> = ({ agentName, startOptionsEnabled =
                   onChange={(message) => setUserMessage(message)}
                   onSend={handleSend}
                   onStop={handleStop}
-                  onUploadFile={handleUploadFile}
+                  agentName={agentName}
                   lastUserMessage={messages.findLast((m) => m.type === 'user')}
                 />
               </>

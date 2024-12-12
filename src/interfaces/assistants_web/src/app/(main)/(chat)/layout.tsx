@@ -4,17 +4,12 @@ import { Transition } from '@headlessui/react';
 import { useEffect } from 'react';
 
 import { ConversationPanel } from '@/components/Conversation';
-import { useIsDesktop, useListAllDeployments } from '@/hooks';
+import { useIsDesktop } from '@/hooks';
 import { useConversationStore, useParamsStore, useSettingsStore } from '@/stores';
 import { cn } from '@/utils';
 
 const ChatLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { resetConversation } = useConversationStore();
-  const {
-    params: { deployment },
-    setParams,
-  } = useParamsStore();
-  const { data: allDeployments } = useListAllDeployments();
 
   const { isRightPanelOpen } = useSettingsStore();
   const isDesktop = useIsDesktop();
@@ -26,16 +21,6 @@ const ChatLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (!deployment && allDeployments) {
-      const firstAvailableDeployment = allDeployments.find((d) => d.is_available);
-      if (firstAvailableDeployment) {
-        setParams({ deployment: firstAvailableDeployment.name });
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deployment, allDeployments]);
 
   return (
     <div className="relative flex h-full">
