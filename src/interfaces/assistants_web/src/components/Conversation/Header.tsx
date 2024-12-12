@@ -19,7 +19,7 @@ export const Header: React.FC<Props> = ({ agentName }) => {
   } = useConversationStore();
   const { setLeftPanelOpen, setRightPanelOpen } = useSettingsStore();
   const { open } = useContextStore();
-  const { text, bg, contrastText, lightText, fill, lightFill, dark, light } = useBrandedColors("");
+  const { text, bg, contrastText, lightText, fill, lightFill, dark, light } = useBrandedColors('');
 
   const handleOpenShareModal = () => {
     if (!id) return;

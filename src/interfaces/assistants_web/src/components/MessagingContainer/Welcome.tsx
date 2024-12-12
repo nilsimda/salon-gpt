@@ -18,7 +18,7 @@ type Props = {
  * @description Welcome message shown to the user when they first open the chat.
  */
 export const Welcome: React.FC<Props> = ({ show, agentId }) => {
-  const { contrastText, bg, contrastFill } = useBrandedColors("");
+  const { contrastText, bg, contrastFill } = useBrandedColors('');
 
   return (
     <Transition

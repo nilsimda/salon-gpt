@@ -5,11 +5,7 @@ import { useEffect } from 'react';
 import { Conversation, ConversationError } from '@/components/Conversation';
 import { useConversation } from '@/hooks';
 import { useCitationsStore, useConversationStore, useParamsStore } from '@/stores';
-import {
-  createStartEndKey,
-  fixInlineCitationsForMarkdown,
-  mapHistoryToMessages,
-} from '@/utils';
+import { createStartEndKey, fixInlineCitationsForMarkdown, mapHistoryToMessages } from '@/utils';
 
 const Chat: React.FC<{ agentName: string; conversationId?: string }> = ({
   agentName,
@@ -34,14 +30,7 @@ const Chat: React.FC<{ agentName: string; conversationId?: string }> = ({
     if (conversationId) {
       setConversation({ id: conversationId });
     }
-  }, [
-    agentName,
-    conversation,
-    setParams,
-    resetFileParams,
-    setConversation,
-    conversationId,
-  ]);
+  }, [agentName, conversation, setParams, resetFileParams, setConversation, conversationId]);
 
   useEffect(() => {
     if (!conversation) return;
@@ -64,7 +53,7 @@ const Chat: React.FC<{ agentName: string; conversationId?: string }> = ({
     <ConversationError error={error} />
   ) : (
     <Conversation agentName={agentName} startOptionsEnabled />
-  )
+  );
 };
 
 export default Chat;

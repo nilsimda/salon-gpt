@@ -100,7 +100,6 @@ export const SideNavPanel: React.FC<{ className?: string }> = ({ className = '' 
             href="new-study"
           />
 
-
           <AgentsSidePanelButton
             label="Alle Studien anzeigen"
             tooltip="Studien anzeigen oder hinzufügen"

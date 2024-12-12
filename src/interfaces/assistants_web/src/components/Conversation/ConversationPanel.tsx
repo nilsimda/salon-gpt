@@ -5,12 +5,7 @@ import { useState } from 'react';
 
 import { Interview, InterviewType } from '@/cohere-client';
 import { Icon, IconButton, Text, Tooltip } from '@/components/UI';
-import {
-  useBrandedColors,
-  useChatRoutes,
-  useSession,
-  useListStudyFiles
-} from '@/hooks';
+import { useBrandedColors, useChatRoutes, useListStudyFiles, useSession } from '@/hooks';
 import { useParamsStore, useSettingsStore } from '@/stores';
 
 type Props = {};
@@ -38,9 +33,9 @@ export const ConversationPanel: React.FC<Props> = () => {
   }, {} as Record<InterviewType, Interview[]>);
 
   const [collapsedTables, setCollapsedTables] = useState({
-    "TI": false,
-    "GD": false,
-    "Memo": false,
+    TI: false,
+    GD: false,
+    Memo: false,
   });
 
   const toggleTable = (type: InterviewType) => {
@@ -85,8 +80,7 @@ export const ConversationPanel: React.FC<Props> = () => {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-90"
               as="div"
-            >
-            </Transition>
+            ></Transition>
           </div>
         )}
         <section className="relative flex flex-col gap-y-6">

@@ -6,7 +6,7 @@ import { DefaultService } from './services.gen';
 
 type HttpRequestConstructor = new (config: OpenAPIConfig) => BaseHttpRequest;
 
-export class CohereClientGenerated {
+export class SalonClientGenerated {
   public readonly default: DefaultService;
 
   public readonly request: BaseHttpRequest;
