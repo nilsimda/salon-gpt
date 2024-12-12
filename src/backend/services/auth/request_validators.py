@@ -6,8 +6,6 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy.orm import Session
 from starlette import status
 
-from backend.config import Settings
-from backend.config.settings import SCIMAuth
 from backend.database_models import Blacklist, get_session
 from backend.services.auth.jwt import JWTService
 

@@ -7,18 +7,12 @@ import type {
   AuthorizeV1StrategyAuthPostResponse,
   ChatStreamV1ChatStreamPostData,
   ChatStreamV1ChatStreamPostResponse,
-  CreateGroupScimV2GroupsPostData,
-  CreateGroupScimV2GroupsPostResponse,
   CreateStudyV1StudiesPostData,
   CreateStudyV1StudiesPostResponse,
-  CreateUserScimV2UsersPostData,
-  CreateUserScimV2UsersPostResponse,
   CreateUserV1UsersPostData,
   CreateUserV1UsersPostResponse,
   DeleteConversationV1ConversationsConversationIdDeleteData,
   DeleteConversationV1ConversationsConversationIdDeleteResponse,
-  DeleteGroupScimV2GroupsGroupIdDeleteData,
-  DeleteGroupScimV2GroupsGroupIdDeleteResponse,
   DeleteStudyV1StudiesStudyIdDeleteData,
   DeleteStudyV1StudiesStudyIdDeleteResponse,
   DeleteUserV1UsersUserIdDeleteData,
@@ -27,19 +21,11 @@ import type {
   GenerateTitleV1ConversationsConversationIdGenerateTitlePostResponse,
   GetConversationV1ConversationsConversationIdGetData,
   GetConversationV1ConversationsConversationIdGetResponse,
-  GetGroupScimV2GroupsGroupIdGetData,
-  GetGroupScimV2GroupsGroupIdGetResponse,
-  GetGroupsScimV2GroupsGetData,
-  GetGroupsScimV2GroupsGetResponse,
   GetStrategiesV1AuthStrategiesGetResponse,
   GetStudyByIdV1StudiesStudyIdGetData,
   GetStudyByIdV1StudiesStudyIdGetResponse,
-  GetUserScimV2UsersUserIdGetData,
-  GetUserScimV2UsersUserIdGetResponse,
   GetUserV1UsersUserIdGetData,
   GetUserV1UsersUserIdGetResponse,
-  GetUsersScimV2UsersGetData,
-  GetUsersScimV2UsersGetResponse,
   HealthHealthGetResponse,
   ListConversationsV1ConversationsGetData,
   ListConversationsV1ConversationsGetResponse,
@@ -52,10 +38,6 @@ import type {
   LoginV1LoginPostData,
   LoginV1LoginPostResponse,
   LogoutV1LogoutGetResponse,
-  PatchGroupScimV2GroupsGroupIdPatchData,
-  PatchGroupScimV2GroupsGroupIdPatchResponse,
-  PatchUserScimV2UsersUserIdPatchData,
-  PatchUserScimV2UsersUserIdPatchResponse,
   SearchConversationsV1ConversationsSearchGetData,
   SearchConversationsV1ConversationsSearchGetResponse,
   ToggleConversationPinV1ConversationsConversationIdTogglePinPutData,
@@ -64,8 +46,6 @@ import type {
   UpdateConversationV1ConversationsConversationIdPutResponse,
   UpdateStudyV1StudiesStudyIdPutData,
   UpdateStudyV1StudiesStudyIdPutResponse,
-  UpdateUserScimV2UsersUserIdPutData,
-  UpdateUserScimV2UsersUserIdPutResponse,
   UpdateUserV1UsersUserIdPutData,
   UpdateUserV1UsersUserIdPutResponse,
 } from './types.gen';
@@ -193,7 +173,6 @@ export class DefaultService {
    * session (DBSessionDep): Database session.
    * chat_request (CohereChatRequest): Chat request data.
    * request (Request): Request object.
-   * (Context): Context object.
    *
    * Returns:
    * EventSourceResponse: Server-sent event response with chatbot responses.
@@ -229,7 +208,7 @@ export class DefaultService {
    * User: Created user.
    * @param data The data for the request.
    * @param data.requestBody
-   * @returns backend__schemas__user__User Successful Response
+   * @returns User Successful Response
    * @throws ApiError
    */
   public createUserV1UsersPost(
@@ -261,7 +240,7 @@ export class DefaultService {
    * @param data The data for the request.
    * @param data.offset
    * @param data.limit
-   * @returns backend__schemas__user__User Successful Response
+   * @returns User Successful Response
    * @throws ApiError
    */
   public listUsersV1UsersGet(
@@ -296,7 +275,7 @@ export class DefaultService {
    * HTTPException: If the user with the given ID is not found.
    * @param data The data for the request.
    * @param data.userId
-   * @returns backend__schemas__user__User Successful Response
+   * @returns User Successful Response
    * @throws ApiError
    */
   public getUserV1UsersUserIdGet(
@@ -333,7 +312,7 @@ export class DefaultService {
    * @param data The data for the request.
    * @param data.userId
    * @param data.requestBody
-   * @returns backend__schemas__user__User Successful Response
+   * @returns User Successful Response
    * @throws ApiError
    */
   public updateUserV1UsersUserIdPut(
@@ -404,7 +383,6 @@ export class DefaultService {
    * HTTPException: If the conversation with the given ID is not found.
    * @param data The data for the request.
    * @param data.conversationId
-   * @param data.userId
    * @returns Conversation Successful Response
    * @throws ApiError
    */
@@ -416,9 +394,6 @@ export class DefaultService {
       url: '/v1/conversations/{conversation_id}',
       path: {
         conversation_id: data.conversationId,
-      },
-      query: {
-        user_id: data.userId,
       },
       errors: {
         422: 'Validation Error',
@@ -858,241 +833,6 @@ export class DefaultService {
       url: '/v1/studies/{study_id}/interviews',
       path: {
         study_id: data.studyId,
-      },
-      errors: {
-        422: 'Validation Error',
-      },
-    });
-  }
-
-  /**
-   * Get Users
-   * @param data The data for the request.
-   * @param data.count
-   * @param data.startIndex
-   * @param data.filter
-   * @returns ListUserResponse Successful Response
-   * @throws ApiError
-   */
-  public getUsersScimV2UsersGet(
-    data: GetUsersScimV2UsersGetData = {}
-  ): CancelablePromise<GetUsersScimV2UsersGetResponse> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/scim/v2/Users',
-      query: {
-        count: data.count,
-        start_index: data.startIndex,
-        filter: data.filter,
-      },
-      errors: {
-        422: 'Validation Error',
-      },
-    });
-  }
-
-  /**
-   * Create User
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns backend__schemas__scim__User Successful Response
-   * @throws ApiError
-   */
-  public createUserScimV2UsersPost(
-    data: CreateUserScimV2UsersPostData
-  ): CancelablePromise<CreateUserScimV2UsersPostResponse> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/scim/v2/Users',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        422: 'Validation Error',
-      },
-    });
-  }
-
-  /**
-   * Get User
-   * @param data The data for the request.
-   * @param data.userId
-   * @returns backend__schemas__scim__User Successful Response
-   * @throws ApiError
-   */
-  public getUserScimV2UsersUserIdGet(
-    data: GetUserScimV2UsersUserIdGetData
-  ): CancelablePromise<GetUserScimV2UsersUserIdGetResponse> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/scim/v2/Users/{user_id}',
-      path: {
-        user_id: data.userId,
-      },
-      errors: {
-        422: 'Validation Error',
-      },
-    });
-  }
-
-  /**
-   * Update User
-   * @param data The data for the request.
-   * @param data.userId
-   * @param data.requestBody
-   * @returns backend__schemas__scim__User Successful Response
-   * @throws ApiError
-   */
-  public updateUserScimV2UsersUserIdPut(
-    data: UpdateUserScimV2UsersUserIdPutData
-  ): CancelablePromise<UpdateUserScimV2UsersUserIdPutResponse> {
-    return this.httpRequest.request({
-      method: 'PUT',
-      url: '/scim/v2/Users/{user_id}',
-      path: {
-        user_id: data.userId,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        422: 'Validation Error',
-      },
-    });
-  }
-
-  /**
-   * Patch User
-   * @param data The data for the request.
-   * @param data.userId
-   * @param data.requestBody
-   * @returns backend__schemas__scim__User Successful Response
-   * @throws ApiError
-   */
-  public patchUserScimV2UsersUserIdPatch(
-    data: PatchUserScimV2UsersUserIdPatchData
-  ): CancelablePromise<PatchUserScimV2UsersUserIdPatchResponse> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/scim/v2/Users/{user_id}',
-      path: {
-        user_id: data.userId,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        422: 'Validation Error',
-      },
-    });
-  }
-
-  /**
-   * Get Groups
-   * @param data The data for the request.
-   * @param data.count
-   * @param data.startIndex
-   * @param data.filter
-   * @returns ListGroupResponse Successful Response
-   * @throws ApiError
-   */
-  public getGroupsScimV2GroupsGet(
-    data: GetGroupsScimV2GroupsGetData = {}
-  ): CancelablePromise<GetGroupsScimV2GroupsGetResponse> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/scim/v2/Groups',
-      query: {
-        count: data.count,
-        start_index: data.startIndex,
-        filter: data.filter,
-      },
-      errors: {
-        422: 'Validation Error',
-      },
-    });
-  }
-
-  /**
-   * Create Group
-   * @param data The data for the request.
-   * @param data.requestBody
-   * @returns Group Successful Response
-   * @throws ApiError
-   */
-  public createGroupScimV2GroupsPost(
-    data: CreateGroupScimV2GroupsPostData
-  ): CancelablePromise<CreateGroupScimV2GroupsPostResponse> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/scim/v2/Groups',
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        422: 'Validation Error',
-      },
-    });
-  }
-
-  /**
-   * Get Group
-   * @param data The data for the request.
-   * @param data.groupId
-   * @returns Group Successful Response
-   * @throws ApiError
-   */
-  public getGroupScimV2GroupsGroupIdGet(
-    data: GetGroupScimV2GroupsGroupIdGetData
-  ): CancelablePromise<GetGroupScimV2GroupsGroupIdGetResponse> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/scim/v2/Groups/{group_id}',
-      path: {
-        group_id: data.groupId,
-      },
-      errors: {
-        422: 'Validation Error',
-      },
-    });
-  }
-
-  /**
-   * Patch Group
-   * @param data The data for the request.
-   * @param data.groupId
-   * @param data.requestBody
-   * @returns Group Successful Response
-   * @throws ApiError
-   */
-  public patchGroupScimV2GroupsGroupIdPatch(
-    data: PatchGroupScimV2GroupsGroupIdPatchData
-  ): CancelablePromise<PatchGroupScimV2GroupsGroupIdPatchResponse> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/scim/v2/Groups/{group_id}',
-      path: {
-        group_id: data.groupId,
-      },
-      body: data.requestBody,
-      mediaType: 'application/json',
-      errors: {
-        422: 'Validation Error',
-      },
-    });
-  }
-
-  /**
-   * Delete Group
-   * @param data The data for the request.
-   * @param data.groupId
-   * @returns void Successful Response
-   * @throws ApiError
-   */
-  public deleteGroupScimV2GroupsGroupIdDelete(
-    data: DeleteGroupScimV2GroupsGroupIdDeleteData
-  ): CancelablePromise<DeleteGroupScimV2GroupsGroupIdDeleteResponse> {
-    return this.httpRequest.request({
-      method: 'DELETE',
-      url: '/scim/v2/Groups/{group_id}',
-      path: {
-        group_id: data.groupId,
       },
       errors: {
         422: 'Validation Error',

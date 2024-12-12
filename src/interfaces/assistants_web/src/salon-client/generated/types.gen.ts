@@ -67,16 +67,17 @@ export type ConversationWithoutMessages = {
   is_pinned: boolean;
 };
 
-export type CreateGroup = {
-  schemas: Array<string>;
-  members: Array<GroupMember>;
-  displayName: string;
-};
-
 export type CreateStudyRequest = {
   name: string;
   description?: string | null;
   is_transcribed?: boolean | null;
+};
+
+export type CreateUser = {
+  password?: string | null;
+  hashed_password?: (Blob | File) | null;
+  fullname: string;
+  email?: string | null;
 };
 
 export type DeleteConversationResponse = unknown;
@@ -85,40 +86,9 @@ export type DeleteStudy = unknown;
 
 export type DeleteUser = unknown;
 
-export type Email = {
-  primary: boolean;
-  value?: string | null;
-  type: string;
-};
-
 export type GenerateTitleResponse = {
   title: string;
   error?: string | null;
-};
-
-export type Group = {
-  schemas: Array<string>;
-  members: Array<GroupMember>;
-  displayName: string;
-  id: string;
-  meta: Meta;
-};
-
-export type GroupMember = {
-  value: string;
-  display: string;
-};
-
-export type GroupOperation = {
-  op: string;
-  path?: string | null;
-  value:
-    | {
-        [key: string]: string;
-      }
-    | Array<{
-        [key: string]: string;
-      }>;
 };
 
 export type HTTPValidationError = {
@@ -147,20 +117,6 @@ export type ListAuthStrategy = {
   pkce_enabled: boolean;
 };
 
-export type ListGroupResponse = {
-  totalResults: number;
-  startIndex: number;
-  itemsPerPage: number;
-  Resources: Array<Group>;
-};
-
-export type ListUserResponse = {
-  totalResults: number;
-  startIndex: number;
-  itemsPerPage: number;
-  Resources: Array<backend__schemas__scim__User>;
-};
-
 export type Login = {
   strategy: string;
   payload?: {
@@ -186,36 +142,7 @@ export enum MessageAgent {
   CHATBOT = 'CHATBOT',
 }
 
-export type Meta = {
-  resourceType: string;
-  created: string;
-  lastModified: string;
-};
-
-export type Name = {
-  givenName: string;
-  familyName: string;
-};
-
-export type Operation = {
-  op: string;
-  value: {
-    [key: string]: boolean;
-  };
-};
-
-export type PatchGroup = {
-  schemas: Array<string>;
-  operations: Array<GroupOperation>;
-};
-
-export type PatchUser = {
-  schemas: Array<string>;
-  operations: Array<Operation>;
-};
-
 export type SalonChatRequest = {
-  user_id: string;
   agent_id: string;
   message: string;
   chat_history?: Array<ChatMessage> | null;
@@ -295,58 +222,25 @@ export type UpdateStudyRequest = {
   is_transcribed?: boolean | null;
 };
 
-export type ValidationError = {
-  loc: Array<string | number>;
-  msg: string;
-  type: string;
-};
-
-export type backend__schemas__scim__CreateUser = {
-  userName: string | null;
-  active: boolean | null;
-  schemas: Array<string>;
-  name: Name;
-  emails: Array<Email>;
-  externalId: string;
-};
-
-export type backend__schemas__scim__UpdateUser = {
-  userName: string | null;
-  active: boolean | null;
-  schemas: Array<string>;
-  emails: Array<Email>;
-  name: Name;
-};
-
-export type backend__schemas__scim__User = {
-  userName: string | null;
-  active: boolean | null;
-  schemas: Array<string>;
-  id: string;
-  externalId: string;
-  meta: Meta;
-};
-
-export type backend__schemas__user__CreateUser = {
-  password?: string | null;
-  hashed_password?: (Blob | File) | null;
-  fullname: string;
-  email?: string | null;
-};
-
-export type backend__schemas__user__UpdateUser = {
+export type UpdateUser = {
   password?: string | null;
   hashed_password?: (Blob | File) | null;
   fullname?: string | null;
   email?: string | null;
 };
 
-export type backend__schemas__user__User = {
+export type User = {
   fullname: string;
   email?: string | null;
   id: string;
   created_at: string;
   updated_at: string;
+};
+
+export type ValidationError = {
+  loc: Array<string | number>;
+  msg: string;
+  type: string;
 };
 
 export type GetStrategiesV1AuthStrategiesGetResponse = Array<ListAuthStrategy>;
@@ -373,30 +267,30 @@ export type ChatStreamV1ChatStreamPostData = {
 export type ChatStreamV1ChatStreamPostResponse = Array<ChatResponseEvent>;
 
 export type CreateUserV1UsersPostData = {
-  requestBody: backend__schemas__user__CreateUser;
+  requestBody: CreateUser;
 };
 
-export type CreateUserV1UsersPostResponse = backend__schemas__user__User;
+export type CreateUserV1UsersPostResponse = User;
 
 export type ListUsersV1UsersGetData = {
   limit?: number;
   offset?: number;
 };
 
-export type ListUsersV1UsersGetResponse = Array<backend__schemas__user__User>;
+export type ListUsersV1UsersGetResponse = Array<User>;
 
 export type GetUserV1UsersUserIdGetData = {
   userId: string;
 };
 
-export type GetUserV1UsersUserIdGetResponse = backend__schemas__user__User;
+export type GetUserV1UsersUserIdGetResponse = User;
 
 export type UpdateUserV1UsersUserIdPutData = {
-  requestBody: backend__schemas__user__UpdateUser;
+  requestBody: UpdateUser;
   userId: string;
 };
 
-export type UpdateUserV1UsersUserIdPutResponse = backend__schemas__user__User;
+export type UpdateUserV1UsersUserIdPutResponse = User;
 
 export type DeleteUserV1UsersUserIdDeleteData = {
   userId: string;
@@ -406,7 +300,6 @@ export type DeleteUserV1UsersUserIdDeleteResponse = DeleteUser;
 
 export type GetConversationV1ConversationsConversationIdGetData = {
   conversationId: string;
-  userId: string;
 };
 
 export type GetConversationV1ConversationsConversationIdGetResponse = Conversation;
@@ -504,73 +397,6 @@ export type ListFilesV1StudiesStudyIdInterviewsGetData = {
 
 export type ListFilesV1StudiesStudyIdInterviewsGetResponse = Array<Interview>;
 
-export type GetUsersScimV2UsersGetData = {
-  count?: number;
-  filter?: string | null;
-  startIndex?: number;
-};
-
-export type GetUsersScimV2UsersGetResponse = ListUserResponse;
-
-export type CreateUserScimV2UsersPostData = {
-  requestBody: backend__schemas__scim__CreateUser;
-};
-
-export type CreateUserScimV2UsersPostResponse = backend__schemas__scim__User;
-
-export type GetUserScimV2UsersUserIdGetData = {
-  userId: string;
-};
-
-export type GetUserScimV2UsersUserIdGetResponse = backend__schemas__scim__User;
-
-export type UpdateUserScimV2UsersUserIdPutData = {
-  requestBody: backend__schemas__scim__UpdateUser;
-  userId: string;
-};
-
-export type UpdateUserScimV2UsersUserIdPutResponse = backend__schemas__scim__User;
-
-export type PatchUserScimV2UsersUserIdPatchData = {
-  requestBody: PatchUser;
-  userId: string;
-};
-
-export type PatchUserScimV2UsersUserIdPatchResponse = backend__schemas__scim__User;
-
-export type GetGroupsScimV2GroupsGetData = {
-  count?: number;
-  filter?: string | null;
-  startIndex?: number;
-};
-
-export type GetGroupsScimV2GroupsGetResponse = ListGroupResponse;
-
-export type CreateGroupScimV2GroupsPostData = {
-  requestBody: CreateGroup;
-};
-
-export type CreateGroupScimV2GroupsPostResponse = Group;
-
-export type GetGroupScimV2GroupsGroupIdGetData = {
-  groupId: string;
-};
-
-export type GetGroupScimV2GroupsGroupIdGetResponse = Group;
-
-export type PatchGroupScimV2GroupsGroupIdPatchData = {
-  groupId: string;
-  requestBody: PatchGroup;
-};
-
-export type PatchGroupScimV2GroupsGroupIdPatchResponse = Group;
-
-export type DeleteGroupScimV2GroupsGroupIdDeleteData = {
-  groupId: string;
-};
-
-export type DeleteGroupScimV2GroupsGroupIdDeleteResponse = void;
-
 export type HealthHealthGetResponse = unknown;
 
 export type ApplyMigrationsMigratePostResponse = unknown;
@@ -648,7 +474,7 @@ export type $OpenApiTs = {
         /**
          * Successful Response
          */
-        200: backend__schemas__user__User;
+        200: User;
         /**
          * Validation Error
          */
@@ -661,7 +487,7 @@ export type $OpenApiTs = {
         /**
          * Successful Response
          */
-        200: Array<backend__schemas__user__User>;
+        200: Array<User>;
         /**
          * Validation Error
          */
@@ -676,7 +502,7 @@ export type $OpenApiTs = {
         /**
          * Successful Response
          */
-        200: backend__schemas__user__User;
+        200: User;
         /**
          * Validation Error
          */
@@ -689,7 +515,7 @@ export type $OpenApiTs = {
         /**
          * Successful Response
          */
-        200: backend__schemas__user__User;
+        200: User;
         /**
          * Validation Error
          */
@@ -888,144 +714,6 @@ export type $OpenApiTs = {
          * Successful Response
          */
         200: Array<Interview>;
-        /**
-         * Validation Error
-         */
-        422: HTTPValidationError;
-      };
-    };
-  };
-  '/scim/v2/Users': {
-    get: {
-      req: GetUsersScimV2UsersGetData;
-      res: {
-        /**
-         * Successful Response
-         */
-        200: ListUserResponse;
-        /**
-         * Validation Error
-         */
-        422: HTTPValidationError;
-      };
-    };
-    post: {
-      req: CreateUserScimV2UsersPostData;
-      res: {
-        /**
-         * Successful Response
-         */
-        201: backend__schemas__scim__User;
-        /**
-         * Validation Error
-         */
-        422: HTTPValidationError;
-      };
-    };
-  };
-  '/scim/v2/Users/{user_id}': {
-    get: {
-      req: GetUserScimV2UsersUserIdGetData;
-      res: {
-        /**
-         * Successful Response
-         */
-        200: backend__schemas__scim__User;
-        /**
-         * Validation Error
-         */
-        422: HTTPValidationError;
-      };
-    };
-    put: {
-      req: UpdateUserScimV2UsersUserIdPutData;
-      res: {
-        /**
-         * Successful Response
-         */
-        200: backend__schemas__scim__User;
-        /**
-         * Validation Error
-         */
-        422: HTTPValidationError;
-      };
-    };
-    patch: {
-      req: PatchUserScimV2UsersUserIdPatchData;
-      res: {
-        /**
-         * Successful Response
-         */
-        200: backend__schemas__scim__User;
-        /**
-         * Validation Error
-         */
-        422: HTTPValidationError;
-      };
-    };
-  };
-  '/scim/v2/Groups': {
-    get: {
-      req: GetGroupsScimV2GroupsGetData;
-      res: {
-        /**
-         * Successful Response
-         */
-        200: ListGroupResponse;
-        /**
-         * Validation Error
-         */
-        422: HTTPValidationError;
-      };
-    };
-    post: {
-      req: CreateGroupScimV2GroupsPostData;
-      res: {
-        /**
-         * Successful Response
-         */
-        201: Group;
-        /**
-         * Validation Error
-         */
-        422: HTTPValidationError;
-      };
-    };
-  };
-  '/scim/v2/Groups/{group_id}': {
-    get: {
-      req: GetGroupScimV2GroupsGroupIdGetData;
-      res: {
-        /**
-         * Successful Response
-         */
-        200: Group;
-        /**
-         * Validation Error
-         */
-        422: HTTPValidationError;
-      };
-    };
-    patch: {
-      req: PatchGroupScimV2GroupsGroupIdPatchData;
-      res: {
-        /**
-         * Successful Response
-         */
-        200: Group;
-        /**
-         * Validation Error
-         */
-        422: HTTPValidationError;
-      };
-    };
-    delete: {
-      req: DeleteGroupScimV2GroupsGroupIdDeleteData;
-      res: {
-        /**
-         * Successful Response
-         */
-        204: void;
         /**
          * Validation Error
          */
