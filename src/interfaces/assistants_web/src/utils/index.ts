@@ -13,5 +13,4 @@ export * from './pluralize';
 export * from './preview';
 export * from './queryString';
 export * from './simpleEmailValidation';
-export * from './tools';
 export * from './urls';

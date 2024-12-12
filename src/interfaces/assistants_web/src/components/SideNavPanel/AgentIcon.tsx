@@ -2,8 +2,8 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 
-import { QuoteLogo, Text, Tooltip } from '@/components/UI';
-import { useBrandedColors, useChatRoutes, useConversationFileActions, useIsDesktop } from '@/hooks';
+import { Tooltip } from '@/components/UI';
+import { useBrandedColors, useChatRoutes, useIsDesktop } from '@/hooks';
 import {
   useCitationsStore,
   useConversationStore,
@@ -38,18 +38,16 @@ export const AgentIcon: React.FC<Props> = ({ name, id, isBaseAgent }) => {
       ? pathname === `/c/${conversationId}`
       : pathname === '/'
     : conversationId
-    ? pathname === `/a/${id}/c/${conversationId}`
-    : pathname === `/a/${id}`;
+      ? pathname === `/a/${id}/c/${conversationId}`
+      : pathname === `/a/${id}`;
 
   const { bg, contrastText, contrastFill } = useBrandedColors(id);
 
   const { resetConversation } = useConversationStore();
   const { resetCitations } = useCitationsStore();
   const { resetFileParams } = useParamsStore();
-  const { clearComposerFiles } = useConversationFileActions();
 
   const resetConversationSettings = () => {
-    clearComposerFiles();
     resetConversation();
     resetCitations();
     resetFileParams();

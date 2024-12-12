@@ -7,7 +7,7 @@ import { Icon, Switch, Text } from '@/components/UI';
 import { useBrandedColors, useListStudies } from '@/hooks';
 import { Study } from '@/salon-client';
 import { useParamsStore } from '@/stores';
-import { checkIsBaseAgent, cn, getToolIcon } from '@/utils';
+import { checkIsBaseAgent, cn } from '@/utils';
 
 export type Props = {
   agentName?: string;
@@ -88,7 +88,7 @@ export const DataSourceMenu: React.FC<Props> = ({ agentName }) => {
                 <div className="flex gap-x-2">
                   <div className="relative flex items-center justify-center rounded bg-mushroom-800 p-1 dark:bg-volcanic-200">
                     <Icon
-                      name={getToolIcon(study.id)}
+                      name="circles-four"
                       kind="outline"
                       size="sm"
                       className="flex items-center fill-mushroom-300 dark:fill-marble-800"

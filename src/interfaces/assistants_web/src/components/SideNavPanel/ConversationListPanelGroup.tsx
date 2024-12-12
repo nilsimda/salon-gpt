@@ -5,7 +5,7 @@ import { Flipped, Flipper } from 'react-flip-toolkit';
 
 import { ConversationCard, ConversationListItem } from '@/components/SideNavPanel';
 import { Text } from '@/components/UI';
-import { useListAgents } from '@/hooks';
+import { AGENTS } from '@/constants';
 import { ConversationWithoutMessages as Conversation } from '@/salon-client';
 import { useConversationStore } from '@/stores';
 import { getWeeksAgo } from '@/utils';
@@ -34,7 +34,6 @@ export const ConversationListPanelGroup: React.FC<Props> = ({
   const {
     conversation: { id: selectedConversationId },
   } = useConversationStore();
-  const { data: agents = [] } = useListAgents();
 
   const { items, flipKey } = useMemo(() => {
     let latestWeekHeading = '';
@@ -54,7 +53,7 @@ export const ConversationListPanelGroup: React.FC<Props> = ({
           title: weeksAgoStr,
           description: weeksAgoStr,
           isPinned: false,
-          agent: agents.find((agent) => agent.id === c.agent_id),
+          agent: AGENTS.find((agent) => agent === c.agent_id),
         });
       }
       itemsWithTitles.push({
@@ -63,7 +62,7 @@ export const ConversationListPanelGroup: React.FC<Props> = ({
         title: c.title,
         description: c.description,
         isPinned: c.is_pinned,
-        agent: agents.find((agent) => agent.id === c.agent_id),
+        agent: AGENTS.find((agent) => agent === c.agent_id),
       });
     });
 

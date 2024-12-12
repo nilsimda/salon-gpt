@@ -4,10 +4,7 @@ import { UseMutateAsyncFunction, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 import {
-  DEFAULT_AGENT_TOOLS,
   DEFAULT_TYPING_VELOCITY,
-  DEPLOYMENT_OLLAMA,
-  TOOL_PYTHON_INTERPRETER_ID,
 } from '@/constants';
 import {
   StreamingChatParams,
@@ -22,7 +19,6 @@ import {
   SalonChatRequest,
   StreamEnd,
   StreamEvent,
-  StreamToolCallsGeneration,
   isCohereNetworkError,
   isStreamError,
 } from '@/salon-client';
@@ -43,8 +39,6 @@ import {
   createStartEndKey,
   fixInlineCitationsForMarkdown,
   fixMarkdownImagesInText,
-  isGroundingOn,
-  parsePythonInterpreterToolFields,
   replaceCodeBlockWithIframe,
   replaceTextWithCitations,
   shouldUpdateConversationTitle,
@@ -112,52 +106,6 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
     };
   }, []);
 
-  const saveCitations = (
-    generationId: string,
-    citations: Citation[],
-    documentsMap: {
-      [documentId: string]: Document;
-    }
-  ) => {
-    for (const citation of citations) {
-      const startEndKey = createStartEndKey(citation.start ?? 0, citation.end ?? 0);
-      const documents = (citation?.document_ids || [])
-        .map((id) => documentsMap[id])
-        // When we use documents for RAG, we don't get the documents split up by snippet
-        // and their new ids until the final response. In the future, we will potentially
-        // get the snippets in the citation-generation event and we can inject them here.
-        .filter(Boolean);
-      addCitation(generationId, startEndKey, documents);
-    }
-  };
-
-  const mapDocuments = (documents: Document[]) => {
-    return documents.reduce<{ documentsMap: IdToDocument; outputFilesMap: OutputFiles }>(
-      ({ documentsMap, outputFilesMap }, doc) => {
-        const docId = doc?.document_id ?? '';
-        const toolName = doc?.tool_name ?? '';
-        const newOutputFilesMapEntry: OutputFiles = {};
-
-        if (toolName === TOOL_PYTHON_INTERPRETER_ID) {
-          const { outputFile } = parsePythonInterpreterToolFields(doc);
-
-          if (outputFile) {
-            newOutputFilesMapEntry[outputFile.filename] = {
-              name: outputFile.filename,
-              data: outputFile.b64_data,
-              documentId: docId,
-            };
-          }
-        }
-        return {
-          documentsMap: { ...documentsMap, [docId]: doc },
-          outputFilesMap: { ...outputFilesMap, ...newOutputFilesMapEntry },
-        };
-      },
-      { documentsMap: {}, outputFilesMap: {} }
-    );
-  };
-
   const handleUpdateConversationTitle = async (conversationId: string) => {
     const { title } = await updateConversationTitle(conversationId);
 
@@ -209,7 +157,6 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
     let citations: Citation[] = [];
     let documentsMap: IdToDocument = {};
     let outputFiles: OutputFiles = {};
-    let toolEvents: StreamToolCallsGeneration[] = [];
     let currentToolEventIndex = 0;
 
     // Temporarily store the streaming `parameters` partial JSON string for a tool call
@@ -243,140 +190,19 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
                 generationId,
                 isRAGOn,
                 originalText: botResponse,
-                toolEvents,
               });
               break;
             }
 
             // This event only occurs when we use tools.
             case StreamEvent.SEARCH_RESULTS: {
-              const data = eventData.data;
-              const documents = data?.documents ?? [];
-
-              const { documentsMap: newDocumentsMap, outputFilesMap: newOutputFilesMap } =
-                mapDocuments(documents);
-              documentsMap = { ...documentsMap, ...newDocumentsMap };
-              outputFiles = { ...outputFiles, ...newOutputFilesMap };
-              saveOutputFiles({ ...savedOutputFiles, ...outputFiles });
-
-              // we are only interested in web_search results
-              // ignore search results of pyhton interpreter tool
-              if (
-                toolEvents[currentToolEventIndex - 1]?.tool_calls?.[0]?.name !==
-                TOOL_PYTHON_INTERPRETER_ID
-              ) {
-                toolEvents.push({
-                  text: '',
-                  stream_search_results: data,
-                  tool_calls: [],
-                } as StreamToolCallsGeneration);
-                currentToolEventIndex += 1;
-              }
-              break;
-            }
-
-            case StreamEvent.TOOL_CALLS_CHUNK: {
-              setIsStreamingToolEvents(true);
-              const data = eventData.data;
-
-              // Initiate an empty tool event if one doesn't already exist at the current index
-              const toolEvent: StreamToolCallsGeneration = toolEvents[currentToolEventIndex] ?? {
-                text: '',
-                tool_calls: [],
-              };
-              toolEvent.text += data?.text ?? '';
-
-              // A tool call needs to be added/updated if a tool call delta is present in the event
-              if (data?.tool_call_delta) {
-                const currentToolCallsIndex = data.tool_call_delta.index ?? 0;
-                let toolCall = toolEvent.tool_calls?.[currentToolCallsIndex];
-                if (!toolCall) {
-                  toolCall = {
-                    name: '',
-                    parameters: {},
-                  };
-                  toolCallParamaterStr = '';
-                }
-
-                if (data?.tool_call_delta?.name) {
-                  toolCall.name = data.tool_call_delta.name;
-                }
-                if (data?.tool_call_delta?.parameters) {
-                  toolCallParamaterStr += data?.tool_call_delta?.parameters;
-
-                  // Attempt to parse the partial parameter string as valid JSON to show that the parameters
-                  // are streaming in. To make the partial JSON string valid JSON after the object key comes in,
-                  // we naively try to add `"}` to the end.
-                  try {
-                    const partialParams = JSON.parse(toolCallParamaterStr + `"}`);
-                    toolCall.parameters = partialParams;
-                  } catch (e) {
-                    // Ignore parsing error
-                  }
-                }
-
-                // Update the tool call list with the new/updated tool call
-                if (toolEvent.tool_calls?.[currentToolCallsIndex]) {
-                  toolEvent.tool_calls[currentToolCallsIndex] = toolCall;
-                } else {
-                  toolEvent.tool_calls?.push(toolCall);
-                }
-              }
-
-              // Update the tool event list with the new/updated tool event
-              if (toolEvents[currentToolEventIndex]) {
-                toolEvents[currentToolEventIndex] = toolEvent;
-              } else {
-                toolEvents.push(toolEvent);
-              }
-
               setStreamingMessage({
                 type: MessageType.BOT,
                 state: BotState.TYPING,
-                text: botResponse,
-                isRAGOn,
+                text: "Search Results not implemented yet",
                 generationId,
-                originalText: botResponse,
-                toolEvents,
-              });
-              break;
-            }
-
-            case StreamEvent.TOOL_CALLS_GENERATION: {
-              const data = eventData.data;
-
-              if (toolEvents[currentToolEventIndex]) {
-                toolEvents[currentToolEventIndex] = data;
-                currentToolEventIndex += 1;
-              } else {
-                toolEvents.push(data);
-                currentToolEventIndex = toolEvents.length; // double check this is right
-              }
-              break;
-            }
-
-            case StreamEvent.CITATION_GENERATION: {
-              const data = eventData.data;
-              const newCitations = [...(data?.citations ?? [])];
-              const fixedCitations = fixInlineCitationsForMarkdown(newCitations, botResponse);
-              citations.push(...fixedCitations);
-              citations.sort((a, b) => (a.start ?? 0) - (b.start ?? 0));
-              saveCitations(generationId, fixedCitations, documentsMap);
-
-              let text = replaceTextWithCitations(botResponse, citations, generationId);
-              console.log(text);
-              botResponse += citations[0].text;
-              console.log(botResponse);
-
-              setStreamingMessage({
-                type: MessageType.BOT,
-                state: BotState.TYPING,
-                text: botResponse, //replaceTextWithCitations(botResponse, citations, generationId),
-                citations,
                 isRAGOn,
-                generationId,
                 originalText: botResponse,
-                toolEvents,
               });
               break;
             }
@@ -403,17 +229,6 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
 
               addSearchResults(data?.search_results ?? []);
 
-              // When we use documents for RAG, we don't get the documents split up by snippet
-              // and their new ids until the final response. In the future, we will potentially
-              // get the snippets in the citation-generation event and we can inject them there.
-              const { documentsMap: newDocumentsMap, outputFilesMap: newOutputFilesMap } =
-                mapDocuments(data.documents ?? []);
-              documentsMap = { ...documentsMap, ...newDocumentsMap };
-              outputFiles = { ...outputFiles, ...newOutputFilesMap };
-
-              saveCitations(generationId, citations, documentsMap);
-              saveOutputFiles({ ...savedOutputFiles, ...outputFiles });
-
               const outputText =
                 data?.finish_reason === FinishReason.MAX_TOKENS ? botResponse : responseText;
 
@@ -422,13 +237,13 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
 
               const finalText = isRAGOn
                 ? replaceTextWithCitations(
-                    // TODO(@wujessica): temporarily use the text generated from the stream when MAX_TOKENS
-                    // because the final response doesn't give us the full text yet. Note - this means that
-                    // citations will only appear for the first 'block' of text generated.
-                    transformedText,
-                    citations,
-                    generationId
-                  )
+                  // TODO(@wujessica): temporarily use the text generated from the stream when MAX_TOKENS
+                  // because the final response doesn't give us the full text yet. Note - this means that
+                  // citations will only appear for the first 'block' of text generated.
+                  transformedText,
+                  citations,
+                  generationId
+                )
                 : botResponse;
 
               const finalMessage: FulfilledMessage = {
@@ -440,7 +255,6 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
                 citations,
                 isRAGOn,
                 originalText: isRAGOn ? responseText : botResponse,
-                toolEvents,
               };
 
               setConversation({ messages: [...newMessages, finalMessage] });
@@ -454,7 +268,7 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
             }
           }
         },
-        onHeaders: () => {},
+        onHeaders: () => { },
         onFinish: () => {
           setIsStreaming(false);
         },
@@ -522,18 +336,9 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
   const getChatRequest = (message: string, overrides?: ChatRequestOverrides): SalonChatRequest => {
     const { tools: overrideTools, ...restOverrides } = overrides ?? {};
 
-    const requestTools = overrideTools ?? tools ?? undefined;
-
     return {
       message,
       conversation_id: currentConversationId,
-      tools: requestTools
-        ?.map((tool) => ({ name: tool.name }))
-        .concat(DEFAULT_AGENT_TOOLS.map((defaultTool) => ({ name: defaultTool }))),
-      //file_ids: fileIds && fileIds.length > 0 ? fileIds : undefined,
-      temperature,
-      preamble,
-      model,
       agent_id: agentId,
       ...restOverrides,
     };

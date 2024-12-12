@@ -2,18 +2,16 @@
 
 import Link from 'next/link';
 
-import { ShareConversation } from '@/components/Modals/ShareConversation';
 import { KebabMenu, KebabMenuItem, QuoteLogo, Text, Tooltip } from '@/components/UI';
 import { useContextStore } from '@/context';
 import {
   getIsTouchDevice,
   useBrandedColors,
   useConversationActions,
-  useConversationFileActions,
   useIsDesktop,
   useToggleConversationPin,
 } from '@/hooks';
-import { AgentPublic } from '@/salon-client';
+
 import { useConversationStore, useSettingsStore } from '@/stores';
 import { cn, formatDateToShortDate } from '@/utils';
 
@@ -26,7 +24,7 @@ export type ConversationListItem = {
   description: string | null;
   isPinned: boolean;
   weekHeading?: string;
-  agent?: AgentPublic;
+  agentName?: string;
 };
 
 type Props = {
@@ -50,14 +48,6 @@ const useMenuItems = ({
   const { open } = useContextStore();
   const { mutateAsync: toggleConversationPin } = useToggleConversationPin();
 
-  const handleOpenShareModal = () => {
-    if (!conversationId) return;
-    open({
-      title: 'Share link to conversation',
-      content: <ShareConversation conversationId={conversationId} />,
-    });
-  };
-
   const menuItems: KebabMenuItem[] = [
     {
       label: isPinned ? 'Chat Lösen' : 'Chat Anheften',
@@ -69,7 +59,6 @@ const useMenuItems = ({
     {
       label: 'Chat Teilen',
       iconName: 'share',
-      onClick: handleOpenShareModal,
     },
     {
       label: 'Chat Löschen',
@@ -94,8 +83,7 @@ export const ConversationCard: React.FC<Props> = ({ isActive, conversation, flip
   const isDesktop = useIsDesktop();
   const isMobile = !isDesktop;
   const isTouchDevice = getIsTouchDevice();
-  const { clearComposerFiles } = useConversationFileActions();
-  const { bg, contrastText, contrastFill } = useBrandedColors(conversation.agent?.id);
+  const { bg, contrastText, contrastFill } = useBrandedColors(conversation.agentName);
 
   // if the conversation card is for the selected conversation we use the `conversationName`
   // from the context store, otherwise we use the name from the conversation object
@@ -131,16 +119,16 @@ export const ConversationCard: React.FC<Props> = ({ isActive, conversation, flip
             contrastText
           )}
         >
-          {conversation.agent ? (
+          {conversation.agentName ? (
             <Text className={contrastText} styleAs="p-xs">
-              {conversation.agent.name[0]}
+              {conversation.agentName[0]}
             </Text>
           ) : (
-            <AgentLogo agent_id={conversation.agent?.id} className={cn('scale-50', contrastFill)} />
+            <AgentLogo agent_id={conversation.agentName} className={cn('scale-50', contrastFill)} />
           )}
         </div>
         <Text styleAs="p-sm" className="truncate text-volcanic-500 dark:text-mushroom-800">
-          {conversation.agent?.name ?? 'Rheingold Salon'}
+          {conversation.agentName ?? 'Rheingold Salon'}
         </Text>
         <Text styleAs="code-sm" className="ml-auto mt-0.5 uppercase dark:text-mushroom-800">
           {formatDateToShortDate(conversation.updatedAt)}
@@ -149,8 +137,8 @@ export const ConversationCard: React.FC<Props> = ({ isActive, conversation, flip
     </div>
   );
 
-  const conversationUrl = conversation.agent
-    ? `/a/${conversation.agent.id}/c/${conversationId}`
+  const conversationUrl = conversation.agentName
+    ? `/a/${conversation.agentName}/c/${conversationId}`
     : `/c/${conversationId}`;
 
   const wrapperClassName = cn('flex w-full flex-col gap-y-1 pr-2 py-3 truncate');
@@ -165,7 +153,6 @@ export const ConversationCard: React.FC<Props> = ({ isActive, conversation, flip
         onClick={() => {
           setConversation({ id: conversationId, name });
           isMobile && setLeftPanelOpen(false);
-          clearComposerFiles();
         }}
         className={wrapperClassName}
       >
@@ -182,10 +169,10 @@ export const ConversationCard: React.FC<Props> = ({ isActive, conversation, flip
           contrastText
         )}
       >
-        {conversation.agent ? (
-          <Text>{conversation.agent.name[0]}</Text>
+        {conversation.agentName ? (
+          <Text>{conversation.agentName[0]}</Text>
         ) : (
-          <AgentLogo agent_id={conversation.agent?.id} className={contrastFill} />
+          <AgentLogo agent_id={conversation.agentName} className={contrastFill} />
         )}
       </div>
     );

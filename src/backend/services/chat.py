@@ -29,7 +29,6 @@ from backend.schemas.chat import (
 )
 from backend.schemas.conversation import UpdateConversationRequest
 from backend.schemas.interview import Interview
-from backend.services.auth.utils import get_header_user_id
 
 
 def process_chat(

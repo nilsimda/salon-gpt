@@ -3,8 +3,8 @@
 import { useResizeObserver } from '@react-hookz/web';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { ComposerError, ComposerFiles, ComposerToolbar } from '@/components/Composer';
-import { DragDropFileInput, Icon, STYLE_LEVEL_TO_CLASSES } from '@/components/UI';
+import { ComposerError, ComposerToolbar } from '@/components/Composer';
+import { Icon, STYLE_LEVEL_TO_CLASSES } from '@/components/UI';
 import { CHAT_COMPOSER_TEXTAREA_ID } from '@/constants';
 import { useBreakpoint, useIsDesktop } from '@/hooks';
 import { ConfigurableParams } from '@/stores/slices/paramsSlice';
@@ -145,9 +145,8 @@ export const Composer: React.FC<Props> = ({
               'leading-[150%]'
             )}
             style={{
-              maxHeight: `${
-                chatWindowHeight * (isSmallBreakpoint || breakpoint === 'md' ? 0.6 : 0.75)
-              }px`,
+              maxHeight: `${chatWindowHeight * (isSmallBreakpoint || breakpoint === 'md' ? 0.6 : 0.75)
+                }px`,
             }}
             rows={1}
             onKeyDown={handleKeyDown}
@@ -173,7 +172,6 @@ export const Composer: React.FC<Props> = ({
             {isReadyToReceiveMessage ? <Icon name="arrow-submit" /> : <Square />}
           </button>
         </div>
-        <ComposerFiles />
         <ComposerToolbar agentName={agentName} />
       </div>
       <ComposerError className="pt-2" />

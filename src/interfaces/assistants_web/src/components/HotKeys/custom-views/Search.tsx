@@ -7,8 +7,8 @@ import { useState } from 'react';
 
 import { AgentLogo } from '@/components/Agents/AgentLogo';
 import { CommandActionGroup, HotKeyGroupOption, HotKeysDialogInput } from '@/components/HotKeys';
-import { BASE_AGENT } from '@/constants';
-import { useConversations, useListAgents } from '@/hooks';
+import { BASE_AGENT, AGENTS } from '@/constants';
+import { useConversations } from '@/hooks';
 
 type Props = {
   isOpen: boolean;
@@ -31,7 +31,7 @@ export const Search: React.FC<Props> = ({ isOpen, close, onBack }) => {
   ]);
   const router = useRouter();
 
-  const { data: assistants } = useListAgents();
+  const assistants = AGENTS;
   const { data: conversations } = useConversations({});
 
   useDebouncedEffect(
@@ -57,14 +57,10 @@ export const Search: React.FC<Props> = ({ isOpen, close, onBack }) => {
       });
 
       const foundAssistants = assistants?.filter((assistant) => {
-        const name = assistant.name.toLowerCase();
-        const description = assistant.description?.toLowerCase();
-        const preamble = assistant.preamble?.toLowerCase();
+        const name = assistant.toLowerCase();
 
         return (
-          name.includes(query) ||
-          (description && description.includes(query)) ||
-          (preamble && preamble.includes(query))
+          name.includes(query)
         );
       });
 
@@ -78,8 +74,8 @@ export const Search: React.FC<Props> = ({ isOpen, close, onBack }) => {
                 <div className="flex items-center gap-x-2">
                   <AgentLogo
                     agent_id={
-                      assistants?.find((assistant) => assistant.id === conversation.agent_id).id ??
-                      BASE_AGENT.id
+                      assistants?.find((assistant) => assistant === conversation.agent_id) ??
+                      BASE_AGENT
                     }
                   />
                   <span>{conversation.title}</span>
@@ -104,19 +100,14 @@ export const Search: React.FC<Props> = ({ isOpen, close, onBack }) => {
           group: 'Assistants',
           quickActions:
             foundAssistants?.map((assistant) => ({
-              name: assistant.name,
+              name: assistant,
               label: (
                 <div className="flex items-center gap-x-2">
-                  <AgentLogo agent_id={assistant.id} />
-                  <span>{assistant.name}</span>
-                  {assistant.description && (
-                    <span className="ml-2 truncate text-p-sm text-volcanic-600">
-                      {assistant.description}
-                    </span>
-                  )}
+                  <AgentLogo agent_id={assistant} />
+                  <span>{assistant}</span>
                 </div>
               ),
-              action: () => router.push(`/a/${assistant.id}`),
+              action: () => router.push(`/a/${assistant}`),
               closeDialogOnRun: true,
               commands: [],
               registerGlobal: false,

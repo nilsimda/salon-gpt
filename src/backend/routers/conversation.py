@@ -81,13 +81,13 @@ async def get_conversation(
 @router.get("", response_model=list[ConversationWithoutMessages])
 async def list_conversations(
     *,
-    user_id: str,
     offset: int = 0,
     limit: int = 100,
     order_by: Optional[str] = None,
     agent_id: Optional[str] = None,
     session: DBSessionDep,
     request: Request,
+    user_id: str = Depends(get_header_user_id),
 ) -> list[ConversationWithoutMessages]:
     """
     List all conversations.
@@ -134,9 +134,10 @@ async def list_conversations(
 @router.put("/{conversation_id}", response_model=Conversation)
 async def update_conversation(
     conversation_id: str,
-    user_id: str,
     new_conversation: UpdateConversationRequest,
     session: DBSessionDep,
+    request: Request,
+    user_id: str = Depends(get_header_user_id),
 ) -> Conversation:
     """
     Update a conversation by ID.
@@ -174,9 +175,10 @@ async def update_conversation(
 @router.put("/{conversation_id}/toggle-pin", response_model=ConversationWithoutMessages)
 async def toggle_conversation_pin(
     conversation_id: str,
-    user_id: str,
     new_conversation_pin: ToggleConversationPinRequest,
     session: DBSessionDep,
+    request: Request,
+    user_id: str = Depends(get_header_user_id),
 ) -> ConversationWithoutMessages:
     conversation = validate_conversation(session, conversation_id, user_id)
     conversation = conversation_crud.toggle_conversation_pin(
@@ -197,7 +199,10 @@ async def toggle_conversation_pin(
 
 @router.delete("/{conversation_id}")
 async def delete_conversation(
-    conversation_id: str, user_id: str, session: DBSessionDep
+    conversation_id: str,
+    session: DBSessionDep,
+    request: Request,
+    user_id: str = Depends(get_header_user_id),
 ) -> DeleteConversationResponse:
     """
     Delete a conversation by ID.
@@ -205,7 +210,6 @@ async def delete_conversation(
     Args:
         conversation_id (str): Conversation ID.
         session (DBSessionDep): Database session.
-          (Context): Context object.
 
     Returns:
         DeleteConversationResponse: Empty response.
@@ -213,7 +217,7 @@ async def delete_conversation(
     Raises:
         HTTPException: If the conversation with the given ID is not found.
     """
-    conversation = validate_conversation(session, conversation_id, user_id)
+    validate_conversation(session, conversation_id, user_id)
 
     conversation_crud.delete_conversation(session, conversation_id, user_id)
 
@@ -223,12 +227,12 @@ async def delete_conversation(
 @router.get(":search", response_model=list[ConversationWithoutMessages])
 async def search_conversations(
     query: str,
-    user_id: str,
     session: DBSessionDep,
     request: Request,
     offset: int = 0,
     limit: int = 100,
     agent_id: Optional[str] = None,
+    user_id: str = Depends(get_header_user_id),
 ) -> list[ConversationWithoutMessages]:
     """
     Search conversations by title.
@@ -283,9 +287,9 @@ async def search_conversations(
 @router.post("/{conversation_id}/generate-title", response_model=GenerateTitleResponse)
 async def generate_title(
     conversation_id: str,
-    user_id: str,
     session: DBSessionDep,
     request: Request,
+    user_id: str = Depends(get_header_user_id),
 ) -> GenerateTitleResponse:
     """
     Generate a title for a conversation and update the conversation with the generated title.

@@ -11,26 +11,23 @@ router = APIRouter(prefix="/v1/users")
 router.name = RouterName.USER  # type: ignore
 
 
-@router.post("", response_model=User)
+@router.post("", response_model=UserSchema)
 async def create_user(
     user: CreateUser,
     session: DBSessionDep,
-) -> User:
+) -> UserModel:
     """
     Create a new user.
 
     Args:
         user (CreateUser): User data to be created.
         session (DBSessionDep): Database session.
-          (Context): Context object.
 
     Returns:
         User: Created user.
     """
     db_user = UserModel(**user.model_dump(exclude_none=True))
     db_user = user_crud.create_user(session, db_user)
-
-    user_schema = UserSchema.model_validate(db_user)
 
     return db_user
 
@@ -41,7 +38,7 @@ async def list_users(
     offset: int = 0,
     limit: int = 100,
     session: DBSessionDep,
-) -> list[User]:
+) -> list[UserModel]:
     """
     List all users.
 
@@ -61,7 +58,7 @@ async def list_users(
 async def get_user(
     user_id: str,
     session: DBSessionDep,
-) -> User:
+) -> UserModel:
     """
     Get a user by ID.
 
@@ -83,7 +80,7 @@ async def get_user(
             status_code=404, detail=f"User with ID: {user_id} not found."
         )
 
-    user_schema = UserSchema.model_validate(user)
+    UserSchema.model_validate(user)
     return user
 
 
@@ -93,7 +90,7 @@ async def update_user(
     new_user: UpdateUser,
     session: DBSessionDep,
     request: Request,
-) -> User:
+) -> UserModel:
     """
     Update a user by ID.
 
@@ -118,7 +115,7 @@ async def update_user(
         )
 
     user = user_crud.update_user(session, user, new_user)
-    user_schema = UserSchema.model_validate(user)
+    UserSchema.model_validate(user)
 
     return user
 
@@ -149,7 +146,7 @@ async def delete_user(
             status_code=404, detail=f"User with ID: {user_id} not found."
         )
 
-    user_schema = UserSchema.model_validate(user)
+    UserSchema.model_validate(user)
     user_crud.delete_user(session, user_id)
 
     return DeleteUser()

@@ -742,7 +742,7 @@ export const $StreamEvent = {
   type: 'string',
   enum: ['stream-start', 'search-results', 'text-generation', 'stream-end'],
   title: 'StreamEvent',
-  description: "Stream Events returned by Cohere's chat stream response.",
+  description: "Stream Events returned by Salon's chat stream response.",
 } as const;
 
 export const $StreamSearchResults = {

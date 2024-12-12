@@ -10,7 +10,7 @@ from backend.schemas.interview import Interview
 
 class StreamEvent(str, Enum):
     """
-    Stream Events returned by Cohere's chat stream response.
+    Stream Events returned by Salon's chat stream response.
     """
 
     STREAM_START = "stream-start"

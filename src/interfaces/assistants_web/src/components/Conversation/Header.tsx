@@ -1,6 +1,5 @@
 'use client';
 
-import { ShareConversation } from '@/components/Modals/ShareConversation';
 import { Button, Icon, IconButton, Logo, Text } from '@/components/UI';
 import { useContextStore } from '@/context';
 import { env } from '@/env.mjs';
@@ -20,14 +19,6 @@ export const Header: React.FC<Props> = ({ agentName }) => {
   const { setLeftPanelOpen, setRightPanelOpen } = useSettingsStore();
   const { open } = useContextStore();
   const { text, bg, contrastText, lightText, fill, lightFill, dark, light } = useBrandedColors('');
-
-  const handleOpenShareModal = () => {
-    if (!id) return;
-    open({
-      title: 'Link zu dieser Konversation teilen',
-      content: <ShareConversation conversationId={id} />,
-    });
-  };
 
   const handleOpenLeftSidePanel = () => {
     setRightPanelOpen(false);
@@ -67,7 +58,6 @@ export const Header: React.FC<Props> = ({ agentName }) => {
                 ),
               }}
               iconPosition="start"
-              onClick={handleOpenShareModal}
             />
           )}
           <IconButton

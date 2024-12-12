@@ -29,6 +29,7 @@ const Register: React.FC = () => {
   const { register, handleSubmit, formState } = useForm<Credentials>();
 
   const onSubmit: SubmitHandler<Credentials> = async (data) => {
+    console.log(data);
     const { name, email, password } = data;
     try {
       await registerMutation.mutateAsync(
@@ -47,14 +48,14 @@ const Register: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center">
       <Text as="h1" styleAs="h3">
-        Create your account
+        Erstelle einen Account
       </Text>
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-10 flex w-full flex-col gap-4">
         <Input
           className="w-full"
           label="name"
-          placeholder="Your Name"
+          placeholder="Dein Name"
           type="text"
           errorText={!!formState.errors.name ? 'Please enter a name' : undefined}
           {...register('name', {
@@ -66,9 +67,9 @@ const Register: React.FC = () => {
         <Input
           className="w-full"
           label="Email"
-          placeholder="yourname@email.com"
+          placeholder="deinname@email.com"
           type="email"
-          errorText={!!formState.errors.email ? 'Please enter a valid email address' : undefined}
+          errorText={!!formState.errors.email ? 'Bitte gib eine valide Email Addresse ein' : undefined}
           {...register('email', {
             required: true,
             validate: (value) => simpleEmailValidation(value),
@@ -77,11 +78,11 @@ const Register: React.FC = () => {
 
         <Input
           className="mb-2 w-full"
-          label="Password"
+          label="Passwort"
           placeholder="••••••••••••"
           type="password"
           actionType="reveal"
-          errorText={!!formState.errors.password ? 'Please enter a valid password' : undefined}
+          errorText={!!formState.errors.password ? 'Bitte gib ein valides Passwort ein' : undefined}
           {...register('password', { required: true })}
         />
 
@@ -96,7 +97,7 @@ const Register: React.FC = () => {
 
         <Button
           disabled={registerStatus === 'pending' || !formState.isValid}
-          label={registerStatus === 'pending' ? 'Logging in...' : 'Sign up'}
+          label={registerStatus === 'pending' ? 'Einloggen...' : 'Registrieren'}
           buttonType="submit"
           theme="evolved-green"
           kind="cell"
@@ -109,7 +110,7 @@ const Register: React.FC = () => {
         as="div"
         className="mt-10 flex w-full items-center justify-center gap-2 text-volcanic-400 dark:text-marble-950"
       >
-        Already have an account?
+        Du hast bereits einen Account?
         <AuthLink
           redirect={redirect !== '/' ? redirect : undefined}
           action="login"

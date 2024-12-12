@@ -1,6 +1,5 @@
 import { StateCreator } from 'zustand';
 
-import { DEFAULT_CONVERSATION_NAME } from '@/constants';
 import {
   ChatMessage,
   FulfilledMessage,
@@ -14,7 +13,7 @@ import { StoreState } from '..';
 
 const INITIAL_STATE: State = {
   id: undefined,
-  name: DEFAULT_CONVERSATION_NAME,
+  name: "Titel",
   messages: [],
 };
 

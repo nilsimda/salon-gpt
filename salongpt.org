@@ -2,11 +2,10 @@
 ** TODO Add regenerate back
 ** TODO tests
 
-curl --location 'http://localhost:8000/v1/chat-stream' \
---header 'User-Id: test-user' \
+curl --location 'http://localhost:8000/v1/users' \
 --header 'Content-Type: application/json' \
 --data '{
-    "message": "Was wird zum Thema Honig gesagt?",
-    "agent_id": "zitatki",
-    "interview_ids": ["d12cc184-c023-4d41-aa87-f61fbdc5be9b"]
+    "fullname": "Nils Imdahl",
+    "email": "imdahlnils@gmail.com",
+    "password": "Spekulatius1"
 }'

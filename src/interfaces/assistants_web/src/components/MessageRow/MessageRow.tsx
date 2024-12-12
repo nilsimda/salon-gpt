@@ -3,7 +3,7 @@
 import { forwardRef, useEffect, useState } from 'react';
 import { useLongPress } from 'react-aria';
 
-import { Avatar, MessageContent, ToolEvents } from '@/components/MessageRow';
+import { Avatar, MessageContent } from '@/components/MessageRow';
 import {
   Button,
   CopyToClipboardButton,
@@ -134,14 +134,6 @@ export const MessageRow = forwardRef<HTMLDivElement, Props>(function MessageRowI
           <Avatar message={message} />
           <div className="flex w-full min-w-0 max-w-message flex-1 flex-col items-center gap-x-3 md:flex-row">
             <div className="w-full">
-              {hasSteps && (
-                <ToolEvents
-                  show={isStepsExpanded}
-                  events={message.toolEvents}
-                  isStreaming={isStreamingToolEvents}
-                  isLast={isLast}
-                />
-              )}
 
               <MessageContent isLast={isLast} message={message} onRetry={onRetry} />
             </div>

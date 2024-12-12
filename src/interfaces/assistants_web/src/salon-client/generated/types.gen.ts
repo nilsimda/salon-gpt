@@ -168,7 +168,7 @@ export type StreamEnd = {
 };
 
 /**
- * Stream Events returned by Cohere's chat stream response.
+ * Stream Events returned by Salon's chat stream response.
  */
 export enum StreamEvent {
   STREAM_START = 'stream-start',
@@ -307,14 +307,12 @@ export type GetConversationV1ConversationsConversationIdGetResponse = Conversati
 export type UpdateConversationV1ConversationsConversationIdPutData = {
   conversationId: string;
   requestBody: UpdateConversationRequest;
-  userId: string;
 };
 
 export type UpdateConversationV1ConversationsConversationIdPutResponse = Conversation;
 
 export type DeleteConversationV1ConversationsConversationIdDeleteData = {
   conversationId: string;
-  userId: string;
 };
 
 export type DeleteConversationV1ConversationsConversationIdDeleteResponse =
@@ -325,7 +323,6 @@ export type ListConversationsV1ConversationsGetData = {
   limit?: number;
   offset?: number;
   orderBy?: string | null;
-  userId: string;
 };
 
 export type ListConversationsV1ConversationsGetResponse = Array<ConversationWithoutMessages>;
@@ -333,7 +330,6 @@ export type ListConversationsV1ConversationsGetResponse = Array<ConversationWith
 export type ToggleConversationPinV1ConversationsConversationIdTogglePinPutData = {
   conversationId: string;
   requestBody: ToggleConversationPinRequest;
-  userId: string;
 };
 
 export type ToggleConversationPinV1ConversationsConversationIdTogglePinPutResponse =
@@ -344,7 +340,6 @@ export type SearchConversationsV1ConversationsSearchGetData = {
   limit?: number;
   offset?: number;
   query: string;
-  userId: string;
 };
 
 export type SearchConversationsV1ConversationsSearchGetResponse =
@@ -352,7 +347,6 @@ export type SearchConversationsV1ConversationsSearchGetResponse =
 
 export type GenerateTitleV1ConversationsConversationIdGenerateTitlePostData = {
   conversationId: string;
-  userId: string;
 };
 
 export type GenerateTitleV1ConversationsConversationIdGenerateTitlePostResponse =

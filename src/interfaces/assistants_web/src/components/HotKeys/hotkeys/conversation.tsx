@@ -1,7 +1,6 @@
 'use client';
 
 import { HotKeyGroupOption } from '@/components/HotKeys/domain';
-import { ShareConversation } from '@/components/Modals/ShareConversation';
 import { useContextStore } from '@/context';
 import { useConversationActions, useNavigateToNewChat } from '@/hooks';
 import { useConversationStore } from '@/stores';
@@ -15,14 +14,6 @@ export const useConversationHotKeys = (): HotKeyGroupOption[] => {
   const { open } = useContextStore();
 
   if (!id) return [];
-
-  const handleOpenShareModal = () => {
-    if (!id) return;
-    open({
-      title: 'Link zu dieser Unterhaltung teilen',
-      content: <ShareConversation conversationId={id} />,
-    });
-  };
 
   return [
     {
@@ -43,7 +34,6 @@ export const useConversationHotKeys = (): HotKeyGroupOption[] => {
           commands: ['ctrl+alt+a', 'meta+alt+a'],
           registerGlobal: true,
           closeDialogOnRun: true,
-          action: handleOpenShareModal,
           options: {
             preventDefault: true,
           },

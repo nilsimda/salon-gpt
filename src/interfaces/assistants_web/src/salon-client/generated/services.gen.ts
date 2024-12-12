@@ -202,7 +202,6 @@ export class DefaultService {
    * Args:
    * user (CreateUser): User data to be created.
    * session (DBSessionDep): Database session.
-   * (Context): Context object.
    *
    * Returns:
    * User: Created user.
@@ -417,7 +416,6 @@ export class DefaultService {
    * HTTPException: If the conversation with the given ID is not found.
    * @param data The data for the request.
    * @param data.conversationId
-   * @param data.userId
    * @param data.requestBody
    * @returns Conversation Successful Response
    * @throws ApiError
@@ -430,9 +428,6 @@ export class DefaultService {
       url: '/v1/conversations/{conversation_id}',
       path: {
         conversation_id: data.conversationId,
-      },
-      query: {
-        user_id: data.userId,
       },
       body: data.requestBody,
       mediaType: 'application/json',
@@ -449,7 +444,6 @@ export class DefaultService {
    * Args:
    * conversation_id (str): Conversation ID.
    * session (DBSessionDep): Database session.
-   * (Context): Context object.
    *
    * Returns:
    * DeleteConversationResponse: Empty response.
@@ -458,7 +452,6 @@ export class DefaultService {
    * HTTPException: If the conversation with the given ID is not found.
    * @param data The data for the request.
    * @param data.conversationId
-   * @param data.userId
    * @returns DeleteConversationResponse Successful Response
    * @throws ApiError
    */
@@ -470,9 +463,6 @@ export class DefaultService {
       url: '/v1/conversations/{conversation_id}',
       path: {
         conversation_id: data.conversationId,
-      },
-      query: {
-        user_id: data.userId,
       },
       errors: {
         422: 'Validation Error',
@@ -495,7 +485,6 @@ export class DefaultService {
    * Returns:
    * list[ConversationWithoutMessages]: List of conversations.
    * @param data The data for the request.
-   * @param data.userId
    * @param data.offset
    * @param data.limit
    * @param data.orderBy
@@ -504,13 +493,12 @@ export class DefaultService {
    * @throws ApiError
    */
   public listConversationsV1ConversationsGet(
-    data: ListConversationsV1ConversationsGetData
+    data: ListConversationsV1ConversationsGetData = {}
   ): CancelablePromise<ListConversationsV1ConversationsGetResponse> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/v1/conversations',
       query: {
-        user_id: data.userId,
         offset: data.offset,
         limit: data.limit,
         order_by: data.orderBy,
@@ -526,7 +514,6 @@ export class DefaultService {
    * Toggle Conversation Pin
    * @param data The data for the request.
    * @param data.conversationId
-   * @param data.userId
    * @param data.requestBody
    * @returns ConversationWithoutMessages Successful Response
    * @throws ApiError
@@ -539,9 +526,6 @@ export class DefaultService {
       url: '/v1/conversations/{conversation_id}/toggle-pin',
       path: {
         conversation_id: data.conversationId,
-      },
-      query: {
-        user_id: data.userId,
       },
       body: data.requestBody,
       mediaType: 'application/json',
@@ -568,7 +552,6 @@ export class DefaultService {
    * list[ConversationWithoutMessages]: List of conversations that match the query.
    * @param data The data for the request.
    * @param data.query
-   * @param data.userId
    * @param data.offset
    * @param data.limit
    * @param data.agentId
@@ -583,7 +566,6 @@ export class DefaultService {
       url: '/v1/conversations:search',
       query: {
         query: data.query,
-        user_id: data.userId,
         offset: data.offset,
         limit: data.limit,
         agent_id: data.agentId,
@@ -611,7 +593,6 @@ export class DefaultService {
    * HTTPException: If the conversation with the given ID is not found.
    * @param data The data for the request.
    * @param data.conversationId
-   * @param data.userId
    * @returns GenerateTitleResponse Successful Response
    * @throws ApiError
    */
@@ -623,9 +604,6 @@ export class DefaultService {
       url: '/v1/conversations/{conversation_id}/generate-title',
       path: {
         conversation_id: data.conversationId,
-      },
-      query: {
-        user_id: data.userId,
       },
       errors: {
         422: 'Validation Error',
