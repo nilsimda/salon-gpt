@@ -81,7 +81,7 @@ export const OidcSSOButton: React.FC<ButtonProps> = ({ className, service, onCli
       iconPosition="start"
       theme="evolved-green"
       onClick={onClick}
-      label={`Continue with ${service ? service : 'OpenID'}`}
+      label={`Fortfahren mit ${service ? service : 'OpenID'}`}
       kind="outline"
       className="w-full md:w-fit"
     />

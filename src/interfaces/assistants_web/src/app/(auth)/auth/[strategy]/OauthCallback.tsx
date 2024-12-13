@@ -68,7 +68,7 @@ const OauthCallback: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center">
       <Text as="h1" styleAs="h3">
-        Logging in
+        Einloggen...
       </Text>
     </div>
   );

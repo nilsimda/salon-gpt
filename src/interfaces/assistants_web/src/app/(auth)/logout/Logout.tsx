@@ -24,7 +24,7 @@ const Logout = () => {
   return (
     <div className="flex flex-col items-center justify-center">
       <Text as="h1" styleAs="h3">
-        Logging out
+        Ausloggen...
       </Text>
     </div>
   );
