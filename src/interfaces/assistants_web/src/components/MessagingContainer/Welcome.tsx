@@ -9,6 +9,19 @@ import { cn } from '@/utils';
 
 import { AgentLogo } from '../Agents/AgentLogo';
 
+const getDescription = (agentId?: string): string => {
+  switch (agentId) {
+    case 'zitatki':
+      return 'Finde Zitate aus Studien';
+    case 'kerlin':
+      return 'Befrage einen synthetischen Nutzer';
+    case 'transcription':
+      return 'Transkribiere Interviews';
+    default:
+      return '';
+  }
+};
+
 type Props = {
   show: boolean;
   agentId?: string;
@@ -19,6 +32,7 @@ type Props = {
  */
 export const Welcome: React.FC<Props> = ({ show, agentId }) => {
   const { contrastText, bg, contrastFill } = useBrandedColors('');
+  const description = getDescription(agentId);
 
   return (
     <Transition
@@ -50,7 +64,7 @@ export const Welcome: React.FC<Props> = ({ show, agentId }) => {
           </Text>
         </div>
         <Text className="text-mushroom-300 dark:text-marble-800">
-          Ask questions and get answers based on your files.
+          {description}
         </Text>
       </div>
     </Transition>

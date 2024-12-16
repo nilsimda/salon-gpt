@@ -1,5 +1,4 @@
 import { DragDropFileInput, Text } from '@/components/UI';
-import { useConversationFileActions } from '@/hooks/use-files';
 
 import { StudySettingsFields } from '.';
 
@@ -9,7 +8,6 @@ type Props = {
 };
 
 export const UploadFilesStep: React.FC<Props> = ({ fields, setFields }) => {
-  const { uploadFiles } = useConversationFileActions();
   return (
     <div className="flex flex-col space-y-6">
       <div className="flex flex-col space-y-4">
@@ -19,7 +17,6 @@ export const UploadFilesStep: React.FC<Props> = ({ fields, setFields }) => {
           active={true}
           accept={['video/*', 'audio/*']}
           onUploadFile={async (files) => {
-            await uploadFiles(files, fields.id);
           }}
         />
       </div>

@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { Conversation, ConversationError } from '@/components/Conversation';
 import { useConversation } from '@/hooks';
 import { useCitationsStore, useConversationStore, useParamsStore } from '@/stores';
-import { createStartEndKey, fixInlineCitationsForMarkdown, mapHistoryToMessages } from '@/utils';
+import { mapHistoryToMessages } from '@/utils';
 
 const Chat: React.FC<{ agentName: string; conversationId?: string }> = ({
   agentName,
@@ -41,12 +41,6 @@ const Chat: React.FC<{ agentName: string; conversationId?: string }> = ({
 
     setConversation({ name: conversation.title, messages });
 
-    (conversation?.messages ?? []).forEach((message) => {
-      fixInlineCitationsForMarkdown(message.citations, message.text)?.forEach((citation) => {
-        const startEndKey = createStartEndKey(citation.start ?? 0, citation.end ?? 0);
-        addCitation(message.generation_id ?? '', startEndKey, []);
-      });
-    });
   }, [conversation?.id, conversation?.messages.length, setConversation]);
 
   return isError ? (

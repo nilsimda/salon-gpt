@@ -3,7 +3,7 @@ import { NextPage } from 'next';
 
 import Chat from '@/app/(main)/(chat)/Chat';
 import { BASE_AGENT } from '@/constants';
-import { getCohereServerClient } from '@/server/salonServerClient';
+import { getSalonServerClient } from '@/server/salonServerClient';
 
 type Props = {
   params: {
@@ -13,7 +13,7 @@ type Props = {
 };
 
 const Page: NextPage<Props> = async ({ params }) => {
-  const salonServerClient = getCohereServerClient();
+  const salonServerClient = getSalonServerClient();
   const queryClient = new QueryClient();
 
   await Promise.all([

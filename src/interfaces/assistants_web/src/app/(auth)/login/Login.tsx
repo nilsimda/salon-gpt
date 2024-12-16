@@ -156,7 +156,7 @@ const Login: React.FC = () => {
             as="div"
             className="mt-10 flex w-full items-center justify-center gap-2 text-volcanic-700"
           >
-            New user?
+            Neuer Nutzer?
             <AuthLink
               redirect={redirect !== '/' ? redirect : undefined}
               action="register"

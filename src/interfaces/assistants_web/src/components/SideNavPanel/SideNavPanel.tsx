@@ -113,7 +113,7 @@ export const SideNavPanel: React.FC<{ className?: string }> = ({ className = '' 
             tooltip="Befrage einen syntethischen Nutzer"
             theme="mushroom"
             href="/a/kerlin"
-            iconName="compass"
+            iconName="sparkle"
           />
 
           <AgentsSidePanelButton

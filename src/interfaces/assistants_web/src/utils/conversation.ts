@@ -1,10 +1,5 @@
 import { Message, MessageAgent } from '@/salon-client';
 import { BotState, ChatMessage, FulfilledMessage, MessageType, UserMessage } from '@/types/message';
-import {
-  fixInlineCitationsForMarkdown,
-  replaceCodeBlockWithIframe,
-  replaceTextWithCitations,
-} from '@/utils';
 
 /**
  * A utility function that checks if the conversation title should be updated
@@ -49,33 +44,16 @@ export const mapHistoryToMessages = (history?: Message[]): UserOrBotMessage[] =>
           type: MessageType.BOT,
           state: BotState.FULFILLED,
           originalText: message.text ?? '',
-          text: replaceTextWithCitations(
-            replaceCodeBlockWithIframe(message.text) ?? '',
-            fixInlineCitationsForMarkdown(message.citations ?? [], message.text),
-            message.generation_id ?? ''
-          ),
+          text: message.text,
           generationId: message.generation_id ?? '',
-          citations: message.citations,
-          toolEvents: tempToolEvents,
         });
         tempToolEvents = undefined;
-      } else {
-        // Historical tool events come in as chatbot messages before the actual final response message.
-        if (tempToolEvents) {
-          tempToolEvents.push({
-            text: message.tool_plan,
-            tool_calls: message.tool_calls,
-          });
-        } else {
-          tempToolEvents = [{ text: message.tool_plan, tool_calls: message.tool_calls }];
-        }
       }
     } else {
       messages.push({
         id: message.id,
         type: MessageType.USER,
         text: message.text,
-        files: message.files,
       });
     }
   }
