@@ -324,7 +324,6 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
     setUserMessage('');
 
     const request = getChatRequest(message, params);
-    console.log(request.description)
     const headers = {
       'Deployment-Name': '',
       'Deployment-Config': '',
@@ -340,6 +339,7 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
       text: message,
       files: composerFiles,
     });
+
 
     await handleStreamConverse({
       newMessages,

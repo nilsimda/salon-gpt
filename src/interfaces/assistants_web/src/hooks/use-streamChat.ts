@@ -30,17 +30,17 @@ export interface StreamingChatParams extends StreamingParams {
 
 const getUpdatedConversations =
   (conversationId: string | undefined, description: string = '') =>
-  (conversations: Conversation[] | undefined) => {
-    return conversations?.map((c) => {
-      if (c.id !== conversationId) return c;
+    (conversations: Conversation[] | undefined) => {
+      return conversations?.map((c) => {
+        if (c.id !== conversationId) return c;
 
-      return {
-        ...c,
-        description,
-        updatedAt: new Date().toISOString(),
-      };
-    });
-  };
+        return {
+          ...c,
+          description,
+          updatedAt: new Date().toISOString(),
+        };
+      });
+    };
 
 export const useStreamChat = () => {
   const abortControllerRef = useRef<AbortController | null>(null);

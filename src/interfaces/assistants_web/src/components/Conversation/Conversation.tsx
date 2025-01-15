@@ -7,7 +7,6 @@ import { Header } from '@/components/Conversation';
 import { MessagingContainer, WelcomeGuideTooltip } from '@/components/MessagingContainer';
 import { WelcomeGuideStep, useChat, useWelcomeGuideState } from '@/hooks';
 import { useConversationStore } from '@/stores';
-import { ConfigurableParams } from '@/stores/slices/paramsSlice';
 import { ChatMessage } from '@/types/message';
 
 type Props = {

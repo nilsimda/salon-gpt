@@ -89,11 +89,16 @@ def process_chat(
         id=str(uuid4()),
     )
 
-    chat_interviews = (
-        interview_crud.get_interviews_by_ids(session, chat_request.interview_ids)
-        if chat_request.interview_ids
-        else None
-    )
+    print(f"Study ID: {chat_request.study_id}")
+    chat_interviews = None
+    if chat_request.interview_ids:
+        chat_interviews = interview_crud.get_interviews_by_ids(
+            session, chat_request.interview_ids
+        )
+    elif chat_request.study_id:
+        chat_interviews = interview_crud.get_interviews_by_study_id(
+            session, chat_request.study_id
+        )
 
     chat_history = create_chat_history(
         conversation, next_message_position, chat_request
@@ -317,9 +322,7 @@ def update_conversation_after_turn(
 
     # Update conversation description with final message
     conversation = conversation_crud.get_conversation(session, conversation_id, user_id)
-    assert (
-        conversation is not None
-    ), (
+    assert conversation is not None, (
         f"Conversation with id {conversation_id} and user id {user_id} not found "
     )  # this is mostly for type checking
     new_conversation = UpdateConversationRequest(
