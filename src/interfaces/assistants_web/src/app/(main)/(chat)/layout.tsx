@@ -4,7 +4,7 @@ import { Transition } from '@headlessui/react';
 import { useEffect } from 'react';
 
 import { ConversationPanel } from '@/components/Conversation';
-import { useIsDesktop } from '@/hooks';
+import { useChatRoutes, useIsDesktop } from '@/hooks';
 import { useConversationStore, useParamsStore, useSettingsStore } from '@/stores';
 import { cn } from '@/utils';
 
@@ -13,6 +13,7 @@ const ChatLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   const { isRightPanelOpen } = useSettingsStore();
   const isDesktop = useIsDesktop();
+  const { agentId, conversationId } = useChatRoutes()
 
   // Reset conversation when unmounting
   useEffect(() => {
@@ -39,7 +40,7 @@ const ChatLayout: React.FC<React.PropsWithChildren> = ({ children }) => {
         leaveFrom="translate-x-0 opacity-100"
         leaveTo="translate-x-full opacity-0"
       >
-        <ConversationPanel />
+        <ConversationPanel agentId={agentId} />
       </Transition>
     </div>
   );

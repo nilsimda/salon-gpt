@@ -30,6 +30,7 @@ export * from './Spinner';
 export * from './Switch';
 export * from './Tabs';
 export * from './Tag';
+export * from './Table';
 export * from './Text';
 export * from './Textarea';
 export * from './ToggleCard';

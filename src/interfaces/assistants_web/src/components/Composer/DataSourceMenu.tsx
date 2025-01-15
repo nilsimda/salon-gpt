@@ -24,11 +24,11 @@ export const DataSourceMenu: React.FC<Props> = ({ agentName }) => {
 
   const {
     setParams,
-    params: { selected_study },
+    params: { study_id },
   } = useParamsStore();
 
   const handleSelectStudy = (study: Study) => {
-    setParams({ selected_study: study });
+    setParams({ study_id: study.id });
   };
 
   return (
@@ -49,7 +49,7 @@ export const DataSourceMenu: React.FC<Props> = ({ agentName }) => {
             as="span"
             className={cn('font-medium', text, { [contrastText]: open })}
           >
-            Studie: {selected_study?.name}
+            Studie: {studies?.filter(studies => studies.id === study_id)[0]?.name}
           </Text>
         )}
       </PopoverButton>
@@ -98,8 +98,8 @@ export const DataSourceMenu: React.FC<Props> = ({ agentName }) => {
                       className={cn(
                         'absolute -bottom-0.5 -right-0.5  size-2 rounded-full transition-colors duration-300',
                         {
-                          'bg-success-300': selected_study?.id === study.id,
-                          'bg-mushroom-400 dark:bg-volcanic-600': selected_study?.id !== study.id,
+                          'bg-success-300': study_id === study.id,
+                          'bg-mushroom-400 dark:bg-volcanic-600': study_id !== study.id,
                         }
                       )}
                     />
@@ -111,7 +111,7 @@ export const DataSourceMenu: React.FC<Props> = ({ agentName }) => {
                 {isBaseAgent && (
                   <Switch
                     theme="evolved-blue"
-                    checked={study.id === selected_study?.id}
+                    checked={study.id === study_id}
                     onChange={() => handleSelectStudy(study)}
                     showCheckedState
                   />

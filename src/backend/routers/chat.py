@@ -39,6 +39,7 @@ async def chat_stream(
     Returns:
         EventSourceResponse: Server-sent event response with chatbot responses.
     """
+    print(f"Description {chat_request.description}")
     (
         session,
         chat_request,

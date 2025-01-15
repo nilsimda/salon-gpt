@@ -1,27 +1,16 @@
 import { StateCreator } from 'zustand';
 
-import { DEFAULT_CHAT_TEMPERATURE, SalonChatRequest, Study } from '@/salon-client';
+import { SalonChatRequest } from '@/salon-client';
 
 import { StoreState } from '..';
 
 const INITIAL_STATE: ConfigurableParams = {
-  model: undefined,
-  temperature: DEFAULT_CHAT_TEMPERATURE,
-  preamble: '',
-  tools: [],
-  interviews: [],
-  deployment: undefined,
-  deploymentConfig: undefined,
+  interview_ids: [],
+  study_id: '',
+  description: ''
 };
 
-export type ConfigurableParams = Pick<SalonChatRequest, 'temperature' | 'tools'> & {
-  preamble: string;
-  interviews: SalonChatRequest['interviews'];
-  selected_study?: Study;
-  model?: string;
-  deployment?: string;
-  deploymentConfig?: string;
-};
+export type ConfigurableParams = Pick<SalonChatRequest, 'study_id' | 'interview_ids' | 'description'>;
 
 type State = ConfigurableParams;
 type Actions = {
@@ -35,16 +24,11 @@ export type ParamStore = {
 
 export const createParamsSlice: StateCreator<StoreState, [], [], ParamStore> = (set) => ({
   setParams(params?) {
-    let tools = params?.tools;
-    let interviews = params?.interviews;
-
     set((state) => {
       return {
         params: {
           ...state.params,
           ...params,
-          ...(tools ? { tools } : []),
-          ...(interviews ? { interviews } : {}),
         },
       };
     });

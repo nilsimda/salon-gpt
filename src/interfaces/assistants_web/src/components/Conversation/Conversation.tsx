@@ -46,8 +46,8 @@ export const Conversation: React.FC<Props> = ({ agentName, startOptionsEnabled =
 
   const chatWindowRef = useRef<HTMLDivElement>(null);
 
-  const handleSend = (msg?: string, overrides?: Partial<ConfigurableParams>) => {
-    send({ suggestedMessage: msg }, overrides);
+  const handleSend = (msg?: string) => {
+    send({ suggestedMessage: msg });
   };
 
   return (

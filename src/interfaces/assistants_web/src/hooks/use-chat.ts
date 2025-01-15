@@ -22,7 +22,7 @@ import {
   isCohereNetworkError,
   isStreamError,
 } from '@/salon-client';
-import { useCitationsStore, useConversationStore, useFilesStore, useParamsStore } from '@/stores';
+import { useConversationStore, useFilesStore, useParamsStore } from '@/stores';
 import { useStreamingStore } from '@/stores/streaming';
 import {
   BotState,
@@ -35,18 +35,17 @@ import {
   createLoadingMessage,
 } from '@/types/message';
 import {
-  fixMarkdownImagesInText,
   replaceCodeBlockWithIframe,
-  replaceTextWithCitations,
   shouldUpdateConversationTitle,
 } from '@/utils';
+import { ConfigurableParams } from '@/stores/slices/paramsSlice';
 
 const USER_ERROR_MESSAGE = 'Something went wrong. This has been reported. ';
 const ABORT_REASON_USER = 'USER_ABORTED';
 
 type ChatRequestOverrides = Pick<
   SalonChatRequest,
-  'agent_id' | 'conversation_id' | 'interview_ids' | 'description' 
+  'agent_id' | 'conversation_id' | 'study_id' | 'interview_ids' | 'description'
 >;
 
 export type HandleSendChat = (
@@ -64,9 +63,7 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
   const { chatMutation, abortController } = useStreamChat();
   const { mutateAsync: streamChat } = chatMutation;
 
-  const {
-    params: { temperature, preamble, tools, model, deployment, deploymentConfig, interviews },
-  } = useParamsStore();
+  const { params: params } = useParamsStore();
   const {
     conversation: { id, messages },
     setConversation,
@@ -145,9 +142,6 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
     let generationId = '';
     let citations: Citation[] = [];
 
-    // Temporarily store the streaming `parameters` partial JSON string for a tool call
-    let toolCallParamaterStr = '';
-
     try {
       clearComposerFiles();
       clearUploadingErrors();
@@ -219,23 +213,14 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
               // Replace HTML code blocks with iframes
               const transformedText = replaceCodeBlockWithIframe(outputText);
 
-              const finalText = isRAGOn
-                ? replaceTextWithCitations(
-                  // TODO(@wujessica): temporarily use the text generated from the stream when MAX_TOKENS
-                  // because the final response doesn't give us the full text yet. Note - this means that
-                  // citations will only appear for the first 'block' of text generated.
-                  transformedText,
-                  citations,
-                  generationId
-                )
-                : botResponse;
+              const finalText = botResponse;
 
               const finalMessage: FulfilledMessage = {
                 id: data.message_id,
                 type: MessageType.BOT,
                 state: BotState.FULFILLED,
                 generationId,
-                text: citations.length > 0 ? finalText : fixMarkdownImagesInText(transformedText),
+                text: finalText, //: fixMarkdownImagesInText(transformedText),
                 citations,
                 isRAGOn,
                 originalText: isRAGOn ? responseText : botResponse,
@@ -317,23 +302,19 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
     }
   };
 
-  const getChatRequest = (message: string, overrides?: ChatRequestOverrides): SalonChatRequest => {
-    const { ...restOverrides } = overrides ?? {};
-
-    console.log("agent_id", agentId);
-
+  const getChatRequest = (message: string, params: ConfigurableParams): SalonChatRequest => {
     return {
       message,
       conversation_id: currentConversationId,
       agent_id: agentId,
-      ...restOverrides,
+      ...params,
     };
   };
 
   const handleChat: HandleSendChat = async (
     { currentMessages = messages, suggestedMessage },
-    overrides?: ChatRequestOverrides
   ) => {
+
     const message = (suggestedMessage || userMessage || '').trim();
     if (message.length === 0 || isStreaming) {
       return;
@@ -342,10 +323,11 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
     config?.onSend?.(message);
     setUserMessage('');
 
-    const request = getChatRequest(message, overrides);
+    const request = getChatRequest(message, params);
+    console.log(request.description)
     const headers = {
-      'Deployment-Name': deployment ?? '',
-      'Deployment-Config': deploymentConfig ?? '',
+      'Deployment-Name': '',
+      'Deployment-Config': '',
     };
     let newMessages: ChatMessage[] = currentMessages;
 
@@ -396,11 +378,11 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
 
     const newMessages = messages.slice(0, latestUserMessageIndex + 1);
 
-    const request = getChatRequest('');
+    const request = getChatRequest('', params);
 
     const headers = {
-      'Deployment-Name': deployment ?? '',
-      'Deployment-Config': deploymentConfig ?? '',
+      'Deployment-Name': '',
+      'Deployment-Config': '',
     };
 
     await handleStreamConverse({
