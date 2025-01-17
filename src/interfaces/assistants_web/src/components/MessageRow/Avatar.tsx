@@ -37,7 +37,7 @@ export const Avatar: React.FC<Props> = ({ message }) => {
         'h-7 w-7 transition-colors duration-300 ease-in-out md:h-9 md:w-9',
         {
           'bg-volcanic-600': isErroredOrAborted,
-          'bg-coral-700 dark:bg-evolved-green-700': isUser,
+          'bg-white': isUser,
           [bg]: isFulfilled || isTypingOrLoading,
         }
       )}

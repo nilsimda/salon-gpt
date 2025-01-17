@@ -4,8 +4,8 @@ import { Transition } from '@headlessui/react';
 import { PropsWithChildren } from 'react';
 
 import { Markdown } from '@/components/Markdown';
-import { CitationTextHighlighter, DataTable, MarkdownImage } from '@/components/MessageRow';
-import { Icon, Skeleton, Text } from '@/components/UI';
+import { SearchResults } from '@/components/MessageRow';
+import { Icon, Text } from '@/components/UI';
 import {
   type ChatMessage,
   MessageType,
@@ -14,7 +14,7 @@ import {
   isFulfilledOrTypingMessage,
   isLoadingMessage,
 } from '@/types/message';
-import { cn, formatFileSize } from '@/utils';
+import { cn } from '@/utils';
 
 type Props = {
   isLast: boolean;
@@ -40,7 +40,7 @@ export const MessageContent: React.FC<Props> = ({ isLast, message, onRetry }) =>
           {message.error}
           {isLast && (
             <button className="underline underline-offset-1" type="button" onClick={onRetry}>
-              Retry?
+              Erneut versuchen?
             </button>
           )}
         </MessageInfo>
@@ -52,36 +52,6 @@ export const MessageContent: React.FC<Props> = ({ isLast, message, onRetry }) =>
     return (
       <MessageWrapper>
         <Markdown text={message.text} renderRawHtml={false} />
-        {message.files && message.files.length > 0 && (
-          <div className="flex flex-wrap gap-2 py-2">
-            {message.files.map((file) => (
-              <div key={file.id} className="group flex w-60 gap-x-2 rounded bg-mushroom-600/10 p-3">
-                <div
-                  className={cn(
-                    'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded',
-                    'bg-mushroom-600/20 text-mushroom-300 dark:text-marble-950'
-                  )}
-                >
-                  <Icon name="file" kind="outline" />
-                </div>
-                <div className="flex w-full flex-grow flex-col gap-y-0.5 truncate">
-                  <Text styleAs="label" className="w-full truncate font-medium">
-                    {file.file_name}
-                  </Text>
-                  <div className="flex items-center gap-x-2 uppercase">
-                    {file.file_size ? (
-                      <Text styleAs="caption" className="text-volcanic-500 dark:text-marble-900">
-                        {formatFileSize(file.file_size)}
-                      </Text>
-                    ) : (
-                      <Skeleton className="h-5 w-10 bg-mushroom-600/20 dark:bg-volcanic-600" />
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </MessageWrapper>
     );
   }
@@ -131,30 +101,28 @@ export const MessageContent: React.FC<Props> = ({ isLast, message, onRetry }) =>
   const hasCitations =
     isTypingOrFulfilledMessage && message.citations && message.citations.length > 0;
   return (
-    <MessageWrapper>
-      <Markdown
-        className={cn({
-          'text-volcanic-400': isAborted,
-        })}
-        text={message.text}
-        customComponents={{
-          img: MarkdownImage as any,
-          cite: CitationTextHighlighter as any,
-          table: DataTable as any,
-        }}
-        renderLaTex={!hasCitations}
-      />
-      {isAborted && (
-        <MessageInfo>
-          This generation was stopped.{' '}
-          {isLast && isAborted && (
-            <button className="underline underline-offset-1" type="button" onClick={onRetry}>
-              Retry?
-            </button>
-          )}
-        </MessageInfo>
-      )}
-    </MessageWrapper>
+    <>
+      <MessageWrapper>
+        <Markdown
+          className={cn({
+            'text-volcanic-400': isAborted,
+          })}
+          text={message.text}
+          renderLaTex={!hasCitations}
+        />
+        {isAborted && (
+          <MessageInfo>
+            Diese Antwort wurde unterbrochen.{' '}
+            {isLast && isAborted && (
+              <button className="underline underline-offset-1" type="button" onClick={onRetry}>
+                Erneut versuchen?
+              </button>
+            )}
+          </MessageInfo>
+        )}
+      </MessageWrapper>
+      <SearchResults searchResults={message.search_results} />
+    </>
   );
 };
 

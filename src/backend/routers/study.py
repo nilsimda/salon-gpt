@@ -1,8 +1,11 @@
+import pathlib
+import shutil
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile
 
 from backend.config.routers import RouterName
+from backend.crud import interview as interview_crud
 from backend.crud import study as study_crud
 from backend.database_models.database import DBSessionDep
 from backend.database_models.study import Study as StudyModel
@@ -55,9 +58,18 @@ async def create_study(
     study_data = StudyModel(
         name=study.name,
         description=study.description,
-        group_interview_count=study.group_interview_count,
-        is_being_added=False,
+        is_being_added=True,
     )
+
+    saved_files = []
+    for file in [study.meta_file] + study.ti_files + study.gd_files + study.memo_files:
+        file_path = pathlib.Path(f"../data/videos/{study.name}/{file.filename}")
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        saved_files.append(file_path)
+
+    # process files asynchronously
+    # background_tasks.add_task(process_files, saved_files)
 
     try:
         created_study = study_crud.create_study(session, study_data)
@@ -187,7 +199,7 @@ async def delete_study(
     Raises:
         HTTPException: If the study is not found.
     """
-    study = validate_study_exists(session, study_id)
+    _ = validate_study_exists(session, study_id)
     deleted = study_crud.delete_study(session, study_id)
     if not deleted:
         raise HTTPException(status_code=401, detail="Could not delete Study.")
@@ -213,4 +225,4 @@ async def list_files(study_id: str, session: DBSessionDep) -> list[Interview]:
     """
     _ = validate_study_exists(session, study_id)
 
-    return study_crud.get_interviews_by_study(session, study_id)
+    return interview_crud.get_interviews_by_study_id(session, study_id)

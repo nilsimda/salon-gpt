@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
+from fastapi import UploadFile
 from pydantic import BaseModel
 
 
@@ -20,7 +21,10 @@ class Study(BaseModel):
 class CreateStudyRequest(BaseModel):
     name: str
     description: Optional[str] = None
-    is_transcribed: Optional[bool] = False
+    meta_file: UploadFile
+    ti_files: list[UploadFile] = []
+    gd_files: list[UploadFile] = []
+    memo_files: list[UploadFile] = []
 
     class Config:
         from_attributes = True
@@ -29,7 +33,10 @@ class CreateStudyRequest(BaseModel):
 class UpdateStudyRequest(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
-    is_transcribed: Optional[bool] = False
+    meta_file: UploadFile
+    ti_files: list[UploadFile] = []
+    gd_files: list[UploadFile] = []
+    memo_files: list[UploadFile] = []
 
     class Config:
         from_attributes = True

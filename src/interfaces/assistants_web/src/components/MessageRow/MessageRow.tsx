@@ -74,9 +74,7 @@ export const MessageRow = forwardRef<HTMLDivElement, Props>(function MessageRowI
   const hasSteps =
     (isFulfilledOrTypingMessage(message) ||
       isErroredMessage(message) ||
-      isAbortedMessage(message)) &&
-    !!message.toolEvents &&
-    message.toolEvents.length > 0;
+      isAbortedMessage(message));
 
   const enableLongPress =
     (isFulfilledMessage(message) || isUserMessage(message)) && breakpoint === Breakpoint.sm;

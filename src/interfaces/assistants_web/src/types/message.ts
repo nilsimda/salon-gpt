@@ -1,8 +1,6 @@
 import {
   Citation,
-  ListConversationFile,
-  StreamToolCallsGeneration,
-  StreamToolInput,
+  CitationList,
 } from '@/salon-client';
 
 export enum BotState {
@@ -22,6 +20,7 @@ type BaseMessage = {
   id?: string | null;
   type: MessageType;
   text: string;
+  search_results?: CitationList[];
   error?: string;
 };
 
@@ -42,7 +41,6 @@ export type FulfilledMessage = BaseMessage & {
   citations?: Citation[];
   isRAGOn?: boolean;
   originalText: string;
-  toolEvents?: StreamToolCallsGeneration[];
 };
 
 /**
@@ -51,7 +49,6 @@ export type FulfilledMessage = BaseMessage & {
 export type AbortedMessage = BaseMessage & {
   type: MessageType.BOT;
   state: BotState.ABORTED;
-  toolEvents?: StreamToolCallsGeneration[];
 };
 
 /**
@@ -73,7 +70,6 @@ export type TypingMessage = BaseMessage & {
   originalText: string;
   citations?: Citation[];
   isRAGOn?: boolean;
-  toolEvents?: StreamToolCallsGeneration[];
 };
 
 /**
@@ -82,7 +78,6 @@ export type TypingMessage = BaseMessage & {
 export type ErrorMessage = BaseMessage & {
   type: MessageType.BOT;
   state: BotState.ERROR;
-  toolEvents?: StreamToolInput[];
 };
 
 /**
@@ -90,7 +85,6 @@ export type ErrorMessage = BaseMessage & {
  */
 export type UserMessage = BaseMessage & {
   type: MessageType.USER;
-  files?: ListConversationFile[];
 };
 
 export type ChatMessage = UserMessage | BotMessage;

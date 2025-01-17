@@ -14,3 +14,11 @@ class Interview(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class InterviewChunk(BaseModel):
+    interview_id: str
+    original_text: str
+    start_pos: int
+    end_pos: int
+    bm25_tokens: list[str]

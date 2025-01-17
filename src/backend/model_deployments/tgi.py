@@ -8,7 +8,7 @@ from backend.schemas.chat import (
     SalonChatRequest,
     StreamEvent,
 )
-from backend.schemas.citation import CitationList, Citation
+from backend.schemas.citation import Citation, CitationList
 
 
 class TGIDeployment:

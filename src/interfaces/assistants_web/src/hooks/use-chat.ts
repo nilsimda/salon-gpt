@@ -13,7 +13,7 @@ import {
   useUpdateConversationTitle,
 } from '@/hooks';
 import {
-  Citation,
+  CitationList,
   CohereNetworkError,
   FinishReason,
   SalonChatRequest,
@@ -140,7 +140,7 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
     let botResponse = '';
     let conversationId = '';
     let generationId = '';
-    let citations: Citation[] = [];
+    let search_results: CitationList[] = [];
 
     try {
       clearComposerFiles();
@@ -167,6 +167,7 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
                 type: MessageType.BOT,
                 state: BotState.TYPING,
                 text: botResponse,
+                search_results: search_results,
                 generationId,
                 isRAGOn,
                 originalText: botResponse,
@@ -176,10 +177,13 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
 
             // This event only occurs when we use tools.
             case StreamEvent.SEARCH_RESULTS: {
+              const data = eventData.data;
+              search_results.push(data.search_results)
               setStreamingMessage({
                 type: MessageType.BOT,
                 state: BotState.TYPING,
-                text: "Search Results not implemented yet",
+                text: botResponse,
+                search_results: search_results,
                 generationId,
                 isRAGOn,
                 originalText: botResponse,
@@ -221,7 +225,7 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
                 state: BotState.FULFILLED,
                 generationId,
                 text: finalText, //: fixMarkdownImagesInText(transformedText),
-                citations,
+                search_results: search_results,
                 isRAGOn,
                 originalText: isRAGOn ? responseText : botResponse,
               };
@@ -242,7 +246,6 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
           setIsStreaming(false);
         },
         onError: (e) => {
-          citations = [];
           if (isCohereNetworkError(e)) {
             const networkError = e;
             let errorMessage = USER_ERROR_MESSAGE;
@@ -337,7 +340,6 @@ export const useChat = (config?: { onSend?: (msg: string) => void }) => {
     newMessages = newMessages.concat({
       type: MessageType.USER,
       text: message,
-      files: composerFiles,
     });
 
 
